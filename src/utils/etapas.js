@@ -57,3 +57,15 @@ export function podeTrabalharNaEtapa(user, etapa) {
   if (!etapaDoCargo) return true;
   return etapaDoCargo === etapa;
 }
+
+export function getProximaEtapa(etapaAtual) {
+  const idx = ETAPA_ORDER.indexOf(etapaAtual);
+  if (idx === -1 || idx === ETAPA_ORDER.length - 1) return null;
+  return ETAPA_ORDER[idx + 1];
+}
+
+export function getEtapaAnterior(etapaAtual) {
+  const idx = ETAPA_ORDER.indexOf(etapaAtual);
+  if (idx <= 0) return null;
+  return ETAPA_ORDER[idx - 1];
+}

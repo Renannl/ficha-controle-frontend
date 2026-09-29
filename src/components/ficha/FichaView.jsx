@@ -27,7 +27,11 @@ import {
 } from "../../data/painelTemplates";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
-import { getEtapaAtual, podeTrabalharNaEtapa } from "../../utils/etapas";
+import {
+  getEtapaAtual,
+  podeTrabalharNaEtapa,
+  getProximaEtapa,
+} from "../../utils/etapas";
 import QrCodeModal from "../qrcode/QrCodeModal";
 import { montarUrlPublica } from "../qrcode/QrCodeDocumentacao";
 import TimelineFicha from "../sessions/TimelineFicha";
@@ -42,6 +46,7 @@ import {
   QrCode,
   History,
 } from "lucide-react";
+import PularEtapaModal from "../buttons/PularEtapaModal";
 
 export default function FichaView({
   user,
@@ -70,6 +75,7 @@ export default function FichaView({
   const [rejectInfo, setRejectInfo] = useState(null);
   const [approveInfo, setApproveInfo] = useState(null);
   const [verificacaoEtapa, setVerificacaoEtapa] = useState(null);
+  const [pularEtapaOpen, setPularEtapaOpen] = useState(false);
   const { registrarMarcacao } = useChecklistLog(ficha?.dbId);
   const sessaoIniciada = sessoes.some(
     (s) => !s.fim && s.usuario === user?.username,
@@ -143,6 +149,138 @@ export default function FichaView({
     },
     [fichaId, atualizarFicha],
   );
+
+  async function handlePularEtapa(justificativa) {
+    if (!ficha || !isPainel || !etapaAtual) return;
+    if (user?.role !== "admin") return;
+
+    const usuarioNome = user?.nome || user?.username;
+    const proximaEtapa = getProximaEtapa(etapaAtual);
+
+    atualizarFicha(fichaId, (prev) => {
+      const items = [...(prev?.items ?? [])];
+      const verificacoes = { ...(prev?.verificacoes || {}) };
+
+      // 1) Marca itens da sequência da etapa atual como "ok"
+      items.forEach((item, idx) => {
+        const template = activeChecklistItems.find((c) => c.id === item.id);
+        if (template?.etapa === etapaAtual && !item.resultado) {
+          items[idx] = {
+            ...item,
+            resultado: "ok",
+            observacao: `Pulo de etapa (admin): ${justificativa}`,
+          };
+
+          registrarMarcacao({
+            itemId: item.id,
+            descricao: template?.descricao || `Item ${item.id}`,
+            campo: "resultado",
+            valor: "ok",
+            etapa: etapaAtual,
+            usuario: usuarioNome,
+            observacao: `Pulo de etapa: ${justificativa}`,
+          });
+        }
+      });
+
+      // 2) Marca verificações da etapa atual como "ok"
+      const itensVerificacao = getPainelVerificacaoPorEtapa(
+        ficha.tipoPainel,
+        etapaAtual,
+      );
+      const base = [...(verificacoes[etapaAtual] || [])];
+      while (base.length < itensVerificacao.length) base.push("");
+      itensVerificacao.forEach((desc, idx) => {
+        if (!base[idx] || base[idx] === "erro") {
+          base[idx] = "ok";
+          registrarMarcacao({
+            itemId: `ver-${etapaAtual}-${idx}`,
+            descricao: desc || `Verificação ${idx + 1}`,
+            campo: "verificacao",
+            valor: "OK",
+            etapa: etapaAtual,
+            usuario: usuarioNome,
+          });
+        }
+      });
+      verificacoes[etapaAtual] = base;
+
+      // 3) Registra no histórico de etapas
+      const historicoEtapas = [
+        ...(prev?.historicoEtapas || []),
+        {
+          usuario: user?.username,
+          nome: usuarioNome,
+          cargo: user?.role,
+          etapa: etapaAtual,
+          acao: "pulada",
+          justificativa,
+          data: new Date().toISOString(),
+        },
+      ];
+
+      return { ...prev, items, verificacoes, historicoEtapas };
+    });
+
+    // 4) Para sessões abertas da etapa atual
+    sessoesTrabalho.pararTodasSessoes?.();
+
+    setPularEtapaOpen(false);
+  }
+
+  function handleDesfazerPulo() {
+    if (!ficha || !isPainel) return;
+    if (user?.role !== "admin") return;
+
+    const historico = ficha.historicoEtapas || [];
+    // Última etapa que foi pulada
+    const ultimoPuloIdx = historico.map((h) => h.acao).lastIndexOf("pulada");
+    if (ultimoPuloIdx === -1) return;
+
+    const pulo = historico[ultimoPuloIdx];
+    const etapaPulada = pulo.etapa;
+    const usuarioNome = user?.nome || user?.username;
+
+    atualizarFicha(fichaId, (prev) => {
+      const items = [...(prev?.items ?? [])];
+      const verificacoes = { ...(prev?.verificacoes || {}) };
+
+      // 1) Limpa itens da sequência que foram marcados pelo pulo
+      items.forEach((item, idx) => {
+        const template = activeChecklistItems.find((c) => c.id === item.id);
+        if (
+          template?.etapa === etapaPulada &&
+          item.resultado === "ok" &&
+          String(item.observacao || "").includes("Pulo de etapa")
+        ) {
+          items[idx] = { ...item, resultado: "", observacao: "" };
+        }
+      });
+
+      // 2) Limpa verificações da etapa pulada que foram setadas como "ok" pelo pulo
+      if (verificacoes[etapaPulada]) {
+        verificacoes[etapaPulada] = verificacoes[etapaPulada].map((v) =>
+          v === "ok" ? "" : v,
+        );
+      }
+
+      // 3) Remove a última entrada de "pulada" do histórico
+      const novoHistorico = historico.filter((_, i) => i !== ultimoPuloIdx);
+
+      return { ...prev, items, verificacoes, historicoEtapas: novoHistorico };
+    });
+
+    // Registrar no log
+    registrarMarcacao({
+      itemId: `desfazer-pulo-${etapaPulada}`,
+      descricao: `Desfez o pulo da etapa ${etapaPulada}`,
+      campo: "desfazer_pulo",
+      valor: "ok",
+      etapa: etapaPulada,
+      usuario: usuarioNome,
+      observacao: `Admin desfez o pulo da etapa ${etapaPulada}`,
+    });
+  }
 
   function handleTipoPainelChange(novoTipo) {
     if (!ficha || !podeEditar()) return;
@@ -786,22 +924,82 @@ export default function FichaView({
             ))}
 
           {activeTab === "checklist" && (
-            <ChecklistTable
-              ficha={ficha}
-              checklistItems={activeChecklistItems}
-              onToggleMark={updateItemSessionMark}
-              onSetResultado={(idx, val, observacao) =>
-                updateItemResultado(idx, val, observacao)
-              }
-              isTaf={isTaf}
-              isPainel={isPainel}
-              tafData={ficha?.tafData}
-              onUpdateTaf={handleUpdateTaf}
-              readOnly={!sessaoIniciada}
-              user={user}
-              sessaoIniciada={sessaoIniciada}
-              onAbrirVerificacao={setVerificacaoEtapa}
-            />
+            <>
+              {isPainel && etapaAtual && user?.role === "admin" && (
+                <div
+                  style={{
+                    marginBottom: "16px",
+                    padding: "12px 16px",
+                    background: "var(--bg-elevated)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-md)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "12px",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <strong style={{ fontSize: "14px" }}>
+                      Etapa atual:{" "}
+                      {etapaAtual === "montagem"
+                        ? "Montagem"
+                        : etapaAtual === "barramento"
+                          ? "Barramento"
+                          : "Cabeamento"}
+                    </strong>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "var(--text-secondary)",
+                        margin: 0,
+                      }}
+                    >
+                      Admin pode pular esta etapa se necessário.
+                    </p>
+                  </div>
+                  <div
+                    style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
+                  >
+                    {(ficha.historicoEtapas || []).some(
+                      (h) => h.acao === "pulada",
+                    ) && (
+                      <button
+                        className="btn btn-secondary"
+                        onClick={handleDesfazerPulo}
+                        title="Volta a etapa anteriormente pulada para pendente"
+                      >
+                        Desfazer Pulo
+                      </button>
+                    )}
+                    <button
+                      className="btn btn-warning"
+                      onClick={() => setPularEtapaOpen(true)}
+                    >
+                      Pular Etapa
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <ChecklistTable
+                ficha={ficha}
+                checklistItems={activeChecklistItems}
+                onToggleMark={updateItemSessionMark}
+                onSetResultado={(idx, val, observacao) =>
+                  updateItemResultado(idx, val, observacao)
+                }
+                isTaf={isTaf}
+                isPainel={isPainel}
+                tafData={ficha?.tafData}
+                onUpdateTaf={handleUpdateTaf}
+                readOnly={!sessaoIniciada}
+                user={user}
+                sessaoIniciada={sessaoIniciada}
+                onAbrirVerificacao={setVerificacaoEtapa}
+              />
+            </>
           )}
 
           {activeTab === "taf" && isTaf && (
@@ -937,6 +1135,13 @@ export default function FichaView({
         sessaoIniciada={sessaoIniciada}
         fichaId={ficha.dbId}
         onSessoesParadas={loadSessoes}
+      />
+
+      <PularEtapaModal
+        isOpen={pularEtapaOpen}
+        onClose={() => setPularEtapaOpen(false)}
+        etapaAtual={etapaAtual}
+        onConfirm={handlePularEtapa}
       />
     </>
   );
