@@ -11,6 +11,7 @@ import {
   UserPlus,
   Trash,
   QrCode,
+  SkipForward, // 🆕
 } from "lucide-react";
 
 import { FaFilePdf } from "react-icons/fa";
@@ -44,4 +45,5 @@ export const MANAGEMENT_PERMISSIONS = [
   { key: "gerar_pdf", label: "Gerar PDF", icon: FaFilePdf },
   { key: "ver_qrcode", label: "Ver QR Code", icon: QrCode },
   { key: "ver_historico", label: "Ver histórico/timeline", icon: Clock3 },
+  { key: "pular_etapa", label: "Pular etapa no painel", icon: SkipForward },
 ];

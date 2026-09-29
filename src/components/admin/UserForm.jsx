@@ -29,10 +29,8 @@ export default function UserForm({
 
   function handleRoleChange(newRole) {
     setRole(newRole);
-
     const preset = ROLE_PRESETS[newRole] || [];
-
-    setPermissoes(preset);
+    setPermissoes((prev) => [...new Set([...prev, ...preset])]);
   }
 
   return (

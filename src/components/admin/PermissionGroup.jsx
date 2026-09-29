@@ -14,9 +14,9 @@ export default function PermissionGroup({
       <div className="permissions-grid mb-4" style={gridStyle}>
         {permissions.map((perm) => (
           <PermissionItem
-            key={perm.key}
-            checked={selectedPermissions.includes(perm.key)}
-            onChange={() => onToggle(perm.key)}
+            key={perm.id || perm.key}
+            checked={selectedPermissions.includes(perm.id || perm.key)}
+            onChange={() => onToggle(perm.id || perm.key)}
             icon={perm.icon}
             label={perm.label}
           />

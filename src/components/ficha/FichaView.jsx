@@ -80,6 +80,8 @@ export default function FichaView({
   const sessaoIniciada = sessoes.some(
     (s) => !s.fim && s.usuario === user?.username,
   );
+  const podePularEtapa =
+  user?.role === "admin" && user?.permissoes?.includes("pular_etapa");
 
   useEffect(() => {
     let cancelled = false;
@@ -152,7 +154,7 @@ export default function FichaView({
 
   async function handlePularEtapa(justificativa) {
     if (!ficha || !isPainel || !etapaAtual) return;
-    if (user?.role !== "admin") return;
+    if (!podePularEtapa) return;
 
     const usuarioNome = user?.nome || user?.username;
     const proximaEtapa = getProximaEtapa(etapaAtual);
@@ -230,7 +232,7 @@ export default function FichaView({
 
   function handleDesfazerPulo() {
     if (!ficha || !isPainel) return;
-    if (user?.role !== "admin") return;
+    if (!podePularEtapa) return;
 
     const historico = ficha.historicoEtapas || [];
     // Última etapa que foi pulada
@@ -925,7 +927,7 @@ export default function FichaView({
 
           {activeTab === "checklist" && (
             <>
-              {isPainel && etapaAtual && user?.role === "admin" && (
+              {isPainel && etapaAtual && podePularEtapa && (
                 <div
                   style={{
                     marginBottom: "16px",
