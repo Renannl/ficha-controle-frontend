@@ -12,7 +12,6 @@ export function useAuth() {
     }
   }, []);
 
-  // 🔧 authFetch memoizado — não recria a cada render
   const authFetch = useCallback(async (url, options = {}) => {
     if (isManualLogoutRef.current) return null;
 
@@ -33,9 +32,8 @@ export function useAuth() {
     }
 
     return response;
-  }, []); // sem dependências instáveis — token é lido direto do localStorage
+  }, []);
 
-  // 🔧 perfil também memoizado
   const perfil = useCallback(async () => {
     try {
       const response = await authFetch(
@@ -46,7 +44,6 @@ export function useAuth() {
       const data = await response.json();
 
       if (data.user) {
-        // 🔧 só atualiza se realmente mudou (evita loop de referência nova)
         setUser((prev) =>
           JSON.stringify(prev) === JSON.stringify(data.user)
             ? prev
@@ -61,7 +58,6 @@ export function useAuth() {
     }
   }, [authFetch]);
 
-  // 🔧 usa isAuthenticated (bool) como dependência, não o objeto user
   const isAuthenticated = !!user;
 
   useEffect(() => {
@@ -70,7 +66,7 @@ export function useAuth() {
     perfil();
     const interval = setInterval(() => perfil(), 5000);
     return () => clearInterval(interval);
-  }, [isAuthenticated, perfil]); // 🔧 não depende mais de "user" (objeto instável)
+  }, [isAuthenticated, perfil]);
 
   async function login(username, password) {
     try {

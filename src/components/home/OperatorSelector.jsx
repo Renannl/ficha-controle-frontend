@@ -78,7 +78,6 @@ export default function OperatorSelector({
 
           {grupos.map((grupo) => (
             <div key={grupo.role}>
-              {/* Cabeçalho do grupo com a cor do cargo */}
               <div
                 className="op-grupo-label"
                 style={{

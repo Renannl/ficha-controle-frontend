@@ -17,16 +17,15 @@ export default function ChecklistTable({
   user,
   sessaoIniciada,
   onAbrirVerificacao,
+  etapasLiberadas = [],
 }) {
   const [expandedId, setExpandedId] = useState(null);
 
-  // 🆕 Cálculo considera itens de sequência + verificações
   const totalItems = ficha.items.length;
 
   const doneItems = ficha.items.reduce((acc, item, idx) => {
     const template = checklistItems.find((c) => c.id === item.id);
 
-    // Item de verificação → busca em ficha.verificacoes
     if (String(template?.id ?? "").includes("-ver-")) {
       const idxVer = parseInt(String(template.id).split("-").pop(), 10);
       const v = ficha.verificacoes?.[template.etapa]?.[idxVer];
@@ -34,7 +33,6 @@ export default function ChecklistTable({
       return acc;
     }
 
-    // Item de sequência → busca em item.resultado
     if (item.resultado === "ok" || item.resultado === "na") return acc + 1;
     return acc;
   }, 0);
@@ -64,12 +62,26 @@ export default function ChecklistTable({
   function podeEditarItem(item) {
     if (!sessaoIniciada) return false;
     if (!isPainel) return true;
+
     const template = checklistItems.find((c) => c.id === item.id);
-    return podeTrabalharNaEtapa(user, template?.etapa);
+    const etapa = template?.etapa;
+    if (!etapa) return true;
+
+    // 🆕 Admin + etapa liberada pode editar independente do cargo
+    if (user?.role === "admin" && etapasLiberadas.includes(etapa)) return true;
+
+    return podeTrabalharNaEtapa(user, etapa);
   }
 
   function isItemLiberado(index) {
+    const item = ficha.items[index];
+    const template = checklistItems.find((c) => c.id === item.id);
+    const etapa = template?.etapa;
+
+    if (isPainel && etapa && etapasLiberadas.includes(etapa)) return true;
+
     if (index === 0) return true;
+
     const anterior = ficha.items[index - 1];
     if (!anterior) return false;
 
@@ -140,14 +152,12 @@ export default function ChecklistTable({
 
         categoriaAnterior = categoria;
 
-        // 🆕 Verifica se este é o último item da sequência (Validar todas as etapas anteriores)
         const isUltimoDaSequencia =
           isPainel &&
           template?.descricao
             ?.toLowerCase()
             .includes("validar todas as etapas");
 
-        // 🆕 Verifica se a sequência foi completada
         const sequenciaCompletada =
           isUltimoDaSequencia && liberado && item.resultado;
 
@@ -182,7 +192,6 @@ export default function ChecklistTable({
               liberado={liberado}
             />
 
-            {/* 🆕 Botão para abrir verificação após "Validar todas as etapas anteriores" */}
             {sequenciaCompletada && (
               <div className="verificacao-botao-container">
                 <button

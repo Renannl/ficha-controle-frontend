@@ -5,7 +5,6 @@ export default function BookPrintView({ fichas, onAllReady }) {
   const readyCount = useRef(0);
   const prevFichas = useRef(null);
 
-  // 🆕 Reseta o contador quando a lista de fichas muda
   useEffect(() => {
     if (prevFichas.current !== fichas) {
       prevFichas.current = fichas;

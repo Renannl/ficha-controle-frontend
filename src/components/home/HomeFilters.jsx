@@ -55,7 +55,6 @@ export default function HomeFilters({
       </div>
 
       <div className="flex gap-2">
-        {/* FILTRO TIPO */}
         <select
           className="text-xs font-semibold"
           style={{
@@ -79,7 +78,6 @@ export default function HomeFilters({
           <option value="foto">Fotos</option>
         </select>
 
-        {/* FILTRO STATUS */}
         <select
           className="text-xs font-semibold"
           style={{

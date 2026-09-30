@@ -11,7 +11,6 @@ export function useUsers() {
 
       if (!token) {
         console.warn("[useUsers] ⚠️ Token ausente, aguardando...");
-        // 🔄 Tenta de novo em 500ms se ainda não tem token
         setTimeout(() => loadUsers(), 500);
         return;
       }
@@ -24,7 +23,6 @@ export function useUsers() {
 
       if (response.status === 401) {
         console.warn("[useUsers] 🔐 401 — token inválido/expirado, tentando novamente em 1s...");
-        // 🔄 Token pode estar sendo renovado, tenta de novo
         setTimeout(() => loadUsers(), 1000);
         return;
       }

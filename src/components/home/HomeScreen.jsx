@@ -38,7 +38,6 @@ export default function HomeScreen({
   onOpenAdmin,
   listaUsuarios = [],
 }) {
-  // ── STATE ──────────────────────────────────────
   const [viewMode, setViewMode] = useLocalStorageState("homeViewMode", "list");
   const [showNewMenu, setShowNewMenu] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,22 +57,18 @@ export default function HomeScreen({
   const { colecoes, criarColecao, deletarColecao, recarregarColecoes } =
     useColecoes();
 
-  // ── PERMISSIONS ────────────────────────────────
   const podeGerenciar = canManageOperators(user);
 
-  // 🆕 selectedColecao derivada da URL (sem useState duplicado)
   const selectedColecao = useMemo(() => {
     if (!colecaoId) return null;
     return colecoes.find((c) => String(c.id) === String(colecaoId)) || null;
   }, [colecaoId, colecoes]);
 
-  // ── FICHAS DA COLEÇÃO ABERTA ───────────────────
   const fichasDaColecao = useMemo(() => {
     if (!selectedColecao) return [];
     return fichas.filter((f) => f.colecao_id === selectedColecao.id);
   }, [fichas, selectedColecao]);
 
-  // ── HOOKS ──────────────────────────────────────
   const { toggleRef, handleTouchStart, handleTouchMove, handleTouchEnd } =
     useViewModeDrag(setViewMode);
 
@@ -130,7 +125,6 @@ export default function HomeScreen({
     }
   };
 
-  // filtra coleções pelo termo de busca
   const filteredColecoes = useMemo(() => {
     if (!searchTerm) return colecoes;
     const term = searchTerm.toLowerCase();
@@ -141,10 +135,9 @@ export default function HomeScreen({
     );
   }, [colecoes, searchTerm]);
 
-  // ── NAVEGAÇÃO (única versão, via URL) ──────────
   const handleAbrirColecao = (colecao) => {
     navigate(`/colecao/${colecao.id}`);
-    setAbaColecao("fichas"); // 🆕 volta pra Fichas ao abrir nova coleção
+    setAbaColecao("fichas");
     setSelectedFichas([]);
     setSearchTerm("");
     setViewMode("list");
@@ -152,7 +145,7 @@ export default function HomeScreen({
 
   const handleVoltarColecoes = () => {
     navigate("/dashboard");
-    setAbaColecao("fichas"); // 🆕
+    setAbaColecao("fichas");
     setSelectedFichas([]);
     setSearchTerm("");
     setViewMode("list");
@@ -178,12 +171,10 @@ export default function HomeScreen({
     return () => window.removeEventListener("abrir-book-pdf", handler);
   }, []);
 
-  // 🆕 Reseta o "pronto" sempre que começar uma nova exportação
   useEffect(() => {
     if (pendingExport) setBookReady(false);
   }, [pendingExport]);
 
-  // 🆕 Só gera o PDF depois que TODAS as fichas estiverem carregadas
   useEffect(() => {
     if (!pendingExport || !bookReady) return;
     (async () => {
@@ -196,7 +187,6 @@ export default function HomeScreen({
     })();
   }, [bookReady, pendingExport, bookFichas]);
 
-  // ── FILTERS ────────────────────────────────────
   const { filterStatus, setFilterStatus, filterType, setFilterType } =
     useHomeFilters();
 
@@ -209,7 +199,6 @@ export default function HomeScreen({
 
   const mode = selectedColecao ? "fichas" : "colecoes";
 
-  // ── ACTIONS ────────────────────────────────────
   function handleDelete(e, id) {
     e?.stopPropagation?.();
     setDeleteId(id);
@@ -260,12 +249,10 @@ export default function HomeScreen({
     return base === baseIndSelecionada;
   };
 
-  // 🆕 onOpen agora repassa o colecaoId (se estiver dentro de uma coleção)
   const handleOpenFicha = (id) => {
     onOpen(id, selectedColecao?.id ?? null);
   };
 
-  // ── RENDER ─────────────────────────────────────
   return (
     <div className="home">
       <div className="home-bg-decoration">

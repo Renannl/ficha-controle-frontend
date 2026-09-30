@@ -9,7 +9,6 @@ export function montarUrlPublica(token) {
   return `${API_URL}/publico/ficha/${token}/pdf`;
 }
 
-// Hook: gera o data URL PNG do QR de forma assíncrona
 export function useQrDataUrl(url) {
   const [dataUrl, setDataUrl] = useState(null);
 
@@ -20,7 +19,7 @@ export function useQrDataUrl(url) {
     QRCode.toDataURL(url, {
       width: 512,
       margin: 2,
-      errorCorrectionLevel: "H", // alta correção — ideal pra impressão/adesivo
+      errorCorrectionLevel: "H",
     }).then((d) => {
       if (ativo) setDataUrl(d);
     });
@@ -33,7 +32,6 @@ export function useQrDataUrl(url) {
   return dataUrl;
 }
 
-// Baixa o PNG (pra imprimir e colar no painel)
 export async function baixarQrCode(dataUrl, filename) {
   if (await entregarDataUrl(dataUrl, filename)) return;
   const a = document.createElement("a");

@@ -15,7 +15,6 @@ const puppeteer = require('puppeteer');
   });
 
   await page.goto('http://localhost:5173');
-  // Esperar o carregamento dos botões 'Abrir'
   await page.waitForSelector('.btn-ghost', { timeout: 5000 });
   
   const buttons = await page.$$('.btn-ghost');
@@ -23,7 +22,7 @@ const puppeteer = require('puppeteer');
     const text = await page.evaluate(el => el.textContent, btn);
     if (text.includes('Abrir')) {
       await btn.click();
-      await page.waitForTimeout(1000); // esperar abrir
+      await page.waitForTimeout(1000);
       break;
     }
   }

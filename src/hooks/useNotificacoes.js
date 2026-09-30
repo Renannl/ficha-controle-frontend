@@ -52,7 +52,6 @@ export function useNotificacoes() {
 
   useEffect(() => {
     carregar();
-    // Polling a cada 20s
     intervalRef.current = setInterval(carregar, 20000);
     return () => clearInterval(intervalRef.current);
   }, [carregar]);

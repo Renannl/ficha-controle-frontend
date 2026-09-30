@@ -10,15 +10,13 @@ import {
   ChevronRight,
   Home,
   Loader2,
-  Upload, // 🆕
+  Upload,
 } from "lucide-react";
 import { useArquivosColecao } from "../../hooks/useArquivosColecao";
-import UploadArquivoModal from "./UploadArquivoModal"; // 🆕
+import UploadArquivoModal from "./UploadArquivoModal";
 
 import { entregarArquivo } from "../../native/arquivos";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
-// ... (funções corrigirAcentos, IconeArquivo, formatarTamanho permanecem iguais)
 
 function corrigirAcentos(str) {
   if (!str) return str;
@@ -53,7 +51,7 @@ export default function ColecaoPastasTab({ colecaoId }) {
     useArquivosColecao(colecaoId);
   const [caminhoAtual, setCaminhoAtual] = useState([]);
   const [processandoId, setProcessandoId] = useState(null);
-  const [showUploadModal, setShowUploadModal] = useState(false); // 🆕
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   const { pastas, arquivosNaPasta } = useMemo(() => {
     const pastaMap = new Map();
@@ -110,8 +108,6 @@ export default function ColecaoPastasTab({ colecaoId }) {
 
     return { pastas: pastasFilhas, arquivosNaPasta: arquivosAqui };
   }, [arquivos, caminhoAtual]);
-
-  // ... (funções obterBlob, verArquivo, baixarArquivo, entrarNaPasta, irParaPasta, irParaRaiz iguais)
 
   async function obterBlob(arquivo) {
     const token = localStorage.getItem("token");
@@ -177,7 +173,6 @@ export default function ColecaoPastasTab({ colecaoId }) {
 
   return (
     <div className="colecao-arquivos">
-      {/* Breadcrumb */}
       <div className="pastas-breadcrumb">
         <button className="pastas-breadcrumb-home" onClick={irParaRaiz}>
           <Home size={14} />
@@ -189,7 +184,6 @@ export default function ColecaoPastasTab({ colecaoId }) {
           </span>
         ))}
 
-        {/* 🆕 Botão de upload */}
         <button
           className="pastas-upload-btn"
           onClick={() => setShowUploadModal(true)}
@@ -202,7 +196,6 @@ export default function ColecaoPastasTab({ colecaoId }) {
 
       {erro && <div className="arq-erro">⚠️ {erro}</div>}
 
-      {/* Grid de pastas */}
       {pastas.length > 0 && (
         <section className="pastas-secao">
           <h3 className="pastas-secao-titulo">Pastas</h3>
@@ -226,7 +219,6 @@ export default function ColecaoPastasTab({ colecaoId }) {
         </section>
       )}
 
-      {/* Arquivos dentro da pasta atual */}
       {arquivosNaPasta.length > 0 && (
         <section className="pastas-secao">
           <h3 className="pastas-secao-titulo">
@@ -276,7 +268,6 @@ export default function ColecaoPastasTab({ colecaoId }) {
         <div className="arq-vazio">Pasta vazia.</div>
       )}
 
-      {/* 🆕 Modal de upload */}
       <UploadArquivoModal
         show={showUploadModal}
         colecaoId={colecaoId}
@@ -284,7 +275,7 @@ export default function ColecaoPastasTab({ colecaoId }) {
         pastasExistentes={pastas}
         onClose={() => setShowUploadModal(false)}
         onEnviado={() => {
-          carregar(); // recarrega a lista de arquivos
+          carregar();
         }}
       />
     </div>

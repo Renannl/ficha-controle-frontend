@@ -1,4 +1,3 @@
-// PhotoPanel.jsx
 import { memo, useCallback } from "react";
 import PhotoPanelHeader from "./PhotoPanelHeader";
 import PhotoGrid from "./PhotoGrid";

@@ -1,5 +1,3 @@
-// src/utils/tempoUtils.js
-
 export function calcularTempoDecorridoReal(sessoes) {
   if (!sessoes || sessoes.length === 0) return 0;
   const agora = Date.now();

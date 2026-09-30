@@ -16,7 +16,6 @@ export default function UserTable({ users, onEdit }) {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              {/* COLABORADOR */}
               <td>
                 {user.nome ||
                   user.username
@@ -29,17 +28,14 @@ export default function UserTable({ users, onEdit }) {
                     .join(" ")}
               </td>
 
-              {/* USUÁRIO */}
               <td className="user-column">{user.username}</td>
 
-              {/* CARGO */}
               <td>
                 <span className={`role-badge role-${user.role}`}>
                   {user.role}
                 </span>
               </td>
 
-              {/* STATUS */}
               <td>
                 <span
                   className={`status-badge ${
@@ -50,7 +46,6 @@ export default function UserTable({ users, onEdit }) {
                 </span>
               </td>
 
-              {/* AÇÕES */}
               <td>
                 {user.username !== "master" && (
                   <button

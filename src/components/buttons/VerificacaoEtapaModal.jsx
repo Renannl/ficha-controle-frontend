@@ -45,7 +45,6 @@ export default function VerificacaoEtapaModal({
     return Boolean(anterior) || Boolean(resultados[idx]);
   }
 
-  // 🆕 Ao concluir, para todas as sessões ativas da ficha
   async function handleConcluir() {
     setFinalizando(true);
     try {
@@ -65,7 +64,6 @@ export default function VerificacaoEtapaModal({
             console.log(
               `⏹️ ${data.paradas} sessão(ões) paradas ao concluir verificação.`,
             );
-            // 🆕 Avisa o pai pra recarregar as sessões
             onSessoesParadas?.();
           }
         }

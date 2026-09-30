@@ -1,4 +1,3 @@
-// PhotoBank.jsx
 import { useState } from "react";
 import PhotoBankColecoes from "./PhotoBankColecoes";
 import PhotoBankList from "./PhotoBankList";
@@ -13,7 +12,6 @@ export default function PhotoBank({ fichas, colecoes }) {
 
   const fichasComFotos = fichas.filter((f) => getFichaPhotos(f).length > 0);
 
-  // ── Nível 3: Detalhe do álbum (fotos de uma ficha) ──
   if (selectedFichaId) {
     const ficha = fichasComFotos.find((f) => f.id === selectedFichaId);
     if (!ficha) {
@@ -25,7 +23,6 @@ export default function PhotoBank({ fichas, colecoes }) {
     );
   }
 
-  // ── Nível 2: Fichas (álbuns) dentro da coleção ──
   if (selectedColecao) {
     const fichasDaColecao = fichasComFotos.filter(
       (f) => String(f.colecao_id) === String(selectedColecao.id),
@@ -61,7 +58,6 @@ export default function PhotoBank({ fichas, colecoes }) {
     );
   }
 
-  // ── Nível 1: Coleções com fotos ──
   const colecoesComFotos = colecoes.filter((c) =>
     fichasComFotos.some((f) => String(f.colecao_id) === String(c.id)),
   );

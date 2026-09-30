@@ -42,7 +42,7 @@ export default function ColecoesList({ colecoes, fichas }) {
               <button
                 className="colecao-preview-toggle"
                 onClick={(e) => {
-                  e.stopPropagation(); // não navega pro detalhe da coleção
+                  e.stopPropagation();
                   setExpandedId(isExpanded ? null : colecao.id);
                 }}
               >

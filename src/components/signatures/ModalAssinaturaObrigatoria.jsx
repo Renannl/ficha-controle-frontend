@@ -5,8 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://192.168.101.60:3001";
 const LIDER_USERNAME = "heveraldo";
 const SETORES_TODOS = ["barramento", "montagem", "cabeamento"];
 
-// intervalo de re-checagem (detecta troca de cargo sem re-login)
-const INTERVALO_RECHECK = 15000; // 15 segundos
+const INTERVALO_RECHECK = 15000;
 
 const NOME_SETOR = {
   barramento: "Barramento",
@@ -48,7 +47,6 @@ export default function ModalAssinaturaObrigatoria() {
   const usuario = getUsernameFromToken();
   const ehLider = usuario === LIDER_USERNAME;
 
-  // 🆕 role fresca (do /perfil, NÃO do token)
   const [role, setRole] = useState(null);
   const setoresParaAssinar = ehLider ? SETORES_TODOS : role ? [role] : [];
 
@@ -56,7 +54,6 @@ export default function ModalAssinaturaObrigatoria() {
   const [status, setStatus] = useState({});
   const [assinados, setAssinados] = useState([]);
 
-  // refs pra não interromper a assinatura durante o polling
   const assinandoRef = useRef(false);
   const assinouAlgoRef = useRef(false);
   useEffect(() => {
@@ -66,12 +63,10 @@ export default function ModalAssinaturaObrigatoria() {
     assinouAlgoRef.current = assinouAlgo;
   }, [assinouAlgo]);
 
-  // ─── Carrega role fresca + status (e re-checa de tempos em tempos) ───
   const carregarStatus = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    // 1) Busca a role ATUALIZADA no banco (o token pode estar desatualizado)
     let roleAtual = getRoleFromToken();
     try {
       const perfilRes = await fetch(`${API_URL}/perfil`, {
@@ -82,7 +77,6 @@ export default function ModalAssinaturaObrigatoria() {
         roleAtual = perfilData.user?.role || roleAtual;
       }
     } catch {
-      /* mantém a role do token como fallback */
     }
     setRole(roleAtual);
 
@@ -105,7 +99,6 @@ export default function ModalAssinaturaObrigatoria() {
     });
     setStatus(novo);
 
-    // Só troca o setor sozinho se NÃO estiver assinando/desenhando
     if (!assinandoRef.current && !assinouAlgoRef.current) {
       const pendente = resultados.find((r) => !r.jaAssinou && r.evento);
       setSetorAtivo(pendente ? pendente.setor : null);
@@ -114,7 +107,6 @@ export default function ModalAssinaturaObrigatoria() {
     setCarregando(false);
   }, [ehLider]);
 
-  // monta + polling + re-check ao voltar pra aba
   useEffect(() => {
     carregarStatus();
     const interval = setInterval(carregarStatus, INTERVALO_RECHECK);
@@ -173,7 +165,6 @@ export default function ModalAssinaturaObrigatoria() {
 
   const evento = setorAtivo ? status[setorAtivo]?.evento : null;
 
-  // ─── Busca o documento do setor ativo ───
   useEffect(() => {
     if (!evento || !setorAtivo) return;
     const token = localStorage.getItem("token");
@@ -187,7 +178,6 @@ export default function ModalAssinaturaObrigatoria() {
       .catch(() => setDocumentoHtml(""));
   }, [setorAtivo]);
 
-  // ─── Canvas de assinatura ───
   useEffect(() => {
     if (!evento) return;
     const canvas = canvasRef.current;
@@ -341,7 +331,7 @@ export default function ModalAssinaturaObrigatoria() {
     );
   }
 
-  if (!evento) return null; // nada pendente → libera
+  if (!evento) return null;
 
   const setorJaAssinado = (s) => status[s]?.jaAssinou || assinados.includes(s);
 
@@ -371,7 +361,6 @@ export default function ModalAssinaturaObrigatoria() {
           boxShadow: "0 10px 40px rgba(0,0,0,0.4)",
         }}
       >
-        {/* Cabeçalho */}
         <div
           style={{
             background: "#1976d2",
@@ -389,7 +378,6 @@ export default function ModalAssinaturaObrigatoria() {
           </p>
         </div>
 
-        {/* Seletor de setores (só para o líder) */}
         {ehLider && (
           <div
             style={{
@@ -429,7 +417,6 @@ export default function ModalAssinaturaObrigatoria() {
           </div>
         )}
 
-        {/* Corpo rolável */}
         <div style={{ padding: "24px", overflowY: "auto" }}>
           <h3
             style={{ margin: "0 0 10px", fontSize: "15px", color: "#1976d2" }}
@@ -507,7 +494,6 @@ export default function ModalAssinaturaObrigatoria() {
             </p>
           )}
 
-          {/* ─── Canvas de assinatura (estilo do app) ─── */}
           <div style={{ marginTop: "16px" }}>
             <label
               style={{

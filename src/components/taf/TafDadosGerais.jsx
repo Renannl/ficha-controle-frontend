@@ -1,5 +1,4 @@
 export default function TafDadosGerais({ ficha, tafData, handleChange }) {
-  // 🔒 Data do Teste = dia em que a ficha TAF foi criada
   const dataTesteAuto = (() => {
     const raw = ficha?.created_at || ficha?.createdAt || "";
     if (!raw) return "";
@@ -43,7 +42,6 @@ export default function TafDadosGerais({ ficha, tafData, handleChange }) {
           </label>
         </div>
 
-        {/* 🔒 Linkado da produção */}
         <div className="taf-input-group">
           <label>Nome do Quadro/Painel</label>
           <input type="text" value={ficha.nomeEquipamento || ""} readOnly />

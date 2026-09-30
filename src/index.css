@@ -1,8 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ──────────────────────────────────────────────
-   Design Tokens
-────────────────────────────────────────────── */
 :root {
   --bg-base:       #F0F2F5;
   --bg-card:       #FFFFFF;
@@ -11,7 +8,7 @@
   --border:        #E0E4EA;
   --border-light:  #CBD1DB;
  
-  --blue-primary:  #1A4B50; /* Azul Petróleo IndusPower */
+  --blue-primary:  #1A4B50;
   --blue-mid:      #266066; 
   --blue-accent:   #2D7C84; 
   --blue-glow:     rgba(26, 75, 80, 0.1);
@@ -37,12 +34,6 @@
 }
 
 [data-theme='dark'] {
-  /* --- CORES ESCURAS ORIGINAIS ---
-  --blue-primary:  #4BBCC4;
-  --blue-mid:      #3CA3AB;
-  --blue-accent:   #4BBCC4;
-  ------------------------------- */
-
   --bg-base:       #0A0F14;
   --bg-card:       #141B1F;
   --bg-elevated:   #1A2429;
@@ -54,7 +45,7 @@
   --text-secondary: #A0AEC0;
   --text-muted:     #718096;
 
-  --blue-primary:  #4FD1D9; /* Tom de petróleo vibrante para dark mode */
+  --blue-primary:  #4FD1D9;
   --blue-mid:      #38B2AC;
   --blue-accent:   #4FD1D9;
   --blue-glow:     rgba(79, 209, 217, 0.15);
@@ -67,9 +58,6 @@
   --red:           #F56565;
 }
 
-/* ──────────────────────────────────────────────
-   Reset & Base
-────────────────────────────────────────────── */
 *, *::before, *::after { 
   box-sizing: border-box; 
   margin: 0; 
@@ -97,16 +85,10 @@ body {
   height: -webkit-fill-available;
 }
 
-/* ──────────────────────────────────────────────
-   Scrollbars
-────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-/* ──────────────────────────────────────────────
-   App Shell
-────────────────────────────────────────────── */
 .app {
   display: flex;
   flex-direction: column;
@@ -116,9 +98,6 @@ body {
   overflow: hidden;
 }
 
-/* ──────────────────────────────────────────────
-   Cards
-────────────────────────────────────────────── */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -135,9 +114,6 @@ body {
   box-shadow: var(--shadow-card);
 }
 
-/* ──────────────────────────────────────────────
-   Buttons
-────────────────────────────────────────────── */
 button { font-family: inherit; }
 
 .btn {
@@ -196,9 +172,6 @@ button { font-family: inherit; }
 }
 .btn-icon:hover { color: var(--text-primary); background: var(--border-light); }
 
-/* ──────────────────────────────────────────────
-   Form Fields
-────────────────────────────────────────────── */
 .field {
   display: flex;
   flex-direction: column;
@@ -251,9 +224,6 @@ button { font-family: inherit; }
   padding-right: 36px;
 }
 
-/* ──────────────────────────────────────────────
-   Badges
-────────────────────────────────────────────── */
 .badge {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 3px 10px;
@@ -268,9 +238,6 @@ button { font-family: inherit; }
 .badge-amber  { background: rgba(207, 156, 15, 0.164); color: #efb944; border: 1px solid rgba(239, 208, 68, 0.3); }
 .badge-muted  { background: rgba(0,0,0,0.04); color: var(--text-secondary); border: 1px solid var(--border); }
 
-/* ──────────────────────────────────────────────
-   Progress Bar
-────────────────────────────────────────────── */
 .progress-bar {
   height: 4px;
   background: var(--border);
@@ -284,17 +251,11 @@ button { font-family: inherit; }
   transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* ──────────────────────────────────────────────
-   Divider
-────────────────────────────────────────────── */
 .divider {
   height: 1px;
   background: var(--border);
 }
 
-/* ──────────────────────────────────────────────
-   Section Header
-────────────────────────────────────────────── */
 .section-header {
   display: flex;
   align-items: center;
@@ -324,9 +285,6 @@ button { font-family: inherit; }
   margin-top: 1px;
 }
 
-/* ──────────────────────────────────────────────
-   Form Grid
-────────────────────────────────────────────── */
 .form-grid {
   display: grid;
   gap: 12px;
@@ -334,9 +292,6 @@ button { font-family: inherit; }
 .form-grid-2 { grid-template-columns: 1fr 1fr; }
 .form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
 
-/* ──────────────────────────────────────────────
-   Utility
-────────────────────────────────────────────── */
 .flex         { display: flex; }
 .flex-col     { flex-direction: column; }
 .flex-wrap    { flex-wrap: wrap; }
@@ -383,9 +338,6 @@ button { font-family: inherit; }
 .mb-3 { margin-bottom: 12px; }
 .mb-4 { margin-bottom: 16px; }
 
-/* ──────────────────────────────────────────────
-   Animations
-────────────────────────────────────────────── */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }

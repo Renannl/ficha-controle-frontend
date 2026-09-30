@@ -1,9 +1,6 @@
 import { entregarArquivo } from "../native/arquivos";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-// ══════════════════════════════════════
-// Extrai todo o CSS carregado na página (tags <style> e <link>)
-// ══════════════════════════════════════
 function extractAllCssText() {
   let cssText = "";
 
@@ -27,9 +24,6 @@ function extractAllCssText() {
   return cssText;
 }
 
-// ══════════════════════════════════════
-// Monta o HTML completo (head + body) enviado ao Puppeteer
-// ══════════════════════════════════════
 function buildFullHtml(bodyHtml, cssText) {
   const printCss = `
     @page { size: A4; margin: 10mm; }
@@ -93,9 +87,6 @@ function buildFullHtml(bodyHtml, cssText) {
   `;
 }
 
-// ══════════════════════════════════════
-// OVERLAY DE LOADING (compartilhado)
-// ══════════════════════════════════════
 function withOverlay(fn) {
   const overlay = document.createElement("div");
   overlay.style.cssText = `
@@ -120,7 +111,7 @@ function withOverlay(fn) {
 export async function generateBookPdf(
   fichaIds,
   elementId = "book-print-root",
-  filename = "BOOK.pdf", // 🆕
+  filename = "BOOK.pdf",
 ) {
   const el = document.getElementById(elementId);
   if (!el) return false;

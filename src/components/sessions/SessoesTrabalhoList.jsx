@@ -26,7 +26,7 @@ function formatarDuracao(segundos) {
 
 function calcularDuracao(sessao) {
   if (sessao.fim) {
-    const val = Number(sessao.duracao_segundos); // 🔧 força conversão pra number
+    const val = Number(sessao.duracao_segundos);
     if (!isNaN(val)) return val;
     const inicio = new Date(sessao.inicio).getTime();
     const fim = new Date(sessao.fim).getTime();
@@ -51,7 +51,7 @@ export default function SessoesTrabalhoList({
   } = sessoesTrabalho;
   const [sessaoEditando, setSessaoEditando] = useState(null);
   const [, setTick] = useState(0);
-  const [gruposAbertos, setGruposAbertos] = useState({}); // 🆕 controla accordion
+  const [gruposAbertos, setGruposAbertos] = useState({});
 
   const isAdmin = user?.role === "admin";
 
@@ -62,7 +62,6 @@ export default function SessoesTrabalhoList({
     return () => clearInterval(interval);
   }, [sessoes]);
 
-  // 🆕 Agrupa sessões por usuário
   const grupos = useMemo(() => {
     const map = {};
     sessoes.forEach((s) => {
@@ -88,14 +87,12 @@ export default function SessoesTrabalhoList({
         ),
       }))
       .sort((a, b) => {
-        // usuários com sessão ativa primeiro, depois por tempo total
         if (a.temAtiva && !b.temAtiva) return -1;
         if (!a.temAtiva && b.temAtiva) return 1;
         return b.totalSegundos - a.totalSegundos;
       });
   }, [sessoes]);
 
-  // 🆕 Abre automaticamente grupos com sessão ativa
   useEffect(() => {
     setGruposAbertos((prev) => {
       const next = { ...prev };
@@ -154,7 +151,6 @@ export default function SessoesTrabalhoList({
           <p className="sessoes-empty">Nenhuma sessão registrada ainda.</p>
         )}
 
-        {/* 🆕 Grupos por usuário */}
         <div className="sessoes-grupos-list">
           {grupos.map((grupo) => {
             const aberto = !!gruposAbertos[grupo.usuario];

@@ -11,7 +11,6 @@ export default function PrintViewTAF({ ficha, op, isBook = false }) {
           : "print-view-root print-only taf-pdf"
       }
     >
-      {/* HEADER TAF */}
       <div className="taf-pdf-header">
         <div className="taf-pdf-logo">
           <div className="brand">
@@ -27,7 +26,6 @@ export default function PrintViewTAF({ ficha, op, isBook = false }) {
         </div>
       </div>
 
-      {/* TEST EXECUTION TYPE */}
       <table className="taf-pdf-table compact no-border">
         <tbody>
           <tr>
@@ -51,7 +49,6 @@ export default function PrintViewTAF({ ficha, op, isBook = false }) {
         </tbody>
       </table>
 
-      {/* DADOS GERAIS */}
       <table
         className="taf-pdf-table"
         style={{ tableLayout: "fixed", width: "100%" }}
@@ -119,7 +116,6 @@ export default function PrintViewTAF({ ficha, op, isBook = false }) {
         </tbody>
       </table>
 
-      {/* EQUIPAMENTOS */}
       <div className="taf-pdf-section-header">
         EQUIPAMENTOS UTILIZADOS NOS ENSAIOS
       </div>
@@ -163,7 +159,6 @@ export default function PrintViewTAF({ ficha, op, isBook = false }) {
         </tbody>
       </table>
 
-      {/* MEGGER TABLE */}
       <div className="taf-pdf-section-header flex justify-between items-center">
         <span>TESTE DE ISOLAÇÃO MEGGER - CIRCUITO PRINCIPAL</span>
         <div className="flex gap-4 font-normal text-[10px] items-center">
@@ -219,7 +214,6 @@ export default function PrintViewTAF({ ficha, op, isBook = false }) {
         </div>
       </div>
 
-      {/* HI-POT */}
       <div className="taf-pdf-section-header flex justify-between items-center">
         <span>TESTE DE HI-POT - CIRCUITO PRINCIPAL</span>
         <div className="flex gap-4 font-normal text-[10px] items-center">
@@ -258,7 +252,6 @@ export default function PrintViewTAF({ ficha, op, isBook = false }) {
         </tbody>
       </table>
 
-      {/* CHECKLIST */}
       <div className="taf-pdf-section-header flex justify-between items-center">
         <span>TESTES FUNCIONAIS E VISUAIS</span>
         <div className="flex gap-4 font-normal text-[10px] items-center">
@@ -303,7 +296,6 @@ export default function PrintViewTAF({ ficha, op, isBook = false }) {
         {ficha.observacoes || "Sem observações."}
       </div>
 
-      {/* ALTERAÇÕES FEITAS (SE APLICÁVEL) */}
       {ficha.alteracoesFeitas && (
         <div style={{ marginTop: "10px" }}>
           <div className="taf-pdf-section-header">
@@ -313,7 +305,6 @@ export default function PrintViewTAF({ ficha, op, isBook = false }) {
         </div>
       )}
 
-      {/* SIGNATURES */}
       <table
         className="taf-pdf-signatures-table"
         style={{

@@ -13,7 +13,6 @@ export default function FichaTimerBadge({ sessaoAtiva, tempoAcumulado = 0 }) {
   const [tempoTotal, setTempoTotal] = useState(tempoAcumulado);
 
   useEffect(() => {
-    // Sem sessão ativa: mostra só o acumulado (parado)
     if (!sessaoAtiva?.inicio) {
       setTempoTotal(tempoAcumulado);
       return;
@@ -31,7 +30,6 @@ export default function FichaTimerBadge({ sessaoAtiva, tempoAcumulado = 0 }) {
     return () => clearInterval(interval);
   }, [sessaoAtiva?.inicio, tempoAcumulado]);
 
-  // Se não tem nada acumulado e não tem sessão ativa, nem mostra o badge
   if (!sessaoAtiva && tempoAcumulado === 0) return null;
 
   const emAndamento = !!sessaoAtiva;

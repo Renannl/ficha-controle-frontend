@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "./useAuth"; // ajuste o caminho conforme sua estrutura
+import { useAuth } from "./useAuth";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -56,7 +56,6 @@ export function useColecoes() {
     }
   }
 
-  // ✅ NOVA FUNÇÃO
   async function deletarColecao(id) {
     try {
       const response = await authFetch(`${API_URL}/colecoes/${id}`, {

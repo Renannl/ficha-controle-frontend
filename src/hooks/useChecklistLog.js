@@ -25,7 +25,6 @@ export function useChecklistLog(fichaId) {
     loadLogs();
   }, [loadLogs]);
 
-  // dispara e não espera resposta bloquear a UI (fire-and-forget com recarga depois)
   const registrarMarcacao = useCallback(
     async ({
       itemId,

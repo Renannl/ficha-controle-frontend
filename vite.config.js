@@ -11,7 +11,6 @@ export default defineConfig(({ mode }) => {
   const HOST = env.VITE_APP_HOST || "0.0.0.0";
   const PORT = parseInt(env.VITE_APP_PORT || "5173", 10);
 
-  // ─── Headers de Segurança ───
   const securityHeaders = {
     "X-Content-Type-Options": env.VITE_SECURITY_NO_SNIFF || "nosniff",
     "X-Frame-Options": env.VITE_SECURITY_FRAME_OPTIONS || "DENY",
@@ -27,7 +26,7 @@ export default defineConfig(({ mode }) => {
     "Cross-Origin-Opener-Policy": "same-origin",
     "Cross-Origin-Resource-Policy": "same-origin",
     "Strict-Transport-Security":
-      env.VITE_SECURITY_HSTS || "max-age=31536000; includeSubDomains; preload", // Força requisição HTTPS (certificado)
+      env.VITE_SECURITY_HSTS || "max-age=31536000; includeSubDomains; preload",
   };
 
   return {
@@ -60,7 +59,6 @@ export default defineConfig(({ mode }) => {
               },
             },
             {
-              // API calls: network first, sem cache
               urlPattern: /\/api\/.*/,
               handler: "NetworkOnly",
             },
@@ -93,12 +91,10 @@ export default defineConfig(({ mode }) => {
       }),
     ],
 
-    // ─── Servidor de Desenvolvimento ───
     server: {
       host: "0.0.0.0",
       port: 5173,
       strictPort: true,
-      // Bloqueia acesso de origens não autorizadas
       cors: {
         origin: (env.VITE_APP_ALLOWED_ORIGINS || "")
           .split(",")
@@ -107,11 +103,9 @@ export default defineConfig(({ mode }) => {
         credentials: false,
       },
       headers: securityHeaders,
-      // HMR dinâmico (permite Live Reload em celular e PC)
       hmr: true,
     },
 
-    // ─── Preview (produção local) ───
     preview: {
       host: HOST,
       port: PORT + 1,
@@ -119,12 +113,10 @@ export default defineConfig(({ mode }) => {
       headers: securityHeaders,
     },
 
-    // ─── Build ───
     build: {
       sourcemap: false,
       rollupOptions: {
         output: {
-          // Ofusca nomes de chunks
           chunkFileNames: "assets/[hash].js",
           entryFileNames: "assets/[hash].js",
           assetFileNames: "assets/[hash].[ext]",
@@ -132,7 +124,6 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    // ─── Variáveis de ambiente ───
     envPrefix: "VITE_",
   };
 });

@@ -1,6 +1,3 @@
-/* ──────────────────────────────────────────────
-   CRITICAL RESET & FIX
-────────────────────────────────────────────── */
 .brand-logo-wrap {
   width: 64px !important;
   height: 64px !important;
@@ -49,11 +46,6 @@
   z-index: 0;
 }
 
-/* ──────────────────────────────────────────────
-   App Layout
-────────────────────────────────────────────── */
-
-/* ─── Header ─── */
 .top-header {
   display: flex;
   align-items: center;
@@ -143,7 +135,6 @@
   text-align: right;
 }
 
-/* ─── Main Content ─── */
 .main-content {
   flex: 1;
   overflow-y: auto;
@@ -153,7 +144,6 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* ─── Bottom Tab Bar ─── */
 .tab-bar {
   display: flex;
   align-items: stretch;
@@ -215,9 +205,6 @@
   color: var(--text-secondary);
 }
 
-/* ──────────────────────────────────────────────
-   Home Screen
-────────────────────────────────────────────── */
 .home {
   flex: 1;
   display: flex;
@@ -403,7 +390,6 @@
   text-overflow: ellipsis;
 }
 
-/* Filtros e Status */
 .status-tag {
   padding: 4px 10px;
   border-radius: var(--radius-sm);
@@ -427,7 +413,6 @@
   letter-spacing: 0.5px;
 }
 
-/* Ajustes específicos para Dark Mode nas badges */
 [data-theme='dark'] .badge-muted {
   background: rgba(45, 124, 132, 0.1);
   color: var(--blue-accent);
@@ -633,9 +618,6 @@
   transform: scale(0.95);
 }
 
-/* ──────────────────────────────────────────────
-   Info Card (fields form)
-────────────────────────────────────────────── */
 .info-section {
   animation: slideUp 0.3s ease forwards;
 }
@@ -644,9 +626,6 @@
   margin-top: 16px;
 }
 
-/* ──────────────────────────────────────────────
-   Checklist Table
-────────────────────────────────────────────── */
 .checklist-wrap {
   animation: slideUp 0.3s ease forwards;
 }
@@ -727,7 +706,6 @@
   flex-shrink: 0;
 }
 
-/* OK / NA toggle buttons */
 .resultado-btns {
   display: flex;
   gap: 4px;
@@ -762,7 +740,6 @@
   color: var(--red);
 }
 
-/* Sessions row inside expanded item */
 .checklist-item-sessions {
   padding: 0 14px 14px;
   overflow-x: auto;
@@ -820,7 +797,6 @@
   color: var(--red);
 }
 
-/* Expand arrow */
 .expand-arrow {
   font-size: 12px;
   color: var(--text-muted);
@@ -833,9 +809,6 @@
   transform: rotate(180deg);
 }
 
-/* ──────────────────────────────────────────────
-   Sessions Panel
-────────────────────────────────────────────── */
 .sessions-panel {
   animation: slideUp 0.3s ease forwards;
 }
@@ -860,7 +833,7 @@
   justify-content: center;
   gap: 4px;
   box-shadow: var(--shadow-card);
-  border-top: 4px solid var(--blue-primary); /* Linha IndusPower */
+  border-top: 4px solid var(--blue-primary);
 }
 
 .stats-card .stats-value {
@@ -940,9 +913,6 @@
   flex-shrink: 0;
 }
 
-/* ──────────────────────────────────────────────
-   Notes Section
-────────────────────────────────────────────── */
 .notes-section {
   animation: slideUp 0.3s ease forwards;
 }
@@ -959,9 +929,6 @@
   color: var(--text-secondary);
 }
 
-/* ──────────────────────────────────────────────
-   Signature Section
-────────────────────────────────────────────── */
 .signatures-section {
   animation: slideUp 0.3s ease forwards;
   display: flex;
@@ -1071,9 +1038,6 @@
   margin: 0 auto;
 }
 
-/* ──────────────────────────────────────────────
-   Finalize Section
-────────────────────────────────────────────── */
 .finalize-section {
   margin-top: 24px;
   margin-bottom: 32px;
@@ -1116,9 +1080,6 @@
   font-weight: 600;
 }
 
-/* ──────────────────────────────────────────────
-   Auto-filled values (Equipe + Objetivo)
-────────────────────────────────────────────── */
 .auto-filled-value {
   display: flex;
   align-items: flex-start;
@@ -1150,9 +1111,6 @@
   margin-top: 2px;
 }
 
-/* ──────────────────────────────────────────────
-   Operation Info Banner
-────────────────────────────────────────────── */
 .operation-info-banner {
   display: flex;
   align-items: flex-start;
@@ -1173,9 +1131,6 @@
   font-size: 14px;
 }
 
-/* ──────────────────────────────────────────────
-   Select dropdown styling
-────────────────────────────────────────────── */
 .field select {
   cursor: pointer;
 }
@@ -1186,9 +1141,6 @@
   padding: 8px;
 }
 
-/* ──────────────────────────────────────────────
-   Responsive
-────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .main-content {
     padding: 12px;
@@ -1267,7 +1219,6 @@
     font-size: 24px;
   }
 
-  /* Melhoria de acessibilidade para toque */
   .resultado-btn {
     padding: 8px 16px !important;
     font-size: 12px !important;
@@ -1311,14 +1262,9 @@
   }
 }
 
-/* ──────────────────────────────────────────────
-   Print View Styles (PDF Generation)
-────────────────────────────────────────────── */
 .print-only {
   display: none !important;
-  /* Escondido nativamente na tela — o JS clone remove esta classe */
   width: 794px;
-  /* Deve coincidir com A4_PRINT_WIDTH em sharepointService.js    */
   background: white !important;
   color: black !important;
   padding: 20px;
@@ -1327,7 +1273,6 @@
 
 @media print {
 
-  /* Esconde a UI normal */
   .app,
   .top-header,
   .tab-bar,
@@ -1336,7 +1281,6 @@
     display: none !important;
   }
 
-  /* Mostra o bloco de impressão */
   .print-only {
     display: block !important;
     width: 100% !important;
@@ -1363,9 +1307,6 @@
   }
 }
 
-/* ──────────────────────────────────────────────
-   PDF Layout Rules (Global for html2canvas)
-────────────────────────────────────────────── */
 .print-only * {
   box-sizing: border-box !important;
   font-family: 'Inter', sans-serif;
@@ -1416,7 +1357,6 @@
   font-size: 9px;
 }
 
-/* Sections */
 .print-section-title {
   background: #1A1D23 !important;
   color: #fff !important;
@@ -1427,7 +1367,6 @@
   border: 1px solid #000;
 }
 
-/* Tables */
 .print-info-table {
   width: 100% !important;
   border-collapse: collapse;
@@ -1443,11 +1382,9 @@
   line-height: 1.2;
 }
 
-/* Checklist Table (19 colunas: IT + DESC + 15 sessões + OK + NA) */
 .print-checklist-container {
   width: 100%;
   overflow-x: visible;
-  /* Não corta — o PDF é capturado em largura fixa */
 }
 
 .print-checklist-table {
@@ -1475,8 +1412,6 @@
   background: #e0e0e0 !important;
 }
 
-/* Larguras calibradas para 780px - 48px de padding = ~732px de conteúdo:
-   IT(4%) + DESC(40%) + 15×sessão(2.53% cada = 38%) + OK(4%) + NA(4%) = ~100%  */
 .col-it {
   width: 4%;
   text-align: center;
@@ -1531,7 +1466,6 @@
   font-size: 7.5px;
 }
 
-/* Detailed Sessions Table */
 .print-sessions-table {
   width: 100% !important;
   border-collapse: collapse;
@@ -1557,7 +1491,6 @@
   font-weight: 700;
 }
 
-/* Notes */
 .print-notes {
   border: 1px solid #000;
   min-height: 25px;
@@ -1573,7 +1506,6 @@
   color: #333;
 }
 
-/* Signatures */
 .print-signatures {
   display: flex;
   justify-content: space-between;
@@ -1626,9 +1558,6 @@
 
 
 
-/* ──────────────────────────────────────────────
-   Login Page
-────────────────────────────────────────────── */
 .login-page {
   display: flex;
   align-items: center;
@@ -1641,7 +1570,6 @@
   overflow: hidden;
 }
 
-/* Background decoration circles */
 .login-bg-decoration {
   position: absolute;
   inset: 0;
@@ -1706,14 +1634,11 @@
   background: linear-gradient(135deg, #0A0F1E 0%, #111827 100%);
 }
 
-/* Filtro para Assinatura (Preto -> Azul IndusPower) no Site */
 [data-theme='dark'] .signature-canvas,
 [data-theme='dark'] .signature-preview img {
   filter: invert(56%) sepia(87%) saturate(325%) hue-rotate(135deg) brightness(95%) contrast(90%);
-  /* Este filtro faz com que o preto (#000) apareça como o azul/ciano da marca no modo escuro */
 }
 
-/* Menu de Nova Ficha */
 .new-ficha-overlay {
   position: fixed;
   top: 0;
@@ -1852,13 +1777,12 @@
   animation: fadeIn 0.5s ease forwards;
 }
 
-/* Brand */
 .login-brand {
   text-align: center;
 }
 
 .login-logo {
-  width: 180px; /* Aumentado para a nova logo 3D */
+  width: 180px;
   height: auto;
   min-height: 180px;
   display: flex;
@@ -1898,7 +1822,6 @@
   font-weight: 500;
 }
 
-/* Card */
 .login-card {
   width: 100%;
   background: var(--bg-card);
@@ -1993,7 +1916,6 @@
   border-color: var(--blue-primary);
 }
 
-/* Fix para autofill do Chrome no Dark Mode */
 [data-theme='dark'] .login-field input:-webkit-autofill,
 [data-theme='dark'] .login-field input:-webkit-autofill:hover, 
 [data-theme='dark'] .login-field input:-webkit-autofill:focus {
@@ -2011,7 +1933,6 @@
   cursor: not-allowed;
 }
 
-/* Error */
 .login-error {
   display: flex;
   align-items: center;
@@ -2026,7 +1947,6 @@
   animation: fadeIn 0.2s ease;
 }
 
-/* Button */
 .login-btn {
   width: 100%;
   padding: 14px;
@@ -2060,7 +1980,6 @@
   cursor: not-allowed;
 }
 
-/* Spinner */
 .login-spinner {
   width: 20px;
   height: 20px;
@@ -2076,7 +1995,6 @@
   }
 }
 
-/* Footer */
 .login-footer {
   display: flex;
   align-items: center;
@@ -2097,7 +2015,7 @@
   letter-spacing: 0.5px;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centraliza o conteúdo da coluna */
+  align-items: center;
   gap: 4px;
 }
 
@@ -2106,9 +2024,6 @@
   opacity: 0.7;
 }
 
-/* ──────────────────────────────────────────────
-   User Bar (Home Screen)
-────────────────────────────────────────────── */
 .user-bar {
   display: flex;
   align-items: center;
@@ -2170,7 +2085,6 @@
   color: var(--blue-accent);
 }
 
-/* TAF Panel Styles */
 .taf-panel {
   display: flex;
   flex-direction: column;
@@ -2263,7 +2177,6 @@
   display: block;
 }
 
-/* Responsividade Mobile para o TAF Panel */
 @media (max-width: 600px) {
   .taf-form-row {
     grid-template-columns: 1fr !important;
@@ -2276,7 +2189,6 @@
 
   .megger-table {
     grid-template-columns: 1fr 1fr !important;
-    /* Força 2 colunas */
     padding: 12px;
     gap: 10px;
   }
@@ -2288,7 +2200,6 @@
   .taf-input-group input {
     padding: 12px 10px;
     font-size: 15px;
-    /* Fonte maior para evitar zoom automático do iOS */
   }
 
   .taf-section-title {
@@ -2300,7 +2211,6 @@
 @media (max-width: 440px) {
   .megger-table {
     grid-template-columns: 1fr !important;
-    /* Força 1 coluna em telas bem pequenas */
   }
 
   .megger-table .taf-input-group.span-2 {
@@ -2312,9 +2222,6 @@
   grid-column: span 2;
 }
 
-/* ──────────────────────────────────────────────
-   TAF PDF LAYOUT (PRINT ONLY)
-────────────────────────────────────────────── */
 .taf-pdf {
   width: 210mm;
   min-height: 277mm;
@@ -2600,9 +2507,6 @@
   gap: 8px;
 }
 
-/* ========================================================= */
-/* RELATORIO FOTOGRAFICO - PDF */
-/* ========================================================= */
 .fotos-pdf {
   font-family: Arial, sans-serif;
   color: #000;
@@ -2617,12 +2521,10 @@
   margin-bottom: 2mm;
   background: #fff;
   min-height: 40px;
-  /* More compact height */
 }
 
 .fotos-pdf-logo {
   width: 120px;
-  /* Slightly narrower */
   border-right: 1px solid #000;
   padding: 4px;
   display: flex;
@@ -2672,7 +2574,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  /* space between columns and rows */
 }
 
 .foto-sessao-title {
@@ -2694,13 +2595,11 @@
   break-before: page !important;
 }
 
-/* Espaçamento superior para descer o conteúdo no PDF */
 .fotos-pdf .page-break,
 .fotos-pdf .fotos-section-page {
   padding-top: 10mm;
 }
 
-/* Ajuste exclusivo para a sessão 52-T2 */
 .fotos-pdf .session-52-t2 {
   padding-top: 0.1mm !important;
 }
@@ -2717,7 +2616,7 @@
 
 .foto-frame {
   width: 100%;
-  height: 260px; /* Valor fixo padronizado para mobile */
+  height: 260px;
   border: 1.5px solid #000;
   display: flex;
   flex-direction: column;
@@ -2730,7 +2629,7 @@
 
 .foto-frame-header {
   display: flex;
-  height: 24px; /* Altura fixa para o header */
+  height: 24px;
   border-bottom: 1px solid #000;
   background: #f8f9fa;
   flex-shrink: 0;
@@ -2768,7 +2667,7 @@
 .foto-content img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Preenche o espaço fixo de forma elegante */
+  object-fit: cover;
   display: block;
 }
 
@@ -2780,9 +2679,6 @@
   text-align: center;
 }
 
-/* ──────────────────────────────────────────────
-   Home View Toggles
-────────────────────────────────────────────── */
 .home-view-toggle {
   display: flex;
   background: var(--bg-elevated);
@@ -2843,9 +2739,6 @@
   color: var(--blue-accent);
 }
 
-/* ──────────────────────────────────────────────
-   Photo Bank Styles
-────────────────────────────────────────────── */
 .photo-album-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -2870,9 +2763,6 @@
   position: relative;
   overflow: hidden;
 }
-/* ──────────────────────────────────────────────
-   Admin Panel Premium Styles
-────────────────────────────────────────────── */
 .admin-panel {
   min-height: 100vh;
   background: var(--bg-base);
@@ -3011,7 +2901,7 @@
     gap: 8px;
   }
   .admin-card-header h3 { font-size: 13px; }
-  .card-icon { font-size: 18px; } /* Retornado ao original */
+  .card-icon { font-size: 18px; }
   
   .admin-form-body { padding: 12px; }
   
@@ -3032,7 +2922,7 @@
   }
   
   .perm-item { padding: 8px; }
-  .perm-item .perm-icon { font-size: 16px; } /* Retornado ao original */
+  .perm-item .perm-icon { font-size: 16px; }
   .perm-item .perm-text { font-size: 9px; }
   
   .admin-table { min-width: 400px; }
@@ -3044,7 +2934,6 @@
   
   .btn-admin-submit { padding: 10px; font-size: 14px; }
   
-  /* Solicitações de Acesso Compactas */
   .request-item { 
     padding: 8px; 
     gap: 8px;
@@ -3138,13 +3027,12 @@
   font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
-  margin-top: 12px; /* Espaço adicional acima do botão */
+  margin-top: 12px;
 }
 
 .btn-admin-submit:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26, 75, 80, 0.3); }
 .btn-admin-cancel { width: 100%; padding: 10px; background: transparent; color: var(--text-muted); border: 1px solid var(--border); margin-top: 8px; border-radius: var(--radius-md); cursor: pointer; font-weight: 700; font-size: 13px; }
 
-/* Table Styles */
 .admin-table-wrap { overflow-x: auto; }
 .admin-table { width: 100%; border-collapse: collapse; min-width: 450px; }
 .admin-table th { text-align: left; padding: 12px 16px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; background: var(--bg-elevated); }
@@ -3164,7 +3052,6 @@
 .role-badge.projetos { background: #f3e5f5; color: #7b1fa2; }
 .role-badge.corretor { background: #e8f5e9; color: #2e7d32; }
 
-/* Botões de Ação com Efeito Glow */
 .action-btn-edit { 
   background: transparent; 
   color: var(--text-primary); 
@@ -3197,7 +3084,6 @@
   box-shadow: 0 0 15px rgba(239, 83, 80, 0.2);
 }
 
-/* Domain Sync Placeholder */
 .card-glow-amber {
   border-color: rgba(255, 193, 7, 0.3);
   box-shadow: 0 0 20px rgba(255, 193, 7, 0.05);
@@ -3255,7 +3141,6 @@
   100% { transform: translateX(-5px); }
 }
 
-/* Access Requests Styles */
 .card-glow-blue {
   border-color: rgba(26, 75, 80, 0.2);
   box-shadow: 0 0 20px rgba(26, 75, 80, 0.05);
@@ -3398,36 +3283,27 @@
   flex: 1;
 }
 
-/* ══════════════════════════════════════════════
-   DARK MODE — Overrides Completos
-══════════════════════════════════════════════ */
-
-/* ─── Home Header ─── */
 [data-theme='dark'] .home-header {
   background: rgba(10, 15, 20, 0.85);
   border-bottom-color: var(--border);
 }
 
-/* ─── Logo Wrap ─── */
 [data-theme='dark'] .brand-logo-wrap {
   background: var(--bg-elevated);
   border-color: var(--border);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* ─── User Bar ─── */
 [data-theme='dark'] .user-bar {
   background: var(--bg-card) !important;
   border-bottom-color: var(--border) !important;
 }
 
-/* ─── Stat Cards ─── */
 [data-theme='dark'] .stat-card {
   background: var(--bg-card);
   border-color: var(--border);
 }
 
-/* ─── Status Tags ─── */
 [data-theme='dark'] .status-tag.empty {
   background: var(--bg-elevated);
   color: var(--blue-accent);
@@ -3440,7 +3316,6 @@
   border-color: rgba(56, 161, 105, 0.3);
 }
 
-/* ─── Ficha Cards ─── */
 [data-theme='dark'] .ficha-card {
   background: var(--bg-card);
   border-color: var(--border);
@@ -3457,7 +3332,6 @@
   background: rgba(211, 47, 47, 0.1);
 }
 
-/* ─── View Toggle (Relatórios / Banco de Fotos) ─── */
 [data-theme='dark'] .home-view-toggle {
   background: var(--bg-card);
   border-color: var(--border);
@@ -3468,13 +3342,11 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* ─── Tab Bar ─── */
 [data-theme='dark'] .tab-bar {
   background: var(--bg-card);
   border-top-color: var(--border);
 }
 
-/* ─── Top Header (Ficha Interna) ─── */
 [data-theme='dark'] .top-header {
   background: var(--bg-card);
   border-bottom-color: var(--border);
@@ -3486,7 +3358,6 @@
   color: var(--text-secondary);
 }
 
-/* ─── Cards e Glassmorphism ─── */
 [data-theme='dark'] .card {
   background: var(--bg-card);
   border-color: var(--border);
@@ -3497,7 +3368,6 @@
   border-color: var(--border);
 }
 
-/* ─── Checklist ─── */
 [data-theme='dark'] .checklist-item {
   background: var(--bg-card);
   border-color: var(--border);
@@ -3518,7 +3388,6 @@
   border-color: var(--border);
 }
 
-/* ─── Resultado Buttons ─── */
 [data-theme='dark'] .resultado-btn {
   background: var(--bg-card);
   border-color: var(--border);
@@ -3537,7 +3406,6 @@
   color: #FC8181;
 }
 
-/* ─── New Ficha Menu ─── */
 [data-theme='dark'] .new-ficha-overlay {
   background: rgba(0, 0, 0, 0.6);
 }
@@ -3557,7 +3425,6 @@
   background: rgba(79, 209, 217, 0.08);
 }
 
-/* ─── FAB ─── */
 [data-theme='dark'] .fab {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
 }
@@ -3566,7 +3433,6 @@
   box-shadow: 0 8px 32px rgba(79, 209, 217, 0.3);
 }
 
-/* ─── Photo Bank ─── */
 [data-theme='dark'] .photo-album-card {
   background: var(--bg-card);
   border-color: var(--border);
@@ -3582,30 +3448,24 @@
   color: var(--text-primary);
 }
 
-/* ─── Session Row ─── */
 [data-theme='dark'] .session-row {
   border-color: var(--border);
 }
 
-/* ─── Info Section ─── */
 [data-theme='dark'] .info-section {
   background: var(--bg-card);
 }
 
-/* ─── Home Empty ─── */
 [data-theme='dark'] .home-empty {
   color: var(--text-secondary);
 }
 
-/* ─── Filter Selects (Dark Mode) ─── */
 [data-theme='dark'] .home-list-header select {
   background-color: var(--bg-elevated) !important;
   border-color: var(--border) !important;
   color: var(--text-secondary) !important;
 }
 
-/* ─── Home BG Circles ─── */
-/* ─── Confirm Modal Support ─── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -3709,7 +3569,6 @@
   opacity: 0.08;
 }
 
-/* ─── Tabs Dark Mode ─── */
 [data-theme='dark'] .home-view-toggle {
   background: rgba(0, 0, 0, 0.2);
 }
@@ -3719,7 +3578,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* ─── Form fields in dark mode ─── */
 [data-theme='dark'] .field input,
 [data-theme='dark'] .field textarea,
 [data-theme='dark'] .field select {
@@ -3728,13 +3586,11 @@
   color: var(--text-primary);
 }
 
-/* ─── Notes & Signature areas ─── */
 [data-theme='dark'] .notes-area {
   background: var(--bg-card);
   border-color: var(--border);
 }
 
-/* ─── Dashboard Dark Mode ─── */
 [data-theme='dark'] .dash-section {
   background: var(--bg-card);
   border-color: var(--border);
@@ -3752,10 +3608,6 @@
   border-color: var(--border);
 }
 
-/* ══════════════════════════════════════════════
-   DASHBOARD STYLES
-══════════════════════════════════════════════ */
-
 .dashboard {
   display: flex;
   flex-direction: column;
@@ -3763,7 +3615,6 @@
   margin: 8px 8px;
 }
 
-/* ─── Título ─── */
 .dash-title-row {
   display: flex;
   align-items: baseline;
@@ -3785,7 +3636,6 @@
   color: var(--text-muted);
 }
 
-/* ─── Cards Principais ─── */
 .dash-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -3841,7 +3691,6 @@
   letter-spacing: 0.5px;
 }
 
-/* ─── Seções ─── */
 .dash-section {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -3875,7 +3724,6 @@
   color: var(--blue-accent);
 }
 
-/* ─── Progress Bar Grande ─── */
 .dash-progress-bar-lg {
   height: 12px;
   background: var(--bg-elevated);
@@ -3899,14 +3747,12 @@
   color: var(--text-secondary);
 }
 
-/* ─── Grid 2 colunas ─── */
 .dash-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-/* ─── Donut Chart ─── */
 .dash-donut-wrap {
   display: flex;
   justify-content: center;
@@ -3972,7 +3818,6 @@
   flex-shrink: 0;
 }
 
-/* ─── Items Summary ─── */
 .dash-items-summary {
   display: flex;
   flex-direction: column;
@@ -4035,7 +3880,6 @@
   font-weight: 600;
 }
 
-/* ─── Type Distribution Bars ─── */
 .dash-type-bars {
   display: flex;
   flex-direction: column;
@@ -4083,7 +3927,6 @@
   text-align: right;
 }
 
-/* ─── Ranking ─── */
 .dash-ranking {
   display: flex;
   flex-direction: column;
@@ -4153,7 +3996,6 @@
   text-align: right;
 }
 
-/* ─── Recent Finalized ─── */
 .dash-recent {
   display: flex;
   flex-direction: column;
@@ -4208,7 +4050,6 @@
   border: 1px solid rgba(46, 125, 50, 0.2);
 }
 
-/* ─── Empty ─── */
 .dash-empty {
   text-align: center;
   padding: 48px 20px;
@@ -4228,7 +4069,6 @@
   line-height: 1.5;
 }
 
-/* ─── Search Styles ─── */
 .search-container {
   display: flex;
   align-items: center;
@@ -4284,11 +4124,6 @@
   animation: slideInRight 0.3s ease-out;
 }
 
-/* ──────────────────────────────────────────────
-   RESPONSIVIDADE MOBILE
-────────────────────────────────────────────── */
-
-/* ─── Tablets e telas médias (≤768px) ─── */
 @media (max-width: 768px) {
   .home-list {
     grid-template-columns: 1fr 1fr;
@@ -4314,9 +4149,7 @@
   }
 }
 
-/* ─── Mobile (≤520px) ─── */
 @media (max-width: 520px) {
-  /* Grid de fichas: coluna única no celular */
   .home-list {
     grid-template-columns: 1fr;
     gap: 10px;
@@ -4324,7 +4157,6 @@
     padding-bottom: 100px;
   }
 
-  /* Cabeçalho da lista: título em cima, filtros embaixo */
   .home-list-header {
     flex-direction: column !important;
     align-items: flex-start !important;
@@ -4342,7 +4174,6 @@
     font-size: 12px;
   }
 
-  /* Header e stats */
   .home-header {
     padding: 14px 12px 10px;
   }
@@ -4387,7 +4218,6 @@
     letter-spacing: 0.3px;
   }
 
-  /* Toggle de visualização (Abas) */
   .home-view-toggle {
     margin: 12px 14px 0;
     padding: 3px;
@@ -4408,7 +4238,6 @@
     white-space: nowrap;
   }
 
-  /* Cards de fichas */
   .ficha-card {
     padding: 12px;
   }
@@ -4421,7 +4250,6 @@
     font-size: 11px;
   }
 
-  /* User bar */
   .user-bar {
     padding: 8px 12px !important;
   }
@@ -4440,7 +4268,6 @@
     font-size: 13px;
   }
 
-  /* FAB */
   .fab {
     width: 52px;
     height: 52px;
@@ -4453,7 +4280,6 @@
     padding: 12px;
   }
 
-  /* Banco de fotos */
   .photo-bank-grid {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
@@ -4464,7 +4290,6 @@
     gap: 8px;
   }
 
-  /* Dashboard Mobile */
   .dash-cards {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
@@ -4509,7 +4334,6 @@
   }
 }
 
-/* ─── Mobile muito pequeno (≤360px) ─── */
 @media (max-width: 360px) {
   .home-list {
     padding: 8px;
@@ -4559,10 +4383,6 @@
   }
 }
 
-/* ──────────────────────────────────────────────
-   ADMIN TABLE
-────────────────────────────────────────────── */
-
 .admin-table-wrap {
   max-height: 60vh;
   overflow-y: auto;
@@ -4574,7 +4394,6 @@
   backdrop-filter: blur(10px);
 }
 
-/* cabeçalho fixo */
 .admin-table thead th {
   position: sticky;
   top: 0;
@@ -4617,7 +4436,6 @@
   background: rgba(26, 75, 80, 0.04);
 }
 
-/* scrollbar */
 .admin-table-wrap::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -4632,10 +4450,6 @@
   background: rgba(120,120,120,0.8);
 }
 
-/* ──────────────────────────────────────────────
-   ROLE BADGES
-────────────────────────────────────────────── */
-
 .role-badge {
   display: inline-flex;
   align-items: center;
@@ -4649,44 +4463,35 @@
   border: 1px solid transparent;
 }
 
-/* ADMIN */
 .role-admin {
   background: rgba(220, 38, 38, 0.12);
   color: #DC2626;
   border-color: rgba(220, 38, 38, 0.25);
 }
 
-/* ENGENHARIA */
 .role-corretor {
   background: rgba(37, 99, 235, 0.12);
   color: #2563EB;
   border-color: rgba(37, 99, 235, 0.25);
 }
 
-/* PROJETOS */
 .role-projetos {
   background: rgba(147, 51, 234, 0.12);
   color: #9333EA;
   border-color: rgba(147, 51, 234, 0.25);
 }
 
-/* PRODUCAO */
 .role-producao {
   background: rgba(245, 158, 11, 0.12);
   color: #D97706;
   border-color: rgba(245, 158, 11, 0.25);
 }
 
-/* DEFAULT */
 .role-default {
   background: rgba(100, 116, 139, 0.12);
   color: #475569;
   border-color: rgba(100, 116, 139, 0.25);
 }
-
-/* ──────────────────────────────────────────────
-   STATUS BADGES
-────────────────────────────────────────────── */
 
 .status-badge {
   display: inline-flex;
@@ -4711,10 +4516,6 @@
   color: #DC2626;
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
-
-/* ──────────────────────────────────────────────
-   EDIT BUTTON
-────────────────────────────────────────────── */
 
 .btn-edit-user {
   border: none;
@@ -4743,10 +4544,6 @@
   transform: scale(0.96);
 }
 
-/* ──────────────────────────────────────────────
-   DARK MODE
-────────────────────────────────────────────── */
-
 [data-theme='dark'] .admin-table-wrap {
   background: rgba(20, 20, 20, 0.7);
   border-color: rgba(255,255,255,0.06);
@@ -4763,10 +4560,6 @@
 [data-theme='dark'] .admin-table tbody tr:hover {
   background: rgba(45, 124, 132, 0.08);
 }
-
-/* ──────────────────────────────────────────────
-   USER STATUS SWITCH
-────────────────────────────────────────────── */
 
 .switch-toggle {
   display: flex;
@@ -4858,7 +4651,6 @@
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0); }
 }
-/* telas muito pequenas */
 @media (max-width: 400px) {
   .welcome-screen {
     gap: 18px;

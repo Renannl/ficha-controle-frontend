@@ -9,7 +9,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
   const responsavelTecnico = ficha?.fotoData?.responsavelTecnico || "";
   const dataHoraInicio = ficha?.fotoData?.dataHoraInicio || "";
 
-  // 6 fotos por página (3 col × 2 linhas)
   const FOTOS_POR_PAGINA = 6;
   const pages = [];
   for (let i = 0; i < fotos.length; i += FOTOS_POR_PAGINA) {
@@ -25,9 +24,7 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
       }
       style={{ fontFamily: "Inter, sans-serif", color: "#000" }}
     >
-      {/* ═══════════ PRIMEIRA PÁGINA: CONSIDERAÇÕES ═══════════ */}
       <div style={{ marginBottom: "8mm" }}>
-        {/* cabeçalho */}
         <div
           style={{
             display: "flex",
@@ -50,7 +47,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
           <div style={{ fontSize: 10, fontWeight: 600 }}>CONSIDERAÇÕES</div>
         </div>
 
-        {/* tabela de descrições */}
         <table
           style={{
             width: "100%",
@@ -108,7 +104,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
           </tbody>
         </table>
 
-        {/* observações */}
         <div
           style={{
             border: `1px solid ${BORDER_COLOR}`,
@@ -130,7 +125,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
           </div>
         </div>
 
-        {/* rodapé */}
         <div
           style={{
             display: "flex",
@@ -157,7 +151,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
         </div>
       </div>
 
-      {/* ═══════════ PÁGINAS DE FOTOS ═══════════ */}
       {pages.map((page, pageIdx) => {
         return (
           <div
@@ -168,7 +161,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
               paddingTop: "4mm",
             }}
           >
-            {/* cabeçalho da página de fotos */}
             <div
               style={{
                 display: "flex",
@@ -203,7 +195,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
               </div>
             </div>
 
-            {/* grid de fotos — só as que existem */}
             <div
               style={{
                 display: "grid",
@@ -212,7 +203,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
               }}
             >
               {page.items.map((foto, idx) => {
-                // calcula o número real da foto (considerando páginas anteriores)
                 const fotoNumero = pageIdx * FOTOS_POR_PAGINA + idx + 1;
 
                 return (
@@ -225,7 +215,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
                       background: "#fff",
                     }}
                   >
-                    {/* cabeçalho do card */}
                     <div
                       style={{
                         display: "flex",
@@ -266,7 +255,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
                       </span>
                     </div>
 
-                    {/* corpo da foto — background-image */}
                     <div
                       style={{
                         width: "100%",
@@ -304,7 +292,6 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
               })}
             </div>
 
-            {/* numeração da página */}
             <div
               style={{
                 textAlign: "right",

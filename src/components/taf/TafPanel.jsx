@@ -46,7 +46,6 @@ export default function TafPanel({ ficha, onUpdate }) {
 
   return (
     <div className="taf-panel animate-fadeIn">
-      {/* Dados gerais ficam em um componente */}
       <TafDadosGerais
         ficha={ficha}
         tafData={tafData}

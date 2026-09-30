@@ -46,7 +46,6 @@ export default function ColecaoArquivosTab({ colecaoId }) {
     return await res.blob();
   }
 
-  // 🖥️ Ver: abre PDF/imagem no navegador; os demais são baixados
   async function verArquivo(arquivo) {
     setProcessandoId(arquivo.id);
     try {
@@ -71,7 +70,6 @@ export default function ColecaoArquivosTab({ colecaoId }) {
     }
   }
 
-  // ⬇️ Baixar: força o download
   async function baixarArquivo(arquivo) {
     setProcessandoId(arquivo.id);
     try {

@@ -1,6 +1,6 @@
 import { ROLES } from "../../data/users";
 import { getRoleColor } from "../../utils/roleColors";
-import NotificationBell from "./NotificationBell"; // 🆕 IMPORT
+import NotificationBell from "./NotificationBell";
 import {
   Moon,
   Sun,
@@ -61,7 +61,6 @@ export default function HomeHeader({
 
   return (
     <>
-      {/* ─── USER BAR ─── */}
       <div className="user-bar">
         <div className="user-info">
           <div className="user-avatar" style={{ background: roleColor }}>
@@ -86,7 +85,7 @@ export default function HomeHeader({
         </div>
 
         <div className="user-actions">
-          <NotificationBell /> {/* 🆕 SINO AQUI */}
+          <NotificationBell />{" "}
 
           <button
             className="icon-btn"
@@ -112,7 +111,6 @@ export default function HomeHeader({
         </div>
       </div>
 
-      {/* ─── HEADER ─── */}
       <div className="home-header">
         <div className="home-header-left">
           <div className="home-brand">

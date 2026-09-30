@@ -46,11 +46,9 @@ export default function App() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // ─── Carregar usuários (reage ao login) ───
   const carregouUsuarios = useRef(false);
 
   useEffect(() => {
-    // Só carrega quando autenticado e ainda não carregou
     if (!isAuthenticated) {
       carregouUsuarios.current = false;
       return;
@@ -69,7 +67,6 @@ export default function App() {
 
         if (!response.ok) {
           console.error("[App] Erro ao carregar usuários:", response.status);
-          // 🔄 Se for 401, o token pode estar expirado — tenta de novo em 1s
           if (response.status === 401) {
             setTimeout(() => carregarUsuarios(), 1000);
           }
@@ -78,7 +75,6 @@ export default function App() {
 
         const data = await response.json();
 
-        // ✅ Garante que é array antes de setar
         if (Array.isArray(data)) {
           console.log("[App] ✅ Usuários carregados:", data.length);
           setUsuarios(data);
@@ -92,9 +88,8 @@ export default function App() {
     }
 
     carregarUsuarios();
-  }, [isAuthenticated]); // 👈 Reage quando o login acontece
+  }, [isAuthenticated]);
 
-  // ─── Tela de boas-vindas ───
   useEffect(() => {
     if (!showWelcome) return;
     const t = setTimeout(() => {
@@ -138,7 +133,6 @@ export default function App() {
 
   const deveAssinarApr =
     SECTOR_ROLES.includes(user?.role) || user?.username === LIDER_USERNAME;
-  // ─── LOADING ───
   if (isLoading && !showWelcome && !despedida) {
     return (
       <div
@@ -166,7 +160,6 @@ export default function App() {
     return <Despedida dados={despedida} onFim={finalizarSaida} />;
   }
 
-  // ─── BOAS-VINDAS ───
   if (showWelcome) {
     return (
       <div className="welcome-screen">
@@ -177,7 +170,6 @@ export default function App() {
     );
   }
 
-  // ─── NÃO AUTENTICADO ───
   if (!isAuthenticated) {
     return (
       <Routes>
@@ -201,9 +193,6 @@ export default function App() {
     );
   }
 
-  // ─── Criar nova ficha e já navegar para ela ───
-  // Mapa de tipo amigável → código numérico da operação
-  // ✅ Corrigido — adiciona "fotos"
   const TIPO_PARA_OPERACAO = {
     taf: "50",
     producao: "10",
@@ -269,7 +258,6 @@ export default function App() {
         <Route path="/" element={<Navigate to="/dashboard" />} />
 
         <Route path="/login" element={<Navigate to="/dashboard" />} />
-        {/* Dashboard */}
         <Route
           path="/dashboard"
           element={
@@ -314,7 +302,6 @@ export default function App() {
             </div>
           }
         />
-        {/* Ficha aberta pelo dashboard */}
         <Route
           path="/dashboard/ficha/:fichaId"
           element={

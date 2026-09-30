@@ -19,7 +19,6 @@ export function usePhotoUpload(ficha) {
             const canvas = document.createElement("canvas");
             let { width, height } = img;
 
-            // ── Só redimensiona se for ENORME (> 2048px) ──
             const maxSize = 2048;
 
             if (width > height && width > maxSize) {
@@ -35,7 +34,6 @@ export function usePhotoUpload(ficha) {
 
             const ctx = canvas.getContext("2d");
 
-            // ── Anti-aliasing de alta qualidade ──
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = "high";
             ctx.drawImage(img, 0, 0, width, height);
@@ -53,7 +51,7 @@ export function usePhotoUpload(ficha) {
                 }
               },
               "image/jpeg",
-              0.92, // ← 92% de qualidade
+              0.92,
             );
           };
 

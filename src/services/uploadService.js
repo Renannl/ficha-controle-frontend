@@ -7,7 +7,6 @@ function getToken() {
 }
 
 function buildUrl(downloadUrl) {
-  // Se o backend já retornar URL absoluta ou relativa, adiciona token
   const url = downloadUrl.startsWith("http")
     ? downloadUrl
     : `${API_URL}${downloadUrl}`;

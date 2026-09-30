@@ -1,16 +1,15 @@
 import React from "react";
 
-const HEADER_BG = "#0d47a1"; // azul escuro (diferente do verde)
+const HEADER_BG = "#0d47a1";
 const HEADER_FG = "#fff";
 const BORDER_COLOR = "#333";
-const ACCENT_BG = "#e3f2fd"; // azul claro
+const ACCENT_BG = "#e3f2fd";
 
 export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
   const fotos = ficha?.fotoData?.fotos || [];
   const responsavelTecnico = ficha?.fotoData?.responsavelTecnico || "";
   const dataHoraInicio = ficha?.fotoData?.dataHoraInicio || "";
 
-  // 6 fotos por página (2 col × 3 linhas) - fotos maiores pra detalhes
   const FOTOS_POR_PAGINA = 6;
   const pages = [];
   for (let i = 0; i < fotos.length; i += FOTOS_POR_PAGINA) {
@@ -26,9 +25,7 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
       }
       style={{ fontFamily: "Inter, sans-serif", color: "#000" }}
     >
-      {/* ═══════════ PRIMEIRA PÁGINA: CONSIDERAÇÕES TÉCNICAS ═══════════ */}
       <div style={{ marginBottom: "8mm" }}>
-        {/* cabeçalho */}
         <div
           style={{
             display: "flex",
@@ -51,7 +48,6 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
           <div style={{ fontSize: 10, fontWeight: 600 }}>CONSIDERAÇÕES</div>
         </div>
 
-        {/* tabela de descrições técnicas */}
         <table
           style={{
             width: "100%",
@@ -170,7 +166,6 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
           </tbody>
         </table>
 
-        {/* observações técnicas */}
         <div
           style={{
             border: `1px solid ${BORDER_COLOR}`,
@@ -192,7 +187,6 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
           </div>
         </div>
 
-        {/* rodapé */}
         <div
           style={{
             display: "flex",
@@ -219,7 +213,6 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
         </div>
       </div>
 
-      {/* ═══════════ PÁGINAS DE FOTOS TÉCNICAS ═══════════ */}
       {pages.map((page, pageIdx) => {
         return (
           <div
@@ -230,7 +223,6 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
               paddingTop: "4mm",
             }}
           >
-            {/* cabeçalho da página */}
             <div
               style={{
                 display: "flex",
@@ -265,7 +257,6 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
               </div>
             </div>
 
-            {/* grid de fotos técnicas - 2 colunas */}
             <div
               style={{
                 display: "grid",
@@ -286,7 +277,6 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
                       background: "#fff",
                     }}
                   >
-                    {/* cabeçalho do card técnico */}
                     <div
                       style={{
                         padding: "2mm 3mm",
@@ -334,7 +324,6 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
                         </span>
                       </div>
 
-                      {/* info técnica compacta */}
                       <div
                         style={{
                           display: "grid",
@@ -372,11 +361,10 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
                       </div>
                     </div>
 
-                    {/* corpo da foto - maior pra detalhes */}
                     <div
                       style={{
                         width: "100%",
-                        height: "68mm", // mais alto que a ficha geral (50mm)
+                        height: "68mm",
                         background: foto?.imagem
                           ? `url(${foto.imagem}) center/cover no-repeat`
                           : "#f5f5f5",
@@ -410,7 +398,6 @@ export default function PrintViewFotosTecnicas({ ficha, isBook = false }) {
               })}
             </div>
 
-            {/* numeração da página */}
             <div
               style={{
                 textAlign: "right",

@@ -65,14 +65,13 @@ export default function HomeList({
   fichaPodeSerSelecionada = () => true,
 }) {
   const [expandedColecaoId, setExpandedColecaoId] = useState(null);
-  const [rascunhoSelecionado, setRascunhoSelecionado] = useState(null); // 🆕 NOVO
+  const [rascunhoSelecionado, setRascunhoSelecionado] = useState(null);
 
-  const isAdmin = user?.role === "admin"; // 🆕 NOVO
+  const isAdmin = user?.role === "admin";
 
   if (mode === "colecoes") {
     const LIMITE_PREVIEW = 3;
 
-    // 🆕 SEPARA rascunhos e completas
     const rascunhos = colecoes.filter((col) => col.status === "rascunho");
     const completas = colecoes.filter((col) => col.status !== "rascunho");
 
@@ -156,7 +155,6 @@ export default function HomeList({
           </div>
         )}
 
-        {/* SEÇÃO DE COLEÇÕES COMPLETAS */}
         <div className="home-list-header">
           <div className="flex items-center gap-2">
             {!showSearch && (
@@ -341,7 +339,6 @@ export default function HomeList({
           </div>
         )}
 
-        {/* 🆕 MODAL DE COMPLETAR COLEÇÃO */}
         {rascunhoSelecionado && (
           <CompletarColecaoModal
             show={!!rascunhoSelecionado}
@@ -349,7 +346,7 @@ export default function HomeList({
             onClose={() => setRascunhoSelecionado(null)}
             onCompletado={() => {
               setRascunhoSelecionado(null);
-              onColecaoImportada?.(); // Recarrega as coleções
+              onColecaoImportada?.();
             }}
           />
         )}
@@ -357,7 +354,6 @@ export default function HomeList({
     );
   }
 
-  // MODO FICHAS — sem alterações
   return (
     <div className="home-list animate-scaleIn">
       <HomeFilters

@@ -52,7 +52,6 @@ export default function QrCodeModal({ open, url, filename, fichaId, onClose }) {
           </button>
         </div>
 
-        {/* 🆕 Seletor de PDF do QR, embaixo do QR code */}
         {fichaId && (
           <div className="qr-pdf-section">
             <div className="qr-pdf-section-titulo">PDF do QR Code</div>

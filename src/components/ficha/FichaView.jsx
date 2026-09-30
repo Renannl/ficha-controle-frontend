@@ -26,12 +26,8 @@ import {
   getPainelVerificacaoPorEtapa,
 } from "../../data/painelTemplates";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect, useCallback } from "react";
-import {
-  getEtapaAtual,
-  podeTrabalharNaEtapa,
-  getProximaEtapa,
-} from "../../utils/etapas";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { getEtapaAtual, podeTrabalharNaEtapa } from "../../utils/etapas";
 import QrCodeModal from "../qrcode/QrCodeModal";
 import { montarUrlPublica } from "../qrcode/QrCodeDocumentacao";
 import TimelineFicha from "../sessions/TimelineFicha";
@@ -46,7 +42,8 @@ import {
   QrCode,
   History,
 } from "lucide-react";
-import PularEtapaModal from "../buttons/PularEtapaModal";
+
+const ETAPAS_PAINEL = ["montagem", "barramento", "cabeamento"];
 
 export default function FichaView({
   user,
@@ -75,13 +72,12 @@ export default function FichaView({
   const [rejectInfo, setRejectInfo] = useState(null);
   const [approveInfo, setApproveInfo] = useState(null);
   const [verificacaoEtapa, setVerificacaoEtapa] = useState(null);
-  const [pularEtapaOpen, setPularEtapaOpen] = useState(false);
   const { registrarMarcacao } = useChecklistLog(ficha?.dbId);
+  const isAdmin = user?.role === "admin";
+  const etapasLiberadas = ficha?.etapasLiberadas || [];
   const sessaoIniciada = sessoes.some(
     (s) => !s.fim && s.usuario === user?.username,
   );
-  const podePularEtapa =
-  user?.role === "admin" && user?.permissoes?.includes("pular_etapa");
 
   useEffect(() => {
     let cancelled = false;
@@ -114,7 +110,6 @@ export default function FichaView({
     if (atualizada) setFicha(atualizada);
   }, [fichas, fichaId, ficha]);
 
-  // 🆕 Migração: garante que fichas de painel antigas tenham os itens de verificação
   useEffect(() => {
     if (!ficha || String(ficha.operacao) !== "10" || !ficha.tipoPainel) return;
     if (!Array.isArray(ficha.items)) return;
@@ -129,7 +124,6 @@ export default function FichaView({
     }
   }, [ficha, fichaId, atualizarFicha]);
 
-  // ─── Ajusta aba inicial quando a ficha carregar ───
   useEffect(() => {
     if (!ficha) return;
     const op = String(ficha.operacao ?? "");
@@ -138,7 +132,6 @@ export default function FichaView({
     else setActiveTab("info");
   }, [ficha?.operacao]);
 
-  // ─── Callbacks estáveis ───
   const handleUpdateFotoData = useCallback(
     (updater) => {
       atualizarFicha(fichaId, (prev) => ({
@@ -152,138 +145,6 @@ export default function FichaView({
     [fichaId, atualizarFicha],
   );
 
-  async function handlePularEtapa(justificativa) {
-    if (!ficha || !isPainel || !etapaAtual) return;
-    if (!podePularEtapa) return;
-
-    const usuarioNome = user?.nome || user?.username;
-    const proximaEtapa = getProximaEtapa(etapaAtual);
-
-    atualizarFicha(fichaId, (prev) => {
-      const items = [...(prev?.items ?? [])];
-      const verificacoes = { ...(prev?.verificacoes || {}) };
-
-      // 1) Marca itens da sequência da etapa atual como "ok"
-      items.forEach((item, idx) => {
-        const template = activeChecklistItems.find((c) => c.id === item.id);
-        if (template?.etapa === etapaAtual && !item.resultado) {
-          items[idx] = {
-            ...item,
-            resultado: "ok",
-            observacao: `Pulo de etapa (admin): ${justificativa}`,
-          };
-
-          registrarMarcacao({
-            itemId: item.id,
-            descricao: template?.descricao || `Item ${item.id}`,
-            campo: "resultado",
-            valor: "ok",
-            etapa: etapaAtual,
-            usuario: usuarioNome,
-            observacao: `Pulo de etapa: ${justificativa}`,
-          });
-        }
-      });
-
-      // 2) Marca verificações da etapa atual como "ok"
-      const itensVerificacao = getPainelVerificacaoPorEtapa(
-        ficha.tipoPainel,
-        etapaAtual,
-      );
-      const base = [...(verificacoes[etapaAtual] || [])];
-      while (base.length < itensVerificacao.length) base.push("");
-      itensVerificacao.forEach((desc, idx) => {
-        if (!base[idx] || base[idx] === "erro") {
-          base[idx] = "ok";
-          registrarMarcacao({
-            itemId: `ver-${etapaAtual}-${idx}`,
-            descricao: desc || `Verificação ${idx + 1}`,
-            campo: "verificacao",
-            valor: "OK",
-            etapa: etapaAtual,
-            usuario: usuarioNome,
-          });
-        }
-      });
-      verificacoes[etapaAtual] = base;
-
-      // 3) Registra no histórico de etapas
-      const historicoEtapas = [
-        ...(prev?.historicoEtapas || []),
-        {
-          usuario: user?.username,
-          nome: usuarioNome,
-          cargo: user?.role,
-          etapa: etapaAtual,
-          acao: "pulada",
-          justificativa,
-          data: new Date().toISOString(),
-        },
-      ];
-
-      return { ...prev, items, verificacoes, historicoEtapas };
-    });
-
-    // 4) Para sessões abertas da etapa atual
-    sessoesTrabalho.pararTodasSessoes?.();
-
-    setPularEtapaOpen(false);
-  }
-
-  function handleDesfazerPulo() {
-    if (!ficha || !isPainel) return;
-    if (!podePularEtapa) return;
-
-    const historico = ficha.historicoEtapas || [];
-    // Última etapa que foi pulada
-    const ultimoPuloIdx = historico.map((h) => h.acao).lastIndexOf("pulada");
-    if (ultimoPuloIdx === -1) return;
-
-    const pulo = historico[ultimoPuloIdx];
-    const etapaPulada = pulo.etapa;
-    const usuarioNome = user?.nome || user?.username;
-
-    atualizarFicha(fichaId, (prev) => {
-      const items = [...(prev?.items ?? [])];
-      const verificacoes = { ...(prev?.verificacoes || {}) };
-
-      // 1) Limpa itens da sequência que foram marcados pelo pulo
-      items.forEach((item, idx) => {
-        const template = activeChecklistItems.find((c) => c.id === item.id);
-        if (
-          template?.etapa === etapaPulada &&
-          item.resultado === "ok" &&
-          String(item.observacao || "").includes("Pulo de etapa")
-        ) {
-          items[idx] = { ...item, resultado: "", observacao: "" };
-        }
-      });
-
-      // 2) Limpa verificações da etapa pulada que foram setadas como "ok" pelo pulo
-      if (verificacoes[etapaPulada]) {
-        verificacoes[etapaPulada] = verificacoes[etapaPulada].map((v) =>
-          v === "ok" ? "" : v,
-        );
-      }
-
-      // 3) Remove a última entrada de "pulada" do histórico
-      const novoHistorico = historico.filter((_, i) => i !== ultimoPuloIdx);
-
-      return { ...prev, items, verificacoes, historicoEtapas: novoHistorico };
-    });
-
-    // Registrar no log
-    registrarMarcacao({
-      itemId: `desfazer-pulo-${etapaPulada}`,
-      descricao: `Desfez o pulo da etapa ${etapaPulada}`,
-      campo: "desfazer_pulo",
-      valor: "ok",
-      etapa: etapaPulada,
-      usuario: usuarioNome,
-      observacao: `Admin desfez o pulo da etapa ${etapaPulada}`,
-    });
-  }
-
   function handleTipoPainelChange(novoTipo) {
     if (!ficha || !podeEditar()) return;
     marcarReedicaoSeAprovada();
@@ -292,6 +153,15 @@ export default function FichaView({
       tipoPainel: novoTipo,
       items: buildPainelItems(novoTipo),
     }));
+  }
+
+  function toggleEtapaLiberada(etapa) {
+    if (!isAdmin || !isPainel) return;
+    const novas = etapasLiberadas.includes(etapa)
+      ? etapasLiberadas.filter((e) => e !== etapa)
+      : [...etapasLiberadas, etapa];
+
+    atualizarFicha(fichaId, (prev) => ({ ...prev, etapasLiberadas: novas }));
   }
 
   const handleUpdateConsideracoes = useCallback(
@@ -332,7 +202,6 @@ export default function FichaView({
     }
   }
 
-  // ─── Permissão ───
   function podeEditar() {
     if (!ficha) return false;
     return (
@@ -342,7 +211,6 @@ export default function FichaView({
     );
   }
 
-  // ─── Detecta reedição de ficha já aprovada e sobe a revisão ───
   function marcarReedicaoSeAprovada() {
     if (!ficha) return;
     if (ficha.statusAprovacao === "aprovado" && ficha.status === "finalizada") {
@@ -358,7 +226,6 @@ export default function FichaView({
     }
   }
 
-  // ─── Helpers de update ───
   function updateField(field, value) {
     if (!ficha || !podeEditar()) return;
     marcarReedicaoSeAprovada();
@@ -396,9 +263,9 @@ export default function FichaView({
     }
   }
 
-  // 🆕 Verifica se todos os itens da SEQUÊNCIA (não verificação) foram preenchidos
   function verificarFimEtapa(etapa, itemsAtuais) {
-    // Pega só os itens da sequência (não verificação)
+    if (etapasLiberadas.length > 0) return;
+
     const itensDaSequencia = activeChecklistItems.filter(
       (ci) => ci.etapa === etapa && !String(ci.id ?? "").includes("-ver-"),
     );
@@ -442,7 +309,6 @@ export default function FichaView({
     });
 
     if (vaiMarcar) {
-      // 🆕 Normaliza o valor para exibição no log
       const valorNormalizado =
         valor === "ok" ? "OK" : valor === "na" ? "N/A" : "ERRO";
 
@@ -560,7 +426,7 @@ export default function FichaView({
   }
 
   function handleOperacaoChange(novoCodigo) {
-    if (!ficha || !podeEditar()) return; // 🆕 trava sem permissão
+    if (!ficha || !podeEditar()) return;
     marcarReedicaoSeAprovada();
     atualizarFicha(fichaId, (prev) => ({ ...prev, operacao: novoCodigo }));
   }
@@ -589,7 +455,6 @@ export default function FichaView({
     return [...new Set(nomes.filter(Boolean))].join(", ");
   }
 
-  // ─── Validação de completude ───
   function getCamposFaltantes(fichaArg = null) {
     const f = fichaArg || ficha;
     if (!f) return [];
@@ -622,7 +487,6 @@ export default function FichaView({
 
     if (!foto && f.items?.length > 0) {
       const itensSemResultado = f.items.filter((item) => {
-        // 🆕 Pula itens de verificação — eles são validados em ficha.verificacoes
         if (String(item.id ?? "").includes("-ver-")) return false;
         return !item?.resultado || String(item.resultado).trim() === "";
       });
@@ -637,7 +501,7 @@ export default function FichaView({
         const etapasComVerificacao = ["montagem", "barramento", "cabeamento"];
         for (const etapa of etapasComVerificacao) {
           const resultados = f.verificacoes[etapa] || [];
-          if (resultados.length === 0) continue; // etapa sem verificação no template
+          if (resultados.length === 0) continue;
           const temPendente = resultados.some((v) => !v || v === "erro");
           if (temPendente) {
             faltando.push(
@@ -681,7 +545,6 @@ export default function FichaView({
     if (typeof crypto !== "undefined" && crypto.randomUUID) {
       return crypto.randomUUID();
     }
-    // fallback
     return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }
 
@@ -732,7 +595,7 @@ export default function FichaView({
       status: "finalizada",
       statusAprovacao: "aguardando",
       finalizadaAt: new Date().toISOString(),
-      tokenPublico: fichaEfetiva.tokenPublico || gerarTokenPublico(), // 🆕
+      tokenPublico: fichaEfetiva.tokenPublico || gerarTokenPublico(),
     });
 
     setSuccessModal({
@@ -783,7 +646,6 @@ export default function FichaView({
     setRejectInfo(null);
   }
 
-  // 🆕 Helper: mapeia o prefixo do id do item de verificação pra etapa
   function getEtapaDeItemId(id) {
     const s = String(id || "");
     if (s.startsWith("mm-")) return "montagem";
@@ -798,7 +660,6 @@ export default function FichaView({
     if (total === 0) return 0;
 
     const done = ficha.items.reduce((acc, item) => {
-      // 🆕 Itens de verificação ficam em ficha.verificacoes, não em resultado
       if (String(item.id ?? "").includes("-ver-")) {
         const etapa = getEtapaDeItemId(item.id);
         const idx = parseInt(String(item.id).split("-").pop(), 10);
@@ -811,7 +672,6 @@ export default function FichaView({
     return Math.round((done / total) * 100);
   }
 
-  // ─── Loading ───
   if (loading) {
     return (
       <div
@@ -832,7 +692,6 @@ export default function FichaView({
     );
   }
 
-  // ─── Não encontrada ───
   if (!ficha) {
     return (
       <div
@@ -856,7 +715,6 @@ export default function FichaView({
       ? getPainelVerificacaoItems(ficha?.tipoPainel)
       : getChecklistItems(ficha?.operacao);
 
-  // 🆕 Painel inclui verificação no checklist (para o modal)
   const activeChecklistItems = isPainel
     ? getPainelChecklistItems(ficha?.tipoPainel, { incluirVerificacao: true })
     : checklistItems;
@@ -927,60 +785,30 @@ export default function FichaView({
 
           {activeTab === "checklist" && (
             <>
-              {isPainel && etapaAtual && podePularEtapa && (
-                <div
-                  style={{
-                    marginBottom: "16px",
-                    padding: "12px 16px",
-                    background: "var(--bg-elevated)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--radius-md)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "12px",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <div>
-                    <strong style={{ fontSize: "14px" }}>
-                      Etapa atual:{" "}
-                      {etapaAtual === "montagem"
-                        ? "Montagem"
-                        : etapaAtual === "barramento"
-                          ? "Barramento"
-                          : "Cabeamento"}
-                    </strong>
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "var(--text-secondary)",
-                        margin: 0,
-                      }}
-                    >
-                      Admin pode pular esta etapa se necessário.
-                    </p>
+              {isPainel && isAdmin && (
+                <div className="etapas-liberadas-card">
+                  <div className="etapas-liberadas-title">
+                    Liberar etapas para edição simultânea
                   </div>
-                  <div
-                    style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}
-                  >
-                    {(ficha.historicoEtapas || []).some(
-                      (h) => h.acao === "pulada",
-                    ) && (
-                      <button
-                        className="btn btn-secondary"
-                        onClick={handleDesfazerPulo}
-                        title="Volta a etapa anteriormente pulada para pendente"
-                      >
-                        Desfazer Pulo
-                      </button>
-                    )}
-                    <button
-                      className="btn btn-warning"
-                      onClick={() => setPularEtapaOpen(true)}
-                    >
-                      Pular Etapa
-                    </button>
+                  <div className="etapas-liberadas-grid">
+                    {ETAPAS_PAINEL.map((etapa) => {
+                      const label =
+                        etapa === "montagem"
+                          ? "Montagem"
+                          : etapa === "barramento"
+                            ? "Barramento"
+                            : "Cabeamento";
+                      return (
+                        <label key={etapa} className="etapa-liberada-toggle">
+                          <input
+                            type="checkbox"
+                            checked={etapasLiberadas.includes(etapa)}
+                            onChange={() => toggleEtapaLiberada(etapa)}
+                          />
+                          <span>{label}</span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1000,6 +828,7 @@ export default function FichaView({
                 user={user}
                 sessaoIniciada={sessaoIniciada}
                 onAbrirVerificacao={setVerificacaoEtapa}
+                etapasLiberadas={etapasLiberadas}
               />
             </>
           )}
@@ -1072,6 +901,8 @@ export default function FichaView({
           loading={sessoesLoading}
           onChange={loadSessoes}
           etapa={etapaAtual}
+          etapasLiberadas={etapasLiberadas}
+          isAdmin={isAdmin}
         />
       </div>
 
@@ -1137,13 +968,6 @@ export default function FichaView({
         sessaoIniciada={sessaoIniciada}
         fichaId={ficha.dbId}
         onSessoesParadas={loadSessoes}
-      />
-
-      <PularEtapaModal
-        isOpen={pularEtapaOpen}
-        onClose={() => setPularEtapaOpen(false)}
-        etapaAtual={etapaAtual}
-        onConfirm={handlePularEtapa}
       />
     </>
   );

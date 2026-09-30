@@ -1,13 +1,9 @@
-// ────────────────────────────────────────────────
-// Definição de todas as Operações e seus Checklists
-// ────────────────────────────────────────────────
 import {
   getPainelChecklistItems,
   getPainelVerificacaoItems,
 } from "./painelTemplates";
 
 export function buildPainelItems(tipoPainel) {
-  // 🔴 AQUI: troca { incluirVerificacao: false } por { incluirVerificacao: true }
   return getPainelChecklistItems(tipoPainel, { incluirVerificacao: true }).map(
     (item) => ({
       id: item.id,
@@ -106,16 +102,13 @@ export const OPERACOES = {
   },
 };
 
-// Lista de códigos de operação para uso em selects
 export const OPERACAO_KEYS = Object.keys(OPERACOES);
 
-// Retorna os itens de checklist para uma operação
 export function getChecklistItems(operacaoCodigo) {
   const op = OPERACOES[operacaoCodigo];
   return op ? op.items : OPERACOES["10"].items;
 }
 
-// Retorna a operação padrão
 export const DEFAULT_OPERACAO = "10";
 
 export const NOTA_DOCUMENTOS =
@@ -141,14 +134,12 @@ export const INSTRUMENTOS_TAF = [
   { id: "termo", nome: "Termo-higrômetro Minipa", serie: "2021/045" },
 ];
 
-// Gera um ID único compatível com qualquer contexto (HTTP ou HTTPS)
 function generateId() {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
     try {
       return crypto.randomUUID();
     } catch {}
   }
-  // Fallback manual
   return (
     "xxxx-xxxx-4xxx-yxxx-xxxx".replace(/[xy]/g, (c) => {
       const r = (Math.random() * 16) | 0;
@@ -242,7 +233,7 @@ export function createEmptyFicha(
         ? []
         : isEstrutura && tipoPainel
           ? buildPainelItems(tipoPainel)
-          : isTaf && tipoPainel // ← só entra aqui SE tipoPainel existir
+          : isTaf && tipoPainel
             ? buildTafVerificacaoItems(tipoPainel)
             : op.items.map((item) => ({
                 id: item.id,
@@ -272,10 +263,6 @@ export function createEmptyFicha(
   };
 }
 
-/**
- * Garante que uma ficha de painel já existente tenha os itens de verificação.
- * Preserva resultados/observações já marcados e adiciona os que faltam.
- */
 export function ensurePainelItemsComVerificacao(tipoPainel, itemsAtuais) {
   if (!tipoPainel) return itemsAtuais;
 
@@ -286,12 +273,10 @@ export function ensurePainelItemsComVerificacao(tipoPainel, itemsAtuais) {
   const idsCompletos = completos.map((i) => i.id);
   const idsAtuais = (itemsAtuais || []).map((i) => i.id);
 
-  // Já está completo → não mexe em nada (retorna a MESMA referência)
   if (idsCompletos.every((id) => idsAtuais.includes(id))) {
     return itemsAtuais;
   }
 
-  // Reconstrói preservando o que já foi preenchido
   const porId = {};
   (itemsAtuais || []).forEach((i) => {
     porId[i.id] = i;

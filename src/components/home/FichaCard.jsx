@@ -125,7 +125,7 @@ export default function FichaCard({
                   className={`pdf-badge ${disabledParaPdf ? "pdf-badge--disabled" : ""}`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (disabledParaPdf) return; // 🆕 bloqueia clique
+                    if (disabledParaPdf) return;
                     onToggleSelection(ficha.dbId);
                   }}
                   title={

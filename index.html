@@ -12,7 +12,6 @@
       content="Sistema de Fichas de Controle IndusPower"
     />
 
-    <!-- ─── PWA ─── -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
@@ -29,7 +28,6 @@
     />
     <meta name="mobile-web-app-capable" content="yes" />
 
-    <!-- ─── Segurança: CSP ─── -->
     <meta
       http-equiv="Content-Security-Policy"
       content="
@@ -39,14 +37,13 @@
   font-src 'self' https://fonts.gstatic.com;
   script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
   script-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
-  img-src 'self' data: https: https://pharmacology-lower-episodes-they.trycloudflare.com http://192.168.101.59:3002 http://localhost:* http://127.0.0.1:*;
+  img-src 'self' data: https: https://pharmacology-lower-episodes-they.trycloudflare.com http://localhost:* http://127.0.0.1:*;
   connect-src 'self'
     https://rljrobqmttdvhcwqhihp.supabase.co
     wss://rljrobqmttdvhcwqhihp.supabase.co
     https://pharmacology-lower-episodes-they.trycloudflare.com
     wss://192.168.101.10:8445
     https://192.168.101.10:8445
-    http://192.168.101.59:3002
     https://pharmacology-lower-episodes-they.trycloudflare.com
     wss://192.168.101.10:8445
     http://localhost:*
@@ -57,7 +54,6 @@
 "
     />
 
-    <!-- ─── Segurança: Políticas adicionais ─── -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
@@ -65,7 +61,6 @@
       content="camera=(), microphone=(), geolocation=(), payment=(), usb=()"
     />
 
-    <!-- ─── PWA ─── -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
@@ -75,7 +70,6 @@
 
     <title>Ficha de Controle – IndusPower</title>
 
-    <!-- ─── Fonts (único recurso externo permitido pelo CSP) ─── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -83,7 +77,6 @@
       rel="stylesheet"
     />
 
-    <!-- ─── PDF Generation ─── -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link rel="manifest" href="/manifest.json" />

@@ -51,8 +51,6 @@ function linhaVazia() {
   };
 }
 
-// Extrai IND, cliente e observação do nome da pasta
-// Ex: "IND10091 - COSTA MARE - Serviço" → { ind: "10091", cliente: "COSTA MARE", observacao: "Serviço" }
 function parseNomePasta(nome) {
   if (!nome) return { ind: "", cliente: "", observacao: "" };
 
@@ -82,7 +80,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
   const [descricao, setDescricao] = useState("");
   const [linhas, setLinhas] = useState([linhaVazia()]);
 
-  // Seleção de pasta existente
   const [usarPastaExistente, setUsarPastaExistente] = useState(false);
   const [pastas, setPastas] = useState([]);
   const [pastaSelecionada, setPastaSelecionada] = useState(null);
@@ -101,7 +98,7 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
       setUsarPastaExistente(false);
       setPastas([]);
       setPastaSelecionada(null);
-      setCarregandoPastas(false); // 🔧 reset do loader
+      setCarregandoPastas(false);
     }
   }, [show]);
   const mostrarSufixo = usarPastaExistente && !!pastaSelecionada;
@@ -235,11 +232,9 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
     setCarregando(true);
     setErro(null);
     try {
-      // ─── 1) Criar rascunho ───
       let rascunho;
 
       if (usarPastaExistente && pastaSelecionada) {
-        // Modo pasta existente → envia JSON puro
         const res = await authFetch(`${API_URL}/colecoes/importar-documentos`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -250,7 +245,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
         if (!res?.ok) throw new Error("Falha ao salvar rascunho");
         rascunho = await res.json();
       } else {
-        // Modo pasta nova → envia FormData com arquivos
         const form = new FormData();
         Object.entries(arquivos).forEach(([k, v]) => form.append(k, v));
         const res = await authFetch(`${API_URL}/colecoes/importar-documentos`, {
@@ -261,7 +255,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
         rascunho = await res.json();
       }
 
-      // ─── 2) Completar coleção ───
       const preenchidas = linhasPreenchidas();
       const resFinal = await authFetch(
         `${API_URL}/colecoes/${rascunho.colecao.id}/completar`,
@@ -282,7 +275,7 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
               tipoPainel: l.tipoPainel,
               revisao: l.revisao || "01",
               sufixoFicha:
-                mostrarSufixo && l.sufixo ? Number(l.sufixo) : undefined, // ←
+                mostrarSufixo && l.sufixo ? Number(l.sufixo) : undefined,
             })),
           }),
         },
@@ -305,7 +298,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
         className="importar-colecao-modal completar-manual-modal"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* HEADER */}
         <div className="importar-colecao-header">
           <div>
             <h3>Importar Coleção</h3>
@@ -316,7 +308,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
           </button>
         </div>
 
-        {/* INDICADOR DE PASSOS */}
         <div className="iflow-progress">
           {PASSOS.map((p) => (
             <div
@@ -333,7 +324,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
           ))}
         </div>
 
-        {/* BODY */}
         <div className="importar-colecao-body completar-manual-body">
           {erro && (
             <div className="iflow-erro">
@@ -342,10 +332,8 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
             </div>
           )}
 
-          {/* ── PASSO 1: DOCUMENTOS ── */}
           {passo === 1 && (
             <>
-              {/* Documentos: SÓ no modo "criar pasta nova" */}
               {!usarPastaExistente && (
                 <>
                   <div className="iflow-docs">
@@ -399,7 +387,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
                 </>
               )}
 
-              {/* ESCOLHA DE DESTINO (sempre visível) */}
               <div className="importar-destino">
                 <div className="importar-destino-label">
                   Para onde vão os arquivos?
@@ -517,7 +504,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
             </>
           )}
 
-          {/* ── PASSO 2: FORMULÁRIO MANUAL ── */}
           {passo === 2 && (
             <>
               <div className="completar-manual-campos">
@@ -552,7 +538,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
 
               <div className="importar-divider" />
 
-              {/* TABELA DE EQUIPAMENTOS */}
               <div className="completar-manual-tabela-section">
                 <div className="completar-manual-tabela-header">
                   <h4>Equipamentos / Painéis</h4>
@@ -738,7 +723,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
             </>
           )}
 
-          {/* ── PASSO 3: REVISÃO ── */}
           {passo === 3 && (
             <div className="iflow-revisao">
               <div className="iflow-revisao-dados">
@@ -804,7 +788,6 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
           )}
         </div>
 
-        {/* FOOTER */}
         <div className="importar-colecao-footer">
           {passo === 1 ? (
             <button

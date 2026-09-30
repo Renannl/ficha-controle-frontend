@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { createEmptyFicha } from "../data/fichaTemplate";
 import { useAuth } from "./useAuth";
 import { computeStatusField } from "../utils/fichaStatus";
+import { assinarArquivos, limparArquivos } from "../utils/fotoUrl";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -17,7 +18,7 @@ function formatarNome(nome) {
 }
 
 function converterFicha(f) {
-  return {
+  return assinarArquivos({
     ...f.dados,
     codigo: f.codigo,
     items: f.dados?.items ?? [],
@@ -43,7 +44,7 @@ function converterFicha(f) {
     sessao_ativa: f.sessao_ativa ?? null,
     tempo_acumulado_segundos: Number(f.tempo_acumulado_segundos) || 0,
     ficha_producao_id: f.ficha_producao_id ?? null,
-  };
+  });
 }
 
 export function useFichas(currentUser) {
@@ -59,7 +60,6 @@ export function useFichas(currentUser) {
     fichasRef.current = fichas;
   }, [fichas]);
 
-  // ─── CARREGAR FICHAS ───
   const loadFichas = useCallback(async () => {
     try {
       const res = await authFetch(`${API_URL}/fichas`);
@@ -79,7 +79,6 @@ export function useFichas(currentUser) {
     loadFichas();
   }, [usuarioAtual, loadFichas]);
 
-  // ─── POLLING (não sobrescreve fichas com save pendente) ───
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -105,7 +104,6 @@ export function useFichas(currentUser) {
     return () => clearInterval(interval);
   }, [authFetch]);
 
-  // ─── GERAR CÓDIGO ───
   async function gerarCodigo(operacao) {
     const prefixos = { 10: "PRO", 50: "TAF", 80: "FOTO", 90: "QUA" };
     const prefixo = prefixos[operacao] || "GEN";
@@ -114,7 +112,6 @@ export function useFichas(currentUser) {
       const res = await authFetch(`${API_URL}/fichas`);
       const data = await res.json();
 
-      // Códigos do banco
       const codigosRemotos = data
         .filter(
           (f) =>
@@ -123,7 +120,6 @@ export function useFichas(currentUser) {
         )
         .map((f) => f.codigo);
 
-      // Códigos locais (podem não estar salvos ainda)
       const codigosLocais = fichasRef.current
         .filter(
           (f) =>
@@ -132,7 +128,6 @@ export function useFichas(currentUser) {
         )
         .map((f) => f.codigo);
 
-      // Junta tudo e tira duplicatas
       const todosCodigos = [...new Set([...codigosRemotos, ...codigosLocais])];
 
       const numeros = todosCodigos
@@ -158,10 +153,8 @@ export function useFichas(currentUser) {
       let base;
 
       if (fichasDaColecao.length > 0) {
-        // Coleção já tem fichas → mantém a base
         base = String(fichasDaColecao[0].dados?.numeroInd || "").split("-")[0];
       } else {
-        // Coleção nova → reusa a primeira base livre (preenche lacunas)
         const basesEmUso = new Set(
           data
             .map((f) =>
@@ -175,7 +168,6 @@ export function useFichas(currentUser) {
         base = String(proximoBase);
       }
 
-      // Sequencial dentro da própria coleção (10158-01, 10158-02...)
       const numeros = fichasDaColecao
         .map((f) =>
           parseInt(String(f.dados?.numeroInd || "").split("-")[1], 10),
@@ -190,7 +182,6 @@ export function useFichas(currentUser) {
     }
   }
 
-  // ─── CRIAR ───
   const criarFicha = useCallback(
     async (
       operacaoCodigo,
@@ -200,7 +191,6 @@ export function useFichas(currentUser) {
     ) => {
       const codigoGerado = await gerarCodigo(operacaoCodigo);
 
-      // 🆕 TAF vinculado reaproveita o numeroInd da produção; senão gera normal
       const numeroIndGerado = dadosIniciais.numeroInd
         ? dadosIniciais.numeroInd
         : await gerarNumeroInd(colecaoId);
@@ -226,15 +216,18 @@ export function useFichas(currentUser) {
             codigo: nova.codigo,
             operacao: operacaoCodigo,
             colecao_id: colecaoId,
-            ficha_producao_id: fichaProducaoId, // 🆕
+            ficha_producao_id: fichaProducaoId,
             status: computeStatusField(nova) || "aberta",
             criado_por: nova.criadoPor,
             user_id: nova.userId,
-            dados: nova,
+            dados: limparArquivos(nova),
           }),
         });
 
-        if (!res || !res.ok) throw new Error("Erro ao criar ficha");
+        if (!res || !res.ok) {
+          const detalhe = await res?.json().catch(() => null);
+          throw new Error(detalhe?.error || "Erro ao criar ficha");
+        }
 
         const data = await res.json();
         const nova_ficha = converterFicha(data);
@@ -243,14 +236,13 @@ export function useFichas(currentUser) {
         return nova_ficha.dbId;
       } catch (err) {
         console.error("[API] Erro ao criar ficha:", err);
-        alert("Erro ao criar ficha.");
+        alert(err?.message || "Erro ao criar ficha.");
         return null;
       }
     },
     [currentUser],
   );
 
-  // ─── ATUALIZAR ───
   const atualizarFicha = useCallback(
     (id, updater) => {
       setFichas((prev) => {
@@ -265,7 +257,6 @@ export function useFichas(currentUser) {
             ? updater(fichaAtual)
             : { ...fichaAtual, ...updater };
 
-        // 🆕 Recalcula o status com base no progresso do checklist
         fichaAtualizada = {
           ...fichaAtualizada,
           status: computeStatusField(fichaAtualizada),
@@ -284,7 +275,7 @@ export function useFichas(currentUser) {
               {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(fichaAtualizada),
+                body: JSON.stringify(limparArquivos(fichaAtualizada)),
               },
             );
             if (!res || !res.ok) throw new Error("Erro ao atualizar");
@@ -328,7 +319,6 @@ export function useFichas(currentUser) {
     [fichas, atualizarFicha],
   );
 
-  // ─── ATUALIZAR OPERADORES ───
   const atualizarOperadores = useCallback(
     (fichaId, operadores) => {
       atualizarFicha(fichaId, (f) => ({ ...f, operadores }));
@@ -336,7 +326,6 @@ export function useFichas(currentUser) {
     [atualizarFicha],
   );
 
-  // ─── EXCLUIR ───
   const excluirFicha = useCallback(
     async (id) => {
       const ficha = fichasRef.current.find(
@@ -358,7 +347,6 @@ export function useFichas(currentUser) {
     [authFetch],
   );
 
-  // ─── PERMISSÕES ───
   const visibleFichas = useMemo(() => {
     if (!currentUser) return [];
     const permissoes = currentUser.permissoes || [];
@@ -400,7 +388,6 @@ export function useFichas(currentUser) {
     );
   }, [fichas, currentUser]);
 
-  // ─── GET FICHA ───
   const visibleFichasRef = useRef(visibleFichas);
   useEffect(() => {
     visibleFichasRef.current = visibleFichas;
@@ -408,7 +395,6 @@ export function useFichas(currentUser) {
 
   const getFicha = useCallback(
     async (id) => {
-      // usa o state atual via closure do fichas, não um ref desatualizado
       const local = fichasRef.current.find(
         (f) => String(f.dbId) === String(id) || String(f.id) === String(id),
       );

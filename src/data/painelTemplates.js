@@ -1,7 +1,3 @@
-// ────────────────────────────────────────────────
-// Templates de Painéis — Estrutura e Verificações
-// ────────────────────────────────────────────────
-
 export const TIPOS_PAINEL = {
   SOBREPOR_EMBUTIR: "sobrepor_embutir",
   AUTOPORTANTE: "autoportante",
@@ -17,9 +13,6 @@ export const PAINEL_LABELS = {
 export const PAINEL_KEYS = Object.values(TIPOS_PAINEL);
 
 export const painelTemplates = {
-  // ═══════════════════════════════════════════════
-  // SOBREPOR / EMBUTIR
-  // ═══════════════════════════════════════════════
   [TIPOS_PAINEL.SOBREPOR_EMBUTIR]: {
     montagemMecanica: {
       titulo: "Quadro de sobrepor/embutir",
@@ -96,9 +89,6 @@ export const painelTemplates = {
     },
   },
 
-  // ═══════════════════════════════════════════════
-  // AUTOPORTANTE
-  // ═══════════════════════════════════════════════
   [TIPOS_PAINEL.AUTOPORTANTE]: {
     montagemMecanica: {
       titulo: "Quadro autoportante",
@@ -192,9 +182,6 @@ export const painelTemplates = {
     },
   },
 
-  // ═══════════════════════════════════════════════
-  // PMT
-  // ═══════════════════════════════════════════════
   [TIPOS_PAINEL.PMT]: {
     montagemMecanica: {
       titulo: "PMT",
@@ -283,19 +270,6 @@ export const painelTemplates = {
   },
 };
 
-// ────────────────────────────────────────────────
-// Helpers
-// ────────────────────────────────────────────────
-
-/**
- * Achata o template em uma lista única de itens de checklist,
- * numerados sequencialmente, com categoria pra exibição em grupos.
- *
- * options.incluirVerificacao (default: true)
- *   -> false para excluir os itens de "Verificação da Montagem" e
- *      "Verificação do Barramento" (usado no checklist de Sequência
- *      de Montagem; a verificação fica restrita apenas ao TAF)
- */
 export function getPainelChecklistItems(tipoPainel, options = {}) {
   const { incluirVerificacao = true } = options;
   const tpl = painelTemplates[tipoPainel];
@@ -304,7 +278,6 @@ export function getPainelChecklistItems(tipoPainel, options = {}) {
   const items = [];
   let contador = 1;
 
-  // ── Montagem Mecânica ──
   tpl.montagemMecanica.sequenciaMontagem.forEach((descricao, i) => {
     items.push({
       id: `mm-seq-${i}`,
@@ -327,7 +300,6 @@ export function getPainelChecklistItems(tipoPainel, options = {}) {
     });
   }
 
-  // ── Barramento ──
   if (tpl.barramento) {
     tpl.barramento.sequenciaMontagem.forEach((descricao, i) => {
       items.push({
@@ -351,7 +323,6 @@ export function getPainelChecklistItems(tipoPainel, options = {}) {
     }
   }
 
-  // ── Cabeamento ──
   if (tpl.cabeamento) {
     tpl.cabeamento.sequenciaMontagem.forEach((descricao, i) => {
       items.push({
@@ -378,21 +349,11 @@ export function getPainelChecklistItems(tipoPainel, options = {}) {
   return items;
 }
 
-/**
- * Helper específico só pra pegar os itens de verificação (uso no TAF).
- * Inclui tanto "Verificação da Montagem" quanto "Verificação do Barramento"
- * e "Verificação do Cabeamento", mantendo os IDs consistentes com
- * getPainelChecklistItems(tipoPainel).
- */
 export function getPainelVerificacaoItems(tipoPainel) {
   return getPainelChecklistItems(tipoPainel, {
     incluirVerificacao: true,
   }).filter((item) => String(item.id ?? "").includes("-ver-"));
 }
-
-// ────────────────────────────────────────────────
-// Verificação por etapa (uso no modal pós-checklist)
-// ────────────────────────────────────────────────
 
 const ETAPA_PARA_SECAO = {
   montagem: "montagemMecanica",
@@ -400,10 +361,6 @@ const ETAPA_PARA_SECAO = {
   cabeamento: "cabeamento",
 };
 
-/**
- * Retorna os itens de "verificacaoMontagem" de uma etapa específica
- * (montagem | barramento | cabeamento).
- */
 export function getPainelVerificacaoPorEtapa(tipoPainel, etapa) {
   const tpl = painelTemplates[tipoPainel];
   if (!tpl) return [];

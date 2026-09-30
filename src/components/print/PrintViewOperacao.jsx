@@ -78,9 +78,6 @@ function addChavesDoUsuario(set, raw) {
   if (formatado) set.add(chaveUsuario(formatado));
 }
 
-// 🆕 Quem SÓ verificou POR ETAPA: tem log de verificação E nenhum log de
-// resultado NA MESMA ETAPA. Resolve o caso do admin que trabalhou numa etapa
-// (ex.: barramento) mas só verificou em outra (ex.: montagem/cabeamento).
 function getSomenteVerificadoresPorEtapa(logs) {
   const verificadoresPorEtapa = {};
   const trabalhadoresPorEtapa = {};
@@ -132,7 +129,6 @@ export default function PrintViewOperacao({
 
   const gruposSessoes = agruparSessoesPorEtapaComFallback(sessoes, logs);
 
-  // ─── Colaboradores da ficha (fonte síncrona e sempre disponível) ───
   const operadores = Array.isArray(ficha.operadores) ? ficha.operadores : [];
 
   const gruposOperadores = (() => {
@@ -151,9 +147,6 @@ export default function PrintViewOperacao({
   const gruposVerificadores = agruparVerificadoresPorEtapa(logs);
   const somenteVerificadoresPorEtapa = getSomenteVerificadoresPorEtapa(logs);
 
-  // 🆕 COLABORADORES = sessões (ou operadores) MENOS quem SÓ verificou,
-  // filtrado POR ETAPA. Quem trabalhou sem marcar nada continua (tem sessão,
-  // sem log de verificação naquela etapa).
   const grupos = (gruposSessoes.length > 0 ? gruposSessoes : gruposOperadores)
     .map((g) => {
       const somenteDaEtapa = g.etapa
@@ -175,15 +168,13 @@ export default function PrintViewOperacao({
   console.log(
     "[PrintView] somenteVerificadoresPorEtapa:",
     somenteVerificadoresPorEtapa,
-  ); // 🐞
-  console.log("[PrintView] grupos finais:", grupos); // 🐞
+  );
+  console.log("[PrintView] grupos finais:", grupos);
 
   return (
     <div className={`print-view-root ${isBook ? "book-mode" : "print-only"}`}>
-      {/* CABEÇALHO DA FICHA */}
       <PrintHeader ficha={ficha} />
 
-      {/* DADOS DO EQUIPAMENTO */}
       <div className="print-section-title">DADOS DO EQUIPAMENTO</div>
       <table className="print-info-table">
         <tbody>
@@ -209,7 +200,6 @@ export default function PrintViewOperacao({
         </tbody>
       </table>
 
-      {/* PLANEJAMENTO */}
       <div className="print-section-title">PLANEJAMENTO</div>
       <table className="print-info-table">
         <tbody>
@@ -260,7 +250,6 @@ export default function PrintViewOperacao({
         </div>
       )}
 
-      {/* 🆕 VERIFICAÇÃO — somente quem realizou a verificação (painel) */}
       {isPainel && gruposVerificadores.length > 0 && (
         <div className="print-final-block">
           <div className="print-section-title">VERIFICAÇÃO:</div>
@@ -279,7 +268,6 @@ export default function PrintViewOperacao({
         </div>
       )}
 
-      {/* CHECKLIST TABLE */}
       {!isPainel && (
         <div className="print-checklist-group-label">
           SESSÕES DE TRABALHO (1ª a 15ª)
@@ -392,7 +380,6 @@ export default function PrintViewOperacao({
         </table>
       </div>
 
-      {/* OBSERVAÇÕES */}
       <div className="print-final-block">
         <div className="print-section-title">OBSERVAÇÕES</div>
         <div className="print-notes">
@@ -473,7 +460,6 @@ export default function PrintViewOperacao({
         </table>
       </div>
 
-      {/* 🆕 QR Code no canto inferior direito (última página) */}
       <div
         style={{
           display: "flex",

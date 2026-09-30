@@ -8,11 +8,9 @@ export default function PermissionItem({
     <label className={`perm-item ${checked ? "active" : ""}`}>
       <input type="checkbox" checked={checked} onChange={onChange} />
 
-      {Icon && (
-        <span className="perm-icon">
-          <Icon size={16} />
-        </span>
-      )}
+      <span className="perm-icon">
+        <Icon size={16} />
+      </span>
 
       <span className="perm-text">{label}</span>
     </label>

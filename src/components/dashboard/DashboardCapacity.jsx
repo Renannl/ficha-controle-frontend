@@ -39,7 +39,6 @@ export default function DashboardCapacity({ fichas, usuarios }) {
         <h3>Capacidade da Equipe</h3>
       </div>
 
-      {/* Resumo */}
       <div className="capacity-summary">
         <div className="capacity-summary-item">
           <span className="capacity-summary-label">Fichas ativas</span>
@@ -63,7 +62,6 @@ export default function DashboardCapacity({ fichas, usuarios }) {
         )}
       </div>
 
-      {/* Tabela de cargos */}
       <div className="capacity-table-wrap">
         <table className="capacity-table">
           <thead>
@@ -129,7 +127,6 @@ export default function DashboardCapacity({ fichas, usuarios }) {
         </table>
       </div>
 
-      {/* ETA por ficha */}
       <div className="capacity-eta-section">
         <h4 className="capacity-eta-title">
           <Clock size={16} /> Previsão de entrega por ficha

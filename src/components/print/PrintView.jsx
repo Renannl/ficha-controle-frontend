@@ -23,11 +23,10 @@ export default function PrintView({ ficha, isBook, onDataReady }) {
   const sinalizado = useRef(false);
   const fichaId = ficha?.dbId ?? ficha?.id;
 
-  // 🆕 desestrutura o `loading` do hook (era o que faltava)
   const { sessoes, loading: sessoesLoading } = useSessoesTrabalho(fichaId);
 
   const [logs, setLogs] = useState([]);
-  const [logsLoading, setLogsLoading] = useState(!!fichaId); // 🆕 estado de carregamento
+  const [logsLoading, setLogsLoading] = useState(!!fichaId);
 
   useEffect(() => {
     if (!fichaId) return;
@@ -53,7 +52,6 @@ export default function PrintView({ ficha, isBook, onDataReady }) {
     };
   }, [fichaId]);
 
-  // 🆕 avisa o pai quando sessões E logs terminarem de carregar
   useEffect(() => {
     if (sessoesLoading || logsLoading) return;
     if (sinalizado.current) return;

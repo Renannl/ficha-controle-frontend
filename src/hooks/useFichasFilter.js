@@ -11,11 +11,9 @@ export function useFichasFilter({
 
   const filteredFichas = useMemo(() => {
     return fichas.filter((f) => {
-      // STATUS
       const statusMatch =
         filterStatus === "all" ? true : getFichaStatus(f) === filterStatus;
 
-      // TYPE
       const isTaf = f.operacao === "50";
       const isFoto = f.operacao === "80";
 
@@ -25,7 +23,6 @@ export function useFichasFilter({
       else if (filterType === "controle") typeMatch = !isTaf && !isFoto;
       else if (filterType === "foto") typeMatch = isFoto;
 
-      // SEARCH
       const searchMatch =
         !searchTerm ||
         (f.nomeEquipamento || "").toLowerCase().includes(normalizedSearch) ||

@@ -24,9 +24,7 @@ export default function NewFichaMenu({
   fichasDaColecao = [],
 }) {
   const [etapa, setEtapa] = useState("menu");
-  // "menu" | "tipo-fotos" | "selecionar-producao" | "selecionar-producao-fotos"
   const [tipoFotosSelecionado, setTipoFotosSelecionado] = useState(null);
-  // "geral" | "tecnica"
 
   const [mostrarImportar, setMostrarImportar] = useState(false);
 
@@ -43,7 +41,6 @@ export default function NewFichaMenu({
     });
   };
 
-  // ── Fichas disponíveis para TAF ──
   const fichasProducao = fichasDaColecao.filter((f) => {
     if (String(f.operacao) !== "10") return false;
     if (f.statusAprovacao !== "aprovado") return false;
@@ -94,7 +91,6 @@ export default function NewFichaMenu({
   };
 
   const handleSelecionarProducao = (ficha, tipo) => {
-    // Se for fotos, passa também o tipo selecionado
     if (tipo === "fotos") {
       onCreateFicha(tipo, ficha, tipoFotosSelecionado);
     } else {
@@ -136,7 +132,6 @@ export default function NewFichaMenu({
     <>
       <div className="new-ficha-overlay" onClick={handleClose}>
         <div className="new-ficha-menu" onClick={(e) => e.stopPropagation()}>
-          {/* ── HEADER ── */}
           <div className="new-ficha-menu-header">
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {(etapa === "selecionar-producao" ||
@@ -163,7 +158,6 @@ export default function NewFichaMenu({
             </button>
           </div>
 
-          {/* ── ETAPA: ESCOLHER TIPO DE FOTOS ── */}
           {etapa === "tipo-fotos" && (
             <div className="new-ficha-options">
               <button
@@ -202,7 +196,6 @@ export default function NewFichaMenu({
             </div>
           )}
 
-          {/* ─ ETAPA: SELECIONAR FICHA DE PRODUÇÃO (TAF) ── */}
           {etapa === "selecionar-producao" && (
             <div className="new-ficha-options">
               {fichasProducao.map((f) => (
@@ -227,7 +220,6 @@ export default function NewFichaMenu({
             </div>
           )}
 
-          {/* ── ETAPA: SELECIONAR FICHA DE PRODUÇÃO (FOTOS) ─ */}
           {etapa === "selecionar-producao-fotos" && (
             <div className="new-ficha-options">
               {fichasProducaoFotos.length === 0 ? (
@@ -268,7 +260,6 @@ export default function NewFichaMenu({
             </div>
           )}
 
-          {/* ── OPÇÕES DENTRO DE COLEÇÃO ── */}
           {etapa === "menu" && mode === "fichas" && (
             <div className="new-ficha-options">
               <button className="new-ficha-opt-btn" onClick={handleClickTaf}>
@@ -314,8 +305,6 @@ export default function NewFichaMenu({
             </div>
           )}
 
-          {/* ── OPÇÃO FORA DE COLEÇÃO ─ */}
-          {/* ── OPÇÃO FORA DE COLEÇÃO ─ */}
           {etapa === "menu" && mode !== "fichas" && (
             <div className="new-ficha-options">
               <button

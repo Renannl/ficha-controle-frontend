@@ -13,9 +13,8 @@ export default function HomeViewToggle({
   handleTouchStart,
   handleTouchMove,
   handleTouchEnd,
-  selectedColecao, // ← recebe aqui
+  selectedColecao,
 }) {
-  // ← some completamente quando estiver dentro de uma coleção
   if (selectedColecao) return null;
 
   return (

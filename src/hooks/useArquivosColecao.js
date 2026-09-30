@@ -12,7 +12,7 @@ export function useArquivosColecao(colecaoId, ativo = true) {
     setCarregando(true);
     setErro(null);
     try {
-      const token = localStorage.getItem("token"); // ajuste p/ o seu storage
+      const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/colecoes/${colecaoId}/arquivos`, {
         headers: { Authorization: `Bearer ${token}` },
       });

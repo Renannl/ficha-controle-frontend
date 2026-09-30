@@ -51,7 +51,6 @@ export default function UploadArquivoModal({
 
   if (!show) return null;
 
-  // Pré-seleciona a pasta atual como destino padrão
   const pastaAtualStr = caminhoAtual.join("/");
 
   function handleSelecionarArquivos(e) {
@@ -119,11 +118,9 @@ export default function UploadArquivoModal({
     onClose?.();
   }
 
-  // Monta lista de pastas: padrão + as que existem no SharePoint
   const pastasDisponiveis = [...PASTAS_PADRAO];
   pastasExistentes.forEach((p) => {
     const caminhoStr = p.caminho.join("/");
-    // Evita duplicar
     if (!pastasDisponiveis.some((pd) => pd.valor === caminhoStr)) {
       pastasDisponiveis.push({
         valor: caminhoStr,
@@ -149,7 +146,6 @@ export default function UploadArquivoModal({
         </div>
 
         <div className="importar-colecao-body">
-          {/* Seletor de pasta */}
           <div className="importar-campo">
             <div className="importar-campo-label">
               <Folder size={14} style={{ marginRight: 4 }} />
@@ -173,7 +169,6 @@ export default function UploadArquivoModal({
             )}
           </div>
 
-          {/* Upload de arquivos */}
           <div className="importar-campo">
             <div className="importar-campo-label">
               Arquivos

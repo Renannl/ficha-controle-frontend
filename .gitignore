@@ -1,22 +1,16 @@
-# Dependências
 node_modules/
 
-# Ambiente - NUNCA versionar
 .env
 .env.local
 .env.*.local
 
-# Build
 dist/
 
-# IDE
 .vscode/
 .idea/
 
-# OS
 .DS_Store
 Thumbs.db
 
-# Logs
 *.log
 npm-debug.log*

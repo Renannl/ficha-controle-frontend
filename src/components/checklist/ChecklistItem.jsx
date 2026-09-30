@@ -1,4 +1,3 @@
-// ChecklistItem.jsx
 import ChecklistSessions from "./ChecklistSessions";
 import { useState } from "react";
 import ChecklistObservationModal from "../buttons/ChecklistObservationModal";
@@ -39,7 +38,6 @@ export default function ChecklistItem({
     setPendingResultado(null);
   }
 
-  // 🔹 OK não abre modal, marca direto sem observação
   function handleOkClick(e) {
     e.stopPropagation();
     if (readOnly) return;
@@ -79,7 +77,6 @@ export default function ChecklistItem({
             >
               NA
             </button>
-            {/* 🔹 Novo botão X — indica erro, sempre abre modal */}
             <button
               className={`resultado-btn resultado-btn-erro ${
                 item.resultado === "erro" ? "erro-active" : ""

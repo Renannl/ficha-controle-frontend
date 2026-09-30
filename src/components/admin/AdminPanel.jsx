@@ -45,7 +45,6 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
         active,
       });
 
-      // 🆕 Propaga o cargo novo para a lista do App (sem F5)
       onUserUpdated?.({
         ...editingUser,
         nome,

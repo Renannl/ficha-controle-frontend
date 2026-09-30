@@ -40,7 +40,6 @@ export function useDashboardMetrics(fichas) {
       const itemCount = f.items?.length || 0;
       totalItems += itemCount;
 
-      // ✅ Sempre compara como string (corrige o bug de tipo)
       const op = String(f.operacao ?? "");
       if (op === "50") taf++;
       else if (op === "80") fotos++;
@@ -61,14 +60,11 @@ export function useDashboardMetrics(fichas) {
       else if (status === "rejected") reprovadas++;
       else if (["done", "approved"].includes(status)) concluidas++;
 
-      // ⏱️ Tempo
       totalSegundos += Number(f.tempo_acumulado_segundos) || 0;
       if (f.sessao_ativa) sessoesAtivas++;
 
-      // ⚠️ Ficha parada = em andamento mas ninguém trabalhando agora
       if (status === "progress" && !f.sessao_ativa) fichasParadas++;
 
-      // 🛡️ Aprovação
       const sa = f.statusAprovacao;
       if (sa === "aprovado") qtdAprovadas++;
       else if (sa === "reprovado") qtdReprovadas++;
@@ -82,7 +78,6 @@ export function useDashboardMetrics(fichas) {
         });
       } else if (sa === "revisao") qtdRevisao++;
 
-      // 👥 Operadores (produtividade)
       (f.operadores || []).forEach((opItem) => {
         const key = opItem.username || opItem.id;
         if (!key) return;
@@ -97,11 +92,9 @@ export function useDashboardMetrics(fichas) {
         operadoresMap[key].fichas += 1;
       });
 
-      // 🏢 Clientes
       const cliente = String(f.cliente || "").trim();
       if (cliente) clientesMap[cliente] = (clientesMap[cliente] || 0) + 1;
 
-      // 📈 Produção mensal
       if (f.created_at) {
         const d = new Date(f.created_at);
         if (!isNaN(d.getTime())) {

@@ -27,7 +27,6 @@ export function UsersProvider({ children }) {
     carregarUsuarios();
   }, [carregarUsuarios]);
 
-  // Atualiza um usuário na lista local SEM refazer o fetch (sem F5)
   const atualizarUsuarioLocal = useCallback((id, usuarioAtualizado) => {
     setUsers((prev) =>
       prev.map((u) => (u.id === id ? { ...u, ...usuarioAtualizado } : u)),

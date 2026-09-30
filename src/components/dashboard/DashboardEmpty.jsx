@@ -1,5 +1,3 @@
-// DashboardEmpty.jsx
-
 export default function DashboardEmpty({ total }) {
   if (total !== 0) return null;
 

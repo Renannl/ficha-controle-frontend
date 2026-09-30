@@ -1,10 +1,8 @@
-// utils/roleColors.js
-
 export const ROLE_COLORS = {
-  admin: "#5b8def", // azul
-  montagem: "#f8bc5a", // amarelo
-  barramento: "#5969f3", // azul-violeta
-  cabeamento: "#4e944e", // verde
+  admin: "#5b8def",
+  montagem: "#f8bc5a",
+  barramento: "#5969f3",
+  cabeamento: "#4e944e",
 };
 
 export const ROLE_LABELS = {
@@ -14,7 +12,6 @@ export const ROLE_LABELS = {
   cabeamento: "Cabeamento",
 };
 
-// 🆕 Ordem do fluxo de produção (Montagem → Barramento → Cabeamento)
 const ROLE_ORDER = [
   "montagem",
   "barramento",
@@ -23,7 +20,7 @@ const ROLE_ORDER = [
 ];
 
 export function getRoleColor(role) {
-  return ROLE_COLORS[role] || "#8a8f98"; // fallback cinza
+  return ROLE_COLORS[role] || "#8a8f98";
 }
 
 export function getRoleLabel(role) {
@@ -45,7 +42,6 @@ export function agruparUsuariosPorCargo(listaUsuarios = []) {
     grupos[role].usuarios.push(usuario);
   });
 
-  // 🆕 ordem fixa do fluxo (não alfabética)
   return Object.values(grupos).sort(
     (a, b) => ROLE_ORDER.indexOf(a.role) - ROLE_ORDER.indexOf(b.role),
   );

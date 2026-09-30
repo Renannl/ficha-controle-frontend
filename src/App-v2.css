@@ -1,6 +1,3 @@
-/* ──────────────────────────────────────────────
-   CRITICAL RESET & FIX
-────────────────────────────────────────────── */
 .home-header {
   display: flex;
   align-items: flex-end;
@@ -21,7 +18,6 @@
   opacity: 0.5 !important;
   font-style: italic;
 }
-/* ── Modal de Observação Flutuante ── */
 .obs-modal-overlay {
   position: fixed;
   inset: 0;
@@ -224,9 +220,6 @@
   flex-shrink: 0;
 }
 
-/* ──────────────────────────────────────────────
-   Add Photo Button
-────────────────────────────────────────────── */
 .add-photo-btn {
   display: inline-flex;
   align-items: center;
@@ -278,9 +271,6 @@
   background: rgba(79, 209, 217, 0.08);
 }
 
-/* ══════════════════════════════════════════════
-   Photo Grid Items
-══════════════════════════════════════════════ */
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -291,9 +281,6 @@
   min-width: 0;
 }
 
-/* ══════════════════════════════════════════════
-   Add Photo Tile (COMPLETO)
-══════════════════════════════════════════════ */
 .add-photo-tile {
   flex: 1 1 320px;
   max-width: 400px;
@@ -397,7 +384,6 @@
   letter-spacing: 0.2px;
 }
 
-/* Dark mode */
 [data-theme="dark"] .add-photo-tile {
   background: linear-gradient(
     145deg,
@@ -428,9 +414,6 @@
   color: #0a1419;
 }
 
-/* ══════════════════════════════════════════════
-   Photo Card
-══════════════════════════════════════════════ */
 .photo-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
@@ -447,7 +430,6 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-/* ── Input de descrição ── */
 .photo-card-desc {
   flex: 1;
   background: var(--bg-card);
@@ -475,7 +457,6 @@
   box-shadow: 0 0 0 3px rgba(79, 209, 217, 0.12);
 }
 
-/* ── Preview da foto ── */
 .photo-card-preview {
   position: relative;
   width: 100%;
@@ -493,7 +474,6 @@
   background: #000;
 }
 
-/* ── Botão remover ── */
 .photo-card-remove {
   position: absolute;
   top: 8px;
@@ -525,7 +505,6 @@
   transform: scale(0.95);
 }
 
-/* ── Estado vazio ── */
 .photo-card-empty {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -557,7 +536,6 @@
   opacity: 0.7;
 }
 
-/* ── Label de upload ── */
 .photo-card-upload-label {
   cursor: pointer;
   display: flex;
@@ -581,7 +559,6 @@
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(79, 209, 217, 0.25);
 }
-/* ── Container vertical centralizado ── */
 .photo-card-actions {
   display: flex;
   flex-direction: column;
@@ -590,7 +567,6 @@
   width: 100%;
 }
 
-/* ── Botão base ── */
 .photo-card-btn {
   display: flex;
   align-items: center;
@@ -612,7 +588,6 @@
   flex-shrink: 0;
 }
 
-/* ── Câmera (primário) ── */
 .photo-card-btn-camera {
   background: var(--blue);
   color: var(--blue-accent);
@@ -628,7 +603,6 @@
   transform: scale(0.97);
 }
 
-/* ── Galeria (secundário) ── */
 .photo-card-btn-gallery {
   background: transparent;
   color: var(--blue-accent);
@@ -755,11 +729,6 @@
   transform: scale(0.9);
 }
 
-/* ──────────────────────────────────────────────
-   Status Visual da Coleção (borda lateral + fundo)
-────────────────────────────────────────────── */
-
-/* Amarela — tem ficha(s), mas ainda em andamento */
 .colecao-card.status-andamento::before {
   background: linear-gradient(180deg, #f59e0b, #d97706);
 }
@@ -774,7 +743,6 @@
   color: #f59e0b;
 }
 
-/* Vermelha — alguma ficha com item em ERRO */
 .colecao-card.status-erro::before {
   background: linear-gradient(180deg, #ef4444, #dc2626);
 }
@@ -789,7 +757,6 @@
   color: #ef4444;
 }
 
-/* Verde — coleção completa (todas as fichas concluídas e sem erro) */
 .colecao-card.status-completa::before {
   background: linear-gradient(180deg, #22c55e, #16a34a);
 }
@@ -926,7 +893,6 @@
   margin-left: 1px;
 }
 
-/* Cores por status */
 .stat-total .stat-icon {
   background: #3b82f61f;
   color: #3b82f6;
@@ -1076,21 +1042,18 @@
   font-weight: 600;
 }
 
-/* PRO - Produção (azul, mantém o padrão atual) */
 .ficha-meta-code--pro {
   background: var(--blue-glow);
   border: 1px solid var(--blue-accent);
   color: var(--blue-primary);
 }
 
-/* TAF - Testes (âmbar/laranja) */
 .ficha-meta-code--taf {
   background: rgba(11, 105, 245, 0.12);
   border: 1px solid rgba(11, 120, 245, 0.4);
   color: #0b84f5;
 }
 
-/* QUA - Qualidade (violeta) */
 .ficha-meta-code--foto {
   background: rgba(168, 85, 247, 0.12);
   border: 1px solid rgba(168, 85, 247, 0.4);
@@ -1196,9 +1159,6 @@
   transform: scale(0.95);
 }
 
-/* ──────────────────────────────────────────────
-   Info Card (fields form)
-────────────────────────────────────────────── */
 .info-section {
   animation: slideUp 0.3s ease forwards;
 }
@@ -1207,9 +1167,6 @@
   margin-top: 16px;
 }
 
-/* ──────────────────────────────────────────────
-   Checklist Table
-────────────────────────────────────────────── */
 .checklist-wrap {
   animation: slideUp 0.3s ease forwards;
 }
@@ -1287,7 +1244,6 @@
   flex-shrink: 0;
 }
 
-/* OK / NA toggle buttons */
 .resultado-btns {
   display: flex;
   gap: 4px;
@@ -1331,7 +1287,6 @@
   color: var(--amber);
 }
 
-/* Sessions row inside expanded item */
 .checklist-item-sessions {
   padding: 0 14px 14px;
   overflow-x: auto;
@@ -1389,7 +1344,6 @@
   color: var(--red);
 }
 
-/* Expand arrow */
 .expand-arrow {
   font-size: 12px;
   color: var(--text-muted);
@@ -1402,9 +1356,6 @@
   transform: rotate(180deg);
 }
 
-/* ──────────────────────────────────────────────
-   Sessions Panel
-────────────────────────────────────────────── */
 .sessions-panel {
   animation: slideUp 0.3s ease forwards;
 }
@@ -1481,9 +1432,6 @@
   flex-shrink: 0;
 }
 
-/* ──────────────────────────────────────────────
-   Notes Section
-────────────────────────────────────────────── */
 .notes-section {
   animation: slideUp 0.3s ease forwards;
 }
@@ -1500,9 +1448,6 @@
   color: var(--text-secondary);
 }
 
-/* ──────────────────────────────────────────────
-   Signature Section
-────────────────────────────────────────────── */
 .signatures-section {
   animation: slideUp 0.3s ease forwards;
   display: flex;
@@ -1612,9 +1557,6 @@
   margin: 0 auto;
 }
 
-/* ──────────────────────────────────────────────
-   Finalize Section
-────────────────────────────────────────────── */
 .finalize-section {
   margin-top: 24px;
   margin-bottom: 32px;
@@ -1650,9 +1592,6 @@
   box-shadow: 0 4px 12px rgba(26, 75, 80, 0.3);
 }
 
-/* ──────────────────────────────────────────────
-   Auto-filled values (Equipe + Objetivo)
-────────────────────────────────────────────── */
 .auto-filled-value {
   display: flex;
   align-items: flex-start;
@@ -1684,9 +1623,6 @@
   margin-top: 2px;
 }
 
-/* ──────────────────────────────────────────────
-   Operation Info Banner
-────────────────────────────────────────────── */
 .operation-info-banner {
   display: flex;
   align-items: flex-start;
@@ -1707,9 +1643,6 @@
   font-size: 14px;
 }
 
-/* ──────────────────────────────────────────────
-   Select dropdown styling
-────────────────────────────────────────────── */
 .field select {
   cursor: pointer;
 }
@@ -1720,9 +1653,6 @@
   padding: 8px;
 }
 
-/* ──────────────────────────────────────────────
-   Responsive
-────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .main-content {
     padding: 12px;
@@ -1798,7 +1728,6 @@
     padding: 24px 16px;
   }
 
-  /* Melhoria de acessibilidade para toque */
   .resultado-btn {
     padding: 8px 16px !important;
     font-size: 12px !important;
@@ -1847,12 +1776,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ──────────────────────────────────────────────
-   Print View Styles (PDF Generation)
-────────────────────────────────────────────── */
-
 @media print {
-  /* Esconde a UI normal */
   .app,
   .top-header,
   .tab-bar,
@@ -1900,9 +1824,6 @@ body {
   }
 }
 
-/* ──────────────────────────────────────────────
-   PDF Layout Rules (Global for html2canvas)
-────────────────────────────────────────────── */
 .print-only * {
   box-sizing: border-box !important;
   font-family: "Inter", sans-serif;
@@ -1991,7 +1912,6 @@ body {
   font-size: 9px;
 }
 
-/* Sections */
 .print-section-title {
   background: #1a1d23 !important;
   color: #fff !important;
@@ -2002,7 +1922,6 @@ body {
   border: 1px solid #000;
 }
 
-/* Tables */
 .print-info-table {
   width: 100% !important;
   border-collapse: collapse;
@@ -2018,11 +1937,9 @@ body {
   line-height: 1.2;
 }
 
-/* Checklist Table (19 colunas: IT + DESC + 15 sessões + OK + NA) */
 .print-checklist-container {
   width: 100%;
   overflow-x: visible;
-  /* Não corta — o PDF é capturado em largura fixa */
 }
 
 .print-checklist-table {
@@ -2047,7 +1964,7 @@ body {
 }
 
 .print-checklist-table thead {
-  display: table-header-group; /* repete em cada página impressa */
+  display: table-header-group;
 }
 
 .print-checklist-table tr {
@@ -2108,7 +2025,6 @@ body {
   max-height: 60px;
 }
 
-/* Quando não há colunas de sessão (ex: painel), redistribui a largura total */
 .print-checklist-table.no-sessions .col-it {
   flex: 0 0 6% !important;
   width: 6% !important;
@@ -2192,7 +2108,6 @@ body {
   font-size: 7.5px;
 }
 
-/* Detailed Sessions Table */
 .print-sessions-table {
   width: 100% !important;
   border-collapse: collapse;
@@ -2218,7 +2133,6 @@ body {
   font-weight: 700;
 }
 
-/* Notes */
 .print-notes {
   border: 1px solid #000;
   min-height: 25px;
@@ -2233,8 +2147,6 @@ body {
   font-weight: 600;
   color: #333;
 }
-
-/* Signatures */
 
 .sig-box {
   flex: 1;
@@ -2278,9 +2190,6 @@ body {
   margin-top: 1px;
 }
 
-/* ──────────────────────────────────────────────
-   Login Page
-────────────────────────────────────────────── */
 .login-page {
   display: flex;
   align-items: center;
@@ -2292,8 +2201,6 @@ body {
   position: relative;
   overflow: hidden;
 }
-
-/* Background decoration circles */
 
 .login-bg-circle {
   position: absolute;
@@ -2352,15 +2259,12 @@ body {
   background: linear-gradient(135deg, #0a0f1e 0%, #111827 100%);
 }
 
-/* Filtro para Assinatura (Preto -> Azul IndusPower) no Site */
 [data-theme="dark"] .signature-canvas,
 [data-theme="dark"] .signature-preview img {
   filter: invert(56%) sepia(87%) saturate(325%) hue-rotate(135deg)
     brightness(95%) contrast(90%);
-  /* Este filtro faz com que o preto (#000) apareça como o azul/ciano da marca no modo escuro */
 }
 
-/* Menu de Nova Ficha */
 .new-ficha-overlay {
   position: fixed;
   top: 0;
@@ -2471,13 +2375,12 @@ body {
   animation: fadeIn 0.5s ease forwards;
 }
 
-/* Brand */
 .login-brand {
   text-align: center;
 }
 
 .login-logo {
-  width: 180px; /* Aumentado para a nova logo 3D */
+  width: 180px;
   height: auto;
   min-height: 180px;
   display: flex;
@@ -2510,7 +2413,6 @@ body {
   font-weight: 500;
 }
 
-/* Card */
 .login-card {
   width: 100%;
   background: var(--bg-card);
@@ -2603,7 +2505,6 @@ body {
   border-color: var(--blue-primary);
 }
 
-/* Fix para autofill do Chrome no Dark Mode */
 [data-theme="dark"] .login-field input:-webkit-autofill,
 [data-theme="dark"] .login-field input:-webkit-autofill:hover,
 [data-theme="dark"] .login-field input:-webkit-autofill:focus {
@@ -2621,7 +2522,6 @@ body {
   cursor: not-allowed;
 }
 
-/* Error */
 .login-error {
   display: flex;
   align-items: center;
@@ -2636,7 +2536,6 @@ body {
   animation: fadeIn 0.2s ease;
 }
 
-/* Button */
 .login-btn {
   width: 100%;
   padding: 14px;
@@ -2670,7 +2569,6 @@ body {
   cursor: not-allowed;
 }
 
-/* Spinner */
 .login-spinner {
   width: 20px;
   height: 20px;
@@ -2686,11 +2584,6 @@ body {
   }
 }
 
-/* Footer */
-
-/* ──────────────────────────────────────────────
-   User Bar (Home Screen)
-────────────────────────────────────────────── */
 .user-bar {
   display: flex;
   align-items: center;
@@ -2797,7 +2690,6 @@ body {
   color: var(--blue-accent);
 }
 
-/* TAF Panel Styles */
 .taf-panel {
   display: flex;
   flex-direction: column;
@@ -2883,7 +2775,6 @@ body {
   display: block;
 }
 
-/* Responsividade Mobile para o TAF Panel */
 @media (max-width: 600px) {
   .taf-form-row {
     grid-template-columns: 1fr !important;
@@ -2896,7 +2787,6 @@ body {
 
   .megger-table {
     grid-template-columns: 1fr 1fr !important;
-    /* Força 2 colunas */
     padding: 12px;
     gap: 10px;
   }
@@ -2908,7 +2798,6 @@ body {
   .taf-input-group input {
     padding: 12px 10px;
     font-size: 15px;
-    /* Fonte maior para evitar zoom automático do iOS */
   }
 
   .taf-section-title {
@@ -2937,7 +2826,6 @@ body {
 
   .megger-table {
     grid-template-columns: 1fr !important;
-    /* Força 1 coluna em telas bem pequenas */
   }
 
   .megger-table .taf-input-group.span-2 {
@@ -2949,9 +2837,6 @@ body {
   grid-column: span 2;
 }
 
-/* ──────────────────────────────────────────────
-   TAF PDF LAYOUT (PRINT ONLY)
-────────────────────────────────────────────── */
 .taf-pdf {
   width: 210mm;
   min-height: 277mm;
@@ -3207,9 +3092,6 @@ body {
 .gap-2 {
   gap: 8px;
 }
-/* ========================================================= */
-/* RELATORIO FOTOGRAFICO - PDF */
-/* ========================================================= */
 .book-pdf-btn {
   position: fixed;
   bottom: 100px;
@@ -3385,12 +3267,10 @@ body {
   margin-bottom: 2mm;
   background: #fff;
   min-height: 40px;
-  /* More compact height */
 }
 
 .fotos-pdf-logo {
   width: 120px;
-  /* Slightly narrower */
   border-right: 1px solid #000;
   padding: 4px;
   display: flex;
@@ -3530,7 +3410,6 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  /* space between columns and rows */
 }
 
 .page-break {
@@ -3538,13 +3417,10 @@ body {
   break-before: page !important;
 }
 
-/* Espaçamento superior para descer o conteúdo no PDF */
 .fotos-pdf .page-break,
 .fotos-pdf .fotos-section-page {
   padding-top: 10mm;
 }
-
-/* Ajuste exclusivo para a sessão 52-T2 */
 
 .fotos-pdf-header {
   display: flex;
@@ -3558,7 +3434,7 @@ body {
 
 .foto-frame {
   width: 100%;
-  height: 260px; /* Valor fixo padronizado para mobile */
+  height: 260px;
   border: 1.5px solid #000;
   display: flex;
   flex-direction: column;
@@ -3571,7 +3447,7 @@ body {
 
 .foto-frame-header {
   display: flex;
-  height: 24px; /* Altura fixa para o header */
+  height: 24px;
   border-bottom: 1px solid #000;
   background: #f8f9fa;
   flex-shrink: 0;
@@ -3609,7 +3485,7 @@ body {
 .foto-content img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Preenche o espaço fixo de forma elegante */
+  object-fit: cover;
   display: block;
 }
 
@@ -3621,9 +3497,6 @@ body {
   text-align: center;
 }
 
-/* ──────────────────────────────────────────────
-   Home View Toggles
-────────────────────────────────────────────── */
 .home-view-toggle {
   display: flex;
   background: var(--bg-elevated);
@@ -3680,9 +3553,6 @@ body {
   color: var(--blue-accent);
 }
 
-/* ──────────────────────────────────────────────
-   Photo Bank Styles
-────────────────────────────────────────────── */
 .photo-album-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -3710,9 +3580,6 @@ body {
   position: relative;
   overflow: hidden;
 }
-/* ──────────────────────────────────────────────
-   Admin Panel Premium Styles
-────────────────────────────────────────────── */
 .admin-panel {
   min-height: 100vh;
   background: var(--bg-base);
@@ -3872,7 +3739,7 @@ body {
   }
   .card-icon {
     font-size: 18px;
-  } /* Retornado ao original */
+  }
 
   .admin-form-body {
     padding: 12px;
@@ -3904,7 +3771,7 @@ body {
   }
   .perm-item .perm-icon {
     font-size: 16px;
-  } /* Retornado ao original */
+  }
   .perm-item .perm-text {
     font-size: 9px;
   }
@@ -3928,8 +3795,6 @@ body {
     padding: 10px;
     font-size: 14px;
   }
-
-  /* Solicitações de Acesso Compactas */
 }
 
 .mt-6 {
@@ -4047,7 +3912,7 @@ body {
   font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
-  margin-top: 12px; /* Espaço adicional acima do botão */
+  margin-top: 12px;
 }
 
 .btn-admin-submit:hover {
@@ -4067,7 +3932,6 @@ body {
   font-size: 13px;
 }
 
-/* Table Styles */
 .admin-table-wrap {
   overflow-x: auto;
 }
@@ -4129,10 +3993,6 @@ body {
   color: #fffefe;
 }
 
-/* Botões de Ação com Efeito Glow */
-
-/* Domain Sync Placeholder */
-
 @keyframes slideLeftRight {
   0% {
     transform: translateX(-5px);
@@ -4145,7 +4005,6 @@ body {
   }
 }
 
-/* Access Requests Styles */
 .album-cover img {
   width: 100%;
   height: 100%;
@@ -4260,8 +4119,6 @@ body {
   flex: 1;
 }
 
-/* ───────────────── HEADER ───────────────── */
-
 .top-header {
   display: flex;
   align-items: center;
@@ -4299,8 +4156,6 @@ body {
   color: var(--blue-accent);
   border-color: var(--blue-accent);
 }
-
-/* HeaderInfo */
 
 .header-info-wrap {
   display: flex;
@@ -4343,8 +4198,6 @@ body {
   margin-top: 2px;
 }
 
-/* Área da direita */
-
 .header-actions {
   display: flex;
   align-items: center;
@@ -4352,8 +4205,6 @@ body {
 
   flex-shrink: 0;
 }
-
-/* HeaderApprovalActions */
 
 .approval-actions {
   display: flex;
@@ -4436,8 +4287,6 @@ body {
   font-size: 15px;
   margin: 0 0 4px 0;
 }
-
-/* HeaderProgress */
 
 .header-progress {
   display: flex;
@@ -4532,31 +4381,22 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
-/* ══════════════════════════════════════════════
-   DARK MODE — Overrides Completos
-══════════════════════════════════════════════ */
 
-/* ─── Home Header ─── */
 [data-theme="dark"] .home-header {
   background: rgba(10, 15, 20, 0.85);
   border-bottom-color: var(--border);
 }
 
-/* ─── User Bar ─── */
 [data-theme="dark"] .user-bar {
   background: var(--bg-card) !important;
   border-bottom-color: var(--border) !important;
 }
 
-/* ─── Stat Cards ─── */
 [data-theme="dark"] .stat-card {
   background: var(--bg-card);
   border-color: var(--border);
 }
 
-/* ─── Status Tags ─── */
-
-/* ─── Ficha Cards ─── */
 [data-theme="dark"] .ficha-card {
   background: var(--bg-card);
   border-color: var(--border);
@@ -4573,7 +4413,6 @@ body {
   background: rgba(211, 47, 47, 0.1);
 }
 
-/* ─── View Toggle (Relatórios / Banco de Fotos) ─── */
 [data-theme="dark"] .home-view-toggle {
   background: var(--bg-card);
   border-color: var(--border);
@@ -4584,13 +4423,11 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* ─── Tab Bar ─── */
 [data-theme="dark"] .tab-bar {
   background: var(--bg-card);
   border-top-color: var(--border);
 }
 
-/* ─── Top Header (Ficha Interna) ─── */
 [data-theme="dark"] .top-header {
   background: var(--bg-card);
   border-bottom-color: var(--border);
@@ -4602,13 +4439,11 @@ body {
   color: var(--text-secondary);
 }
 
-/* ─── Cards e Glassmorphism ─── */
 [data-theme="dark"] .card {
   background: var(--bg-card);
   border-color: var(--border);
 }
 
-/* ─── Checklist ─── */
 [data-theme="dark"] .checklist-item {
   background: var(--bg-card);
   border-color: var(--border);
@@ -4629,7 +4464,6 @@ body {
   border-color: var(--border);
 }
 
-/* ─── Resultado Buttons ─── */
 [data-theme="dark"] .resultado-btn {
   background: var(--bg-card);
   border-color: var(--border);
@@ -4645,7 +4479,7 @@ body {
 [data-theme="dark"] .resultado-btn.na-active {
   background: rgba(214, 158, 46, 0.15);
   border-color: rgba(214, 158, 46, 0.3);
-  color: #ebac2f; /* mesmo tom do seu badge-amber dark */
+  color: #ebac2f;
 }
 
 [data-theme="dark"] .resultado-btn-erro.erro-active {
@@ -4654,7 +4488,6 @@ body {
   color: #fff;
 }
 
-/* ─── New Ficha Menu ─── */
 [data-theme="dark"] .new-ficha-overlay {
   background: rgba(0, 0, 0, 0.6);
 }
@@ -4674,7 +4507,6 @@ body {
   background: rgba(79, 209, 217, 0.08);
 }
 
-/* ─── FAB ─── */
 [data-theme="dark"] .fab {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
 }
@@ -4683,7 +4515,6 @@ body {
   box-shadow: 0 8px 32px rgba(79, 209, 217, 0.3);
 }
 
-/* ─── Photo Bank ─── */
 [data-theme="dark"] .photo-album-card {
   background: var(--bg-card);
   border-color: var(--border);
@@ -4699,30 +4530,24 @@ body {
   color: var(--text-primary);
 }
 
-/* ─── Session Row ─── */
 [data-theme="dark"] .session-row {
   border-color: var(--border);
 }
 
-/* ─── Info Section ─── */
 [data-theme="dark"] .info-section {
   background: var(--bg-card);
 }
 
-/* ─── Home Empty ─── */
 [data-theme="dark"] .home-empty {
   color: var(--text-secondary);
 }
 
-/* ─── Filter Selects (Dark Mode) ─── */
 [data-theme="dark"] .home-list-header select {
   background-color: var(--bg-elevated) !important;
   border-color: var(--border) !important;
   color: var(--text-secondary) !important;
 }
 
-/* ─── Home BG Circles ─── */
-/* ─── Confirm Modal Support ─── */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -4833,7 +4658,6 @@ body {
   opacity: 0.08;
 }
 
-/* ─── Tabs Dark Mode ─── */
 [data-theme="dark"] .home-view-toggle {
   background: rgba(0, 0, 0, 0.2);
 }
@@ -4843,7 +4667,6 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* ─── Form fields in dark mode ─── */
 [data-theme="dark"] .field input,
 [data-theme="dark"] .field textarea,
 [data-theme="dark"] .field select {
@@ -4852,9 +4675,6 @@ body {
   color: var(--text-primary);
 }
 
-/* ─── Notes & Signature areas ─── */
-
-/* ─── Dashboard Dark Mode ─── */
 [data-theme="dark"] .dash-section {
   background: var(--bg-card);
   border-color: var(--border);
@@ -4868,10 +4688,6 @@ body {
   border-color: var(--border);
 }
 
-/* ══════════════════════════════════════════════
-   DASHBOARD STYLES
-══════════════════════════════════════════════ */
-
 .dashboard {
   display: flex;
   flex-direction: column;
@@ -4879,7 +4695,6 @@ body {
   margin: 8px 8px;
 }
 
-/* ─── Título ─── */
 .dash-title-row {
   display: flex;
   align-items: baseline;
@@ -4901,9 +4716,6 @@ body {
   color: var(--text-muted);
 }
 
-/* ─── Cards Principais ─── */
-
-/* ─── Seções ─── */
 .dash-section {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -4945,7 +4757,6 @@ body {
   color: var(--blue-accent);
 }
 
-/* ─── Progress Bar Grande ─── */
 .dash-progress-bar-lg {
   height: 12px;
   background: var(--bg-elevated);
@@ -4969,14 +4780,12 @@ body {
   color: var(--text-secondary);
 }
 
-/* ─── Grid 2 colunas ─── */
 .dash-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-/* ─── Donut Chart ─── */
 .dash-donut-wrap {
   display: flex;
   justify-content: center;
@@ -5042,7 +4851,6 @@ body {
   flex-shrink: 0;
 }
 
-/* ─── Items Summary ─── */
 .dash-items-summary {
   display: flex;
   flex-direction: column;
@@ -5103,7 +4911,6 @@ body {
   font-weight: 600;
 }
 
-/* ─── Type Distribution Bars ─── */
 .dash-type-bars {
   display: flex;
   flex-direction: column;
@@ -5157,7 +4964,6 @@ body {
   text-align: right;
 }
 
-/* ─── Ranking ─── */
 .dash-ranking {
   display: flex;
   flex-direction: column;
@@ -5227,7 +5033,6 @@ body {
   text-align: right;
 }
 
-/* ─── Recent Finalized ─── */
 .dash-recent {
   display: flex;
   flex-direction: column;
@@ -5282,7 +5087,6 @@ body {
   border: 1px solid rgba(46, 125, 50, 0.2);
 }
 
-/* ─── Empty ─── */
 .dash-empty {
   text-align: center;
   padding: 48px 20px;
@@ -5296,7 +5100,6 @@ body {
   line-height: 1.5;
 }
 
-/* ─── Search Styles ─── */
 .search-container {
   display: flex;
   align-items: center;
@@ -5358,11 +5161,6 @@ body {
   animation: slideInRight 0.3s ease-out;
 }
 
-/* ──────────────────────────────────────────────
-   RESPONSIVIDADE MOBILE
-────────────────────────────────────────────── */
-
-/* ─── Tablets e telas médias (≤768px) ─── */
 @media (max-width: 768px) {
   .home-list {
     gap: 10px;
@@ -5404,9 +5202,7 @@ body {
   }
 }
 
-/* ─── Mobile (≤520px) ─── */
 @media (max-width: 520px) {
-  /* Grid de fichas: coluna única no celular */
   .home-list {
     grid-template-columns: 1fr;
     gap: 10px;
@@ -5414,7 +5210,6 @@ body {
     padding-bottom: 100px;
   }
 
-  /* Cabeçalho da lista: título em cima, filtros embaixo */
   .home-list-header {
     flex-direction: column !important;
     align-items: flex-start !important;
@@ -5432,7 +5227,6 @@ body {
     font-size: 12px;
   }
 
-  /* Header e stats */
   .home-header {
     padding: 14px 12px 10px;
   }
@@ -5472,7 +5266,6 @@ body {
     letter-spacing: 0.3px;
   }
 
-  /* Toggle de visualização (Abas) */
   .home-view-toggle {
     margin: 12px 14px 0;
     padding: 3px;
@@ -5493,7 +5286,6 @@ body {
     white-space: nowrap;
   }
 
-  /* Cards de fichas */
   .ficha-card {
     padding: 12px;
   }
@@ -5506,7 +5298,6 @@ body {
     font-size: 11px;
   }
 
-  /* User bar */
   .user-bar {
     padding: 8px 12px !important;
   }
@@ -5525,7 +5316,6 @@ body {
     font-size: 13px;
   }
 
-  /* FAB */
   .fab {
     width: 52px;
     height: 52px;
@@ -5538,13 +5328,10 @@ body {
     padding: 12px;
   }
 
-  /* Banco de fotos */
   .photo-bank-grid {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
-
-  /* Dashboard Mobile */
 
   .dash-grid-2 {
     grid-template-columns: 1fr;
@@ -5577,7 +5364,6 @@ body {
   }
 }
 
-/* ─── Mobile muito pequeno (≤360px) ─── */
 @media (max-width: 360px) {
   .home-list {
     padding: 8px;
@@ -5627,10 +5413,6 @@ body {
   }
 }
 
-/* ──────────────────────────────────────────────
-   ADMIN TABLE
-────────────────────────────────────────────── */
-
 .admin-table-wrap {
   max-height: 60vh;
   overflow-y: auto;
@@ -5642,7 +5424,6 @@ body {
   backdrop-filter: blur(10px);
 }
 
-/* cabeçalho fixo */
 .admin-table thead th {
   position: sticky;
   top: 0;
@@ -5685,7 +5466,6 @@ body {
   background: rgba(26, 75, 80, 0.04);
 }
 
-/* scrollbar */
 .admin-table-wrap::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -5700,10 +5480,6 @@ body {
   background: rgba(120, 120, 120, 0.8);
 }
 
-/* ──────────────────────────────────────────────
-   ROLE BADGES
-────────────────────────────────────────────── */
-
 .role-badge {
   display: inline-flex;
   align-items: center;
@@ -5716,20 +5492,6 @@ body {
   letter-spacing: 0.6px;
   border: 1px solid transparent;
 }
-
-/* ADMIN */
-
-/* ENGENHARIA */
-
-/* PROJETOS */
-
-/* PRODUCAO */
-
-/* DEFAULT */
-
-/* ──────────────────────────────────────────────
-   STATUS BADGES
-────────────────────────────────────────────── */
 
 .status-badge {
   display: inline-flex;
@@ -5754,10 +5516,6 @@ body {
   color: #dc2626;
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
-
-/* ──────────────────────────────────────────────
-   EDIT BUTTON
-────────────────────────────────────────────── */
 
 .btn-edit-user {
   border: none;
@@ -5786,10 +5544,6 @@ body {
   transform: scale(0.96);
 }
 
-/* ──────────────────────────────────────────────
-   DARK MODE
-────────────────────────────────────────────── */
-
 [data-theme="dark"] .admin-table-wrap {
   background: rgba(20, 20, 20, 0.7);
   border-color: rgba(255, 255, 255, 0.06);
@@ -5806,10 +5560,6 @@ body {
 [data-theme="dark"] .admin-table tbody tr:hover {
   background: rgba(45, 124, 132, 0.08);
 }
-
-/* ──────────────────────────────────────────────
-   USER STATUS SWITCH
-────────────────────────────────────────────── */
 
 .switch-toggle {
   display: flex;
@@ -5907,7 +5657,6 @@ body {
     transform: translateY(0);
   }
 }
-/* telas muito pequenas */
 @media (max-width: 400px) {
   .welcome-screen {
     gap: 18px;
@@ -6102,23 +5851,16 @@ svg {
   border-color: var(--blue-light);
 }
 
-/* COLEÇÕES */
-
-/* ──────────────────────────────────────────────
-   COLEÇÕES
-────────────────────────────────────────────── */
-
 .colecoes-grid {
   display: grid;
   padding: 16px;
-  grid-template-columns: repeat(3, 1fr); /* 3 colunas fixas */
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   width: 100%;
   box-sizing: border-box;
-  align-content: start; /* cards não esticam verticalmente */
+  align-content: start;
 }
 
-/* ── Data de criação ── */
 .colecao-card-date {
   display: flex;
   align-items: center;
@@ -6126,7 +5868,7 @@ svg {
   font-size: 10px;
   font-weight: 600;
   color: var(--text-muted);
-  margin-top: auto; /* empurra pro fundo do card */
+  margin-top: auto;
   padding-top: 8px;
   border-top: 1px solid var(--border);
 }
@@ -6147,7 +5889,6 @@ svg {
   overflow: hidden;
 }
 
-/* Barra colorida lateral igual ao ficha-card */
 .colecao-card::before {
   content: "";
   position: absolute;
@@ -6169,7 +5910,6 @@ svg {
   transform: scale(0.99);
 }
 
-/* Cabeçalho do card */
 .colecao-card-top {
   display: flex;
   align-items: flex-start;
@@ -6210,7 +5950,6 @@ svg {
   margin-top: 3px;
 }
 
-/* Badge com contagem de fichas */
 .colecao-card-badge {
   display: inline-flex;
   align-items: center;
@@ -6225,7 +5964,6 @@ svg {
   flex-shrink: 0;
 }
 
-/* Preview de fichas dentro do card */
 .colecao-preview {
   display: flex;
   flex-direction: column;
@@ -6311,7 +6049,6 @@ svg {
   padding: 2px;
 }
 
-/* Card vazio (sem fichas ainda) */
 .colecao-card-empty {
   display: flex;
   align-items: center;
@@ -6324,14 +6061,9 @@ svg {
   color: var(--text-muted);
 }
 
-/* Dark mode */
 [data-theme="dark"] .colecao-card {
   background: var(--bg-card);
 }
-
-/* ──────────────────────────────────────────────
-   BREADCRUMB
-────────────────────────────────────────────── */
 
 .colecao-breadcrumb {
   display: flex;
@@ -6381,7 +6113,6 @@ svg {
   text-overflow: ellipsis;
 }
 
-/* ── BREADCRUMB ─────────────────────────────────── */
 .pastas-breadcrumb {
   display: flex;
   align-items: center;
@@ -6431,7 +6162,6 @@ svg {
   background: var(--hover-bg, rgba(255, 255, 255, 0.05));
 }
 
-/* ── SEÇÕES ─────────────────────────────────────── */
 .pastas-secao {
   margin-bottom: 20px;
 }
@@ -6446,7 +6176,6 @@ svg {
   padding-left: 4px;
 }
 
-/* ── GRID DE PASTAS ─────────────────────────────── */
 .pastas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -6491,7 +6220,6 @@ svg {
   color: var(--text-secondary, #9aa4b2);
 }
 
-/* ── LISTA DE ARQUIVOS ──────────────────────────── */
 .pastas-arquivos-lista {
   background: var(--card-bg, rgba(255, 255, 255, 0.03));
   border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
@@ -6546,7 +6274,6 @@ svg {
   padding: 4px 6px;
 }
 
-/* ── ÍCONES DE ARQUIVO (versão inline) ──────────── */
 .icone--pdf {
   color: #ef4444;
   border-radius: 5px;
@@ -6564,9 +6291,6 @@ svg {
   border-radius: 5px;
 }
 
-/* ──────────────────────────────────────────────
-   RESPONSIVO
-────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .colecoes-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -6618,7 +6342,6 @@ svg {
   }
 }
 
-/* ── Overlay ── */
 .new-ficha-overlay {
   position: fixed;
   inset: 0;
@@ -6626,7 +6349,7 @@ svg {
   backdrop-filter: blur(4px);
   z-index: 200;
   display: flex;
-  align-items: flex-end; /* sobe do bottom como sheet */
+  align-items: flex-end;
   justify-content: center;
   padding: 16px;
 }
@@ -6647,7 +6370,6 @@ svg {
   }
 }
 
-/* ── Header ── */
 .new-ficha-menu-header {
   display: flex;
   justify-content: space-between;
@@ -6675,14 +6397,12 @@ svg {
   flex-shrink: 0;
 }
 
-/* ── Lista de opções ── */
 .new-ficha-options {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* ── Botão de opção ── */
 .new-ficha-opt-btn {
   display: flex;
   align-items: center;
@@ -6709,7 +6429,6 @@ svg {
   border-color: var(--primary, #6366f1);
 }
 
-/* ── Ícone colorido ── */
 .new-ficha-opt-icon {
   width: 44px;
   height: 44px;
@@ -6738,7 +6457,7 @@ svg {
 .sessoes-grupos-list {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* 🔄 mais respiro entre os grupos */
+  gap: 10px;
 }
 
 .sessao-grupo {
@@ -6785,7 +6504,6 @@ svg {
   font-weight: 600;
 }
 
-/* 🔄 Área de scroll maior + itens espaçados, sem bordas coladas */
 .sessoes-trabalho-list--scroll {
   max-height: 480px;
   overflow-y: auto;
@@ -6795,7 +6513,6 @@ svg {
   gap: 8px;
 }
 
-/* 🔄 Cada item agora tem seu próprio "cartão" separado, sem colar */
 .sessao-trabalho-item {
   border: 1px solid var(--border-color-light, #ececec);
   border-radius: 10px;
@@ -6804,7 +6521,7 @@ svg {
 }
 
 .sessao-trabalho-item + .sessao-trabalho-item {
-  margin-top: 0; /* já resolvido pelo gap do flex */
+  margin-top: 0;
 }
 
 .sessao-trabalho-info {
@@ -6820,7 +6537,6 @@ svg {
   font-size: 14px;
 }
 
-/* 🔹 novo bloco discreto no canto inferior direito */
 .sessao-meta-corner {
   position: absolute;
   bottom: 6px;
@@ -6924,9 +6640,6 @@ svg {
   padding: 12px 0;
 }
 
-/* ══════════════════════════════════════
-   BOTÃO SESSÃO DE TRABALHO
-   ══════════════════════════════════════ */
 .sessao-trabalho-container {
   display: flex;
   align-items: center;
@@ -6940,12 +6653,9 @@ svg {
   background: var(--bg-elevated);
 }
 
-/* ══════════════════════════════════════
-   BOTÃO SESSÃO DE TRABALHO — FLOATING
-   ══════════════════════════════════════ */
 .sessao-trabalho-float {
   position: fixed;
-  bottom: 90px; /* acima da tab-bar, ajuste se precisar */
+  bottom: 90px;
   right: 20px;
   z-index: 999;
   display: flex;
@@ -7064,7 +6774,6 @@ svg {
   font-size: 16px;
 }
 
-/* ── Texto ── */
 .new-ficha-opt-info {
   display: flex;
   flex-direction: column;
@@ -7245,7 +6954,6 @@ svg {
   }
 }
 
-/* ── TOPO ─────────────────────────────────────── */
 .colecao-arquivos {
   padding: 20px;
   animation: fadeIn 0.3s ease;
@@ -7262,7 +6970,6 @@ svg {
   }
 }
 
-/* ── TOPO ─────────────────────────────────────── */
 .arq-topo {
   display: flex;
   justify-content: space-between;
@@ -7295,7 +7002,6 @@ svg {
   border-color: var(--accent, #2563eb);
 }
 
-/* ── ERRO / VAZIO ─────────────────────────────── */
 .arq-erro {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
@@ -7328,7 +7034,6 @@ svg {
   }
 }
 
-/* ── TABELA ───────────────────────────────────── */
 .arq-tabela {
   width: 100%;
   border-collapse: collapse;
@@ -7353,7 +7058,6 @@ svg {
   border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
 }
 
-/* Coluna "Arquivo" ocupa mais espaço */
 .arq-tabela th:nth-child(1),
 .arq-tabela td:nth-child(1) {
   width: 100%;
@@ -7375,9 +7079,8 @@ svg {
   background: var(--hover-row, rgba(255, 255, 255, 0.03));
 }
 
-/* ── NOME DO ARQUIVO (GRID: ícone fixo + nome flex) ── */
 .arq-nome {
-  padding: 0 !important; /* remove padding da célula pra grid ocupar tudo */
+  padding: 0 !important;
 }
 
 .arq-nome-grid {
@@ -7389,13 +7092,13 @@ svg {
 }
 
 .arq-icone-wrap {
-  justify-self: start; /* ícone sempre à esquerda */
+  justify-self: start;
 }
 
 .arq-nome-text {
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0; /* 🆕 permite o 1fr encolher/espalhar direito */
+  min-width: 0;
   text-align: center;
   display: block;
 }
@@ -7428,7 +7131,6 @@ svg {
   color: #3b82f6;
 }
 
-/* ── PASTA ────────────────────────────────────── */
 .arq-pasta {
   color: var(--text-secondary, #9aa4b2);
   font-size: 13px;
@@ -7437,11 +7139,10 @@ svg {
   white-space: nowrap;
 }
 
-/* ── AÇÕES ────────────────────────────────────── */
 .arq-acoes {
-  display: table-cell; /*  volta a ser célula normal de tabela */
-  text-align: left; /*  botões à esquerda (embaixo do título) */
-  vertical-align: middle; /*  alinha no centro da linha */
+  display: table-cell;
+  text-align: left;
+  vertical-align: middle;
   white-space: nowrap;
   padding: 14px 16px !important;
 }
@@ -7452,7 +7153,7 @@ svg {
   justify-content: center;
   line-height: 1;
   padding: 6px 8px;
-  vertical-align: middle; /*  alinha o botão em si no meio */
+  vertical-align: middle;
 }
 
 .arq-acoes .btn-ghost + .btn-ghost {
@@ -7464,9 +7165,6 @@ svg {
   cursor: not-allowed;
 }
 
-/* ══════════════════════════════════════════════
-   RESPONSIVO: tabela vira CARDS no mobile
-   ═══════════════════════════════════════════════ */
 @media (max-width: 885px) {
   .colecao-arquivos {
     padding: 12px;
@@ -7482,7 +7180,7 @@ svg {
   }
 
   .arq-tabela thead {
-    display: none; /* esconde cabeçalho */
+    display: none;
   }
 
   .arq-tabela tbody tr {
@@ -7508,7 +7206,6 @@ svg {
     padding-top: 12px;
   }
 
-  /* Label antes do valor em cada linha do card */
   .arq-tabela td::before {
     content: attr(data-label);
     font-size: 11px;
@@ -7540,20 +7237,15 @@ svg {
   .arq-pasta {
     max-width: none;
   }
-  /* Restaura as linhas internas de TODOS os cards */
   .arq-tabela tbody tr td {
     border-bottom: 1px solid var(--border-light, rgba(255, 255, 255, 0.05));
   }
 
-  /* Só a última linha (Ações) fica sem borda */
   .arq-tabela tbody tr td:last-child {
     border-bottom: none;
   }
 }
 
-/* ═══════════════════════════════════════════
-   BOTÃO "INICIAR VERIFICAÇÃO" (checklist)
-   ═══════════════════════════════════════════ */
 .verificacao-botao-container {
   margin: 12px 0;
   padding: 12px;
@@ -7596,9 +7288,6 @@ svg {
   font-size: 12px;
 }
 
-/* ═══════════════════════════════════════════
-   MODAL DE VERIFICAÇÃO POR ETAPA
-   ═══════════════════════════════════════════ */
 .verificacao-modal {
   width: min(760px, 95vw);
   max-height: 88vh;
@@ -7641,7 +7330,6 @@ svg {
   gap: 10px;
 }
 
-/* Linha padrão */
 .verificacao-row {
   display: flex;
   align-items: center;
@@ -7656,19 +7344,16 @@ svg {
     border-color 0.15s;
 }
 
-/* Item já marcado */
 .verificacao-row--ok {
   background: rgba(34, 197, 94, 0.08);
   border-color: rgba(34, 197, 94, 0.4);
 }
 
-/* Próximo item a marcar (destaque) */
 .verificacao-row--next {
   border-color: var(--accent, #2563eb);
   box-shadow: 0 0 0 1px var(--accent, #2563eb) inset;
 }
 
-/* Item travado (fora da ordem) */
 .verificacao-row--locked {
   opacity: 0.55;
 }
@@ -7751,7 +7436,6 @@ svg {
   color: #fff;
 }
 
-/* ── Rodapé ── */
 .verificacao-modal-footer {
   padding: 14px 24px;
   border-top: 1px solid var(--border-color, #2a2a2c);
@@ -7804,7 +7488,6 @@ svg {
   cursor: not-allowed;
 }
 
-/* ── Responsivo ── */
 @media (max-width: 560px) {
   .verificacao-row {
     flex-wrap: wrap;
@@ -7837,7 +7520,6 @@ svg {
   font-weight: 500;
 }
 
-/* 🆕 Item com erro (destaque vermelho) */
 .verificacao-row--erro {
   background: rgba(220, 38, 38, 0.08);
   border-color: var(--red, #dc2626) !important;
@@ -7849,7 +7531,6 @@ svg {
   color: #fff;
 }
 
-/* ─── MÉTRICAS AVANÇADAS ─── */
 .dash-kpis {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -7890,7 +7571,6 @@ svg {
   color: var(--text-secondary);
 }
 
-/* Tempo */
 .dash-tempo-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -7911,7 +7591,6 @@ svg {
   color: var(--text-secondary);
 }
 
-/* Aprovação */
 .dash-aprovacao-rate {
   text-align: center;
   margin-bottom: 12px;
@@ -7943,7 +7622,6 @@ svg {
   display: inline-block;
 }
 
-/* Produção mensal */
 .dash-prod-chart {
   display: flex;
   align-items: flex-end;
@@ -7977,7 +7655,6 @@ svg {
   color: var(--text-secondary);
 }
 
-/* Colaboradores */
 .dash-colab-list {
   display: flex;
   flex-direction: column;
@@ -8037,7 +7714,6 @@ svg {
   white-space: nowrap;
 }
 
-/* Clientes */
 .dash-cliente-list {
   display: flex;
   flex-direction: column;
@@ -8072,7 +7748,6 @@ svg {
   font-weight: 700;
 }
 
-/* ─── MÉTRICAS ─── */
 .dash-kpis {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -8250,7 +7925,6 @@ svg {
   background: var(--green);
 }
 
-/* Seções do InfoCard com ícone */
 .section-icon {
   display: flex;
   align-items: center;
@@ -8262,7 +7936,6 @@ svg {
   color: var(--text-secondary);
 }
 
-/* Canvas de assinatura */
 .signature-canvas-wrap {
   position: relative;
   border: 2px dashed var(--border);
@@ -8296,7 +7969,6 @@ svg {
   pointer-events: none;
 }
 
-/* Preview da assinatura salva */
 .signature-preview {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -8342,9 +8014,6 @@ svg {
   transform: scale(0.96);
 }
 
-/* ══════════════════════════════════════
-   MODAL — força acima de TUDO
-   ══════════════════════════════════════ */
 .modal-backdrop {
   position: fixed !important;
   top: 0 !important;
@@ -8460,7 +8129,7 @@ svg {
 .qr-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999; /* acima de TUDO */
+  z-index: 9999;
   background: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
@@ -8468,14 +8137,11 @@ svg {
   padding: 16px;
 }
 
-/* ══════════════════════════════════════
-   BOTÃO FLUTUANTE DO QR — acima da tab-bar
-   ══════════════════════════════════════ */
 .qr-code-float {
   position: fixed;
   right: 16px;
-  bottom: 84px; /* acima da tab-bar */
-  z-index: 1000; /* acima da tab-bar, abaixo do modal */
+  bottom: 84px;
+  z-index: 1000;
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -8517,7 +8183,7 @@ svg {
 }
 
 .qr-modal {
-  position: static !important; /* remove qualquer position herdado */
+  position: static !important;
   top: auto !important;
   left: auto !important;
   right: auto !important;
@@ -8607,7 +8273,7 @@ svg {
 }
 
 .pdf-badge--disabled:hover {
-  opacity: 0.35; /* evita hover effect quando desabilitado */
+  opacity: 0.35;
 }
 
 .qr-modal {
@@ -8692,15 +8358,10 @@ svg {
   white-space: nowrap;
 }
 
-/* ══════════════════════════════════════
-   QR CODE — botão flutuante + modal + seletor de PDF
-   ══════════════════════════════════════ */
-
-/* ── Botão flutuante (abre o modal) ── */
 .qr-code-float {
   position: fixed;
-  left: 16px; /* troque por "right: 16px" se quiser à direita */
-  bottom: 91px; /* acima da tab-bar */
+  left: 16px;
+  bottom: 91px;
   z-index: 1000;
   width: 52px;
   height: 52px;
@@ -8722,7 +8383,6 @@ svg {
   transform: scale(0.96);
 }
 
-/* ── Fundo escuro (acima de TUDO) ── */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -8735,15 +8395,14 @@ svg {
   overflow-y: auto;
 }
 
-/* ── Caixa do modal ── */
 .qr-modal {
   width: 100%;
-  max-width: 520px; /* era 400px */
+  max-width: 520px;
   margin: 0 auto;
   background: var(--bg-card, #fff);
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-  max-height: 92vh; /* era 90vh */
+  max-height: 92vh;
   overflow-y: auto;
 }
 
@@ -8781,7 +8440,7 @@ svg {
 }
 
 .qr-modal .modal-body.qr-modal-body {
-  padding: 24px; /* era 20px */
+  padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8791,11 +8450,11 @@ svg {
 
 .qr-code-preview {
   width: 100%;
-  max-width: 260px; /* era 240px */
+  max-width: 260px;
 }
 
 .qr-pdf-section {
-  padding: 18px 24px 24px; /* era 16px 20px 20px */
+  padding: 18px 24px 24px;
   border-top: 1px solid var(--border, #e5e7eb);
 }
 
@@ -8822,7 +8481,6 @@ svg {
   width: 100%;
 }
 
-/* ── Rodapé (Fechar / Baixar) ── */
 .qr-modal .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -8831,8 +8489,6 @@ svg {
   border-top: 1px solid var(--border, #e5e7eb);
 }
 
-/* ── Seção "PDF do QR Code" (dentro do modal) ── */
-/* ── Seção "PDF do QR Code" (dentro do modal) ── */
 .qr-pdf-section {
   padding: 20px 24px 24px;
   border-top: 1px solid var(--border, #e5e7eb);
@@ -8849,7 +8505,6 @@ svg {
   margin: 0 0 14px;
 }
 
-/* ── Lista de PDFs da ficha ── */
 .ficha-pdf-lista {
   display: flex;
   flex-direction: column;
@@ -8920,7 +8575,6 @@ svg {
   white-space: nowrap;
 }
 
-/* ── Lista de PDFs da ficha ── */
 .ficha-pdf-lista {
   display: flex;
   flex-direction: column;
@@ -8991,11 +8645,10 @@ svg {
   white-space: nowrap;
 }
 
-/* Tab bar da ficha */
 .tab-bar {
   display: flex;
-  gap: 8px; /* era 6px */
-  padding: 12px 16px; /* era 10px 16px */
+  gap: 8px;
+  padding: 12px 16px;
   overflow-x: auto;
   background: var(--bg-card);
   border-top: 1px solid var(--border);
@@ -9004,17 +8657,17 @@ svg {
 .tab-item {
   display: flex;
   align-items: center;
-  gap: 8px; /* era 6px */
-  padding: 11px 18px; /* era 9px 14px */
+  gap: 8px;
+  padding: 11px 18px;
   border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 13px; /* era 12px */
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  flex-shrink: 0; /* 🆕 não deixa espremer */
+  flex-shrink: 0;
   transition: all 0.15s ease;
 }
 
@@ -9081,7 +8734,6 @@ svg {
   }
 }
 
-/* Rascunhos */
 .secao-rascunhos {
   margin-bottom: 2rem;
   padding-bottom: 2rem;
@@ -9106,10 +8758,6 @@ svg {
   gap: 0.5rem;
 }
 
-/* ══════════════════════════════════════
-   RASCUNHOS
-   ══════════════════════════════════════ */
-
 .secao-rascunhos {
   margin-bottom: 2rem;
   padding-bottom: 2rem;
@@ -9121,11 +8769,10 @@ svg {
   background: rgba(245, 158, 11, 0.05);
 }
 
-/* Badge "Rascunho" no card — ícone + texto com espaço */
 .rascunho-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px; /* ← espaço entre ícone e texto */
+  gap: 6px;
   background: rgba(245, 158, 11, 0.15);
   color: #b45309;
   padding: 4px 10px;
@@ -9147,7 +8794,6 @@ svg {
   gap: 0.5rem;
 }
 
-/* ── Seção de arquivos do rascunho (dentro do modal) ── */
 .rascunho-arquivos-section {
   background: rgba(245, 158, 11, 0.05);
   border: 1px solid rgba(245, 158, 11, 0.2);
@@ -9159,7 +8805,7 @@ svg {
 .rascunho-arquivos-title {
   display: flex;
   align-items: center;
-  gap: 8px; /* ← espaço entre o FileText e o texto */
+  gap: 8px;
   margin: 0 0 0.75rem 0;
   font-size: 0.9rem;
   color: #f59e0b;
@@ -9200,7 +8846,7 @@ svg {
 .rascunho-arquivo-item {
   display: flex;
   align-items: center;
-  gap: 8px; /* ← espaço entre ícone, nome e olho */
+  gap: 8px;
   padding: 0.5rem 0.75rem;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -9247,7 +8893,6 @@ svg {
   opacity: 1;
 }
 
-/* Botão "Adicionar" no breadcrumb */
 .pastas-upload-btn {
   margin-left: auto;
   display: inline-flex;
@@ -9269,7 +8914,6 @@ svg {
   transform: translateY(-1px);
 }
 
-/* Select de pasta no modal */
 .upload-pasta-select {
   width: 100%;
   padding: 10px 12px;
@@ -9296,7 +8940,6 @@ svg {
   border-radius: 6px;
 }
 
-/* Lista de arquivos selecionados */
 .upload-arquivos-lista {
   display: flex;
   flex-direction: column;
@@ -9350,7 +8993,6 @@ svg {
   text-decoration: underline;
 }
 
-/* ── NOTIFICAÇÕES ── */
 .notif-container {
   position: relative;
 }
@@ -9566,7 +9208,6 @@ svg {
   box-shadow: 0 0 0 2px #2563eb;
 }
 
-/* linha vertical conectando os pontos */
 .timeline-item:not(:last-child)::before {
   content: "";
   position: absolute;
@@ -9604,11 +9245,6 @@ svg {
   font-size: 13px;
 }
 
-/* ═══════════════════════════════════════════════
-   DASHBOARD DE CAPACIDADE DA EQUIPE
-   ═══════════════════════════════════════════════ */
-
-/* ─── Card base ─── */
 .dash-card {
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border, #e2e8f0);
@@ -9639,7 +9275,6 @@ svg {
   line-height: 1.5;
 }
 
-/* ─── Resumo / KPIs ─── */
 .capacity-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -9677,7 +9312,6 @@ svg {
   color: #dc2626;
 }
 
-/* ─── Tabela de cargos ─── */
 .capacity-table-wrap {
   overflow-x: auto;
   border: 1px solid var(--border, #e2e8f0);
@@ -9735,7 +9369,6 @@ svg {
   font-weight: 600;
 }
 
-/* Role badge (caso não tenha um global) */
 .role-badge {
   display: inline-flex;
   align-items: center;
@@ -9766,7 +9399,6 @@ svg {
   color: #7e22ce;
 }
 
-/* Badges de status */
 .capacity-badge {
   display: inline-flex;
   align-items: center;
@@ -9787,7 +9419,6 @@ svg {
   color: #059669;
 }
 
-/* ─── ETA por ficha ─── */
 .capacity-eta-section {
   margin-top: 8px;
 }
@@ -9879,7 +9510,6 @@ svg {
   font-weight: 600;
 }
 
-/* ─── Responsivo ─── */
 @media (max-width: 768px) {
   .dash-card {
     padding: 14px;
@@ -10060,7 +9690,6 @@ svg {
   border-bottom: none;
 }
 
-/* ── Modal Completar Manual ── */
 .completar-manual-modal {
   max-width: 1100px;
   width: 95vw;
@@ -10078,7 +9707,6 @@ svg {
   gap: 1rem;
 }
 
-/* Campos cliente/descrição */
 .completar-manual-campos {
   display: flex;
   flex-direction: column;
@@ -10116,7 +9744,6 @@ svg {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* Tabela */
 .completar-manual-tabela-section {
   display: flex;
   flex-direction: column;
@@ -10226,7 +9853,6 @@ svg {
   color: var(--text-muted, #6b7280);
 }
 
-/* Botão outline pequeno */
 .btn-sm {
   padding: 0.35rem 0.75rem;
   font-size: 0.8rem;
@@ -10250,14 +9876,12 @@ svg {
   color: var(--blue-accent, #2563eb);
 }
 
-/* Responsivo */
 @media (max-width: 768px) {
   .completar-manual-row {
     grid-template-columns: 1fr;
   }
 }
 
-/* ── Indicador de passos ── */
 .iflow-progress {
   display: flex;
   justify-content: center;
@@ -10303,7 +9927,6 @@ svg {
   font-weight: 600;
 }
 
-/* ── Bloco de erro ── */
 .iflow-erro {
   display: flex;
   align-items: flex-start;
@@ -10321,7 +9944,6 @@ svg {
   margin-top: 1px;
 }
 
-/* ── Lista de documentos (passo 1) ── */
 .iflow-docs {
   display: flex;
   flex-direction: column;
@@ -10347,7 +9969,6 @@ svg {
   color: var(--text-primary, #111);
 }
 
-/* ── Revisão (passo 3) ── */
 .iflow-revisao {
   display: flex;
   flex-direction: column;
@@ -10364,11 +9985,6 @@ svg {
   font-size: 0.875rem;
 }
 
-/* ─────────────────────────────────────────────
-   CORREÇÕES: arquivo com nome longo + tamanho
-   ───────────────────────────────────────────── */
-
-/* 1. Modal maior e com altura confortável */
 .importar-colecao-modal {
   max-width: 1100px !important;
   width: 95vw !important;
@@ -10384,13 +10000,12 @@ svg {
   font-size: 0.95rem;
 }
 
-/* 2. Campo de arquivo selecionado — NÃO deixa o nome estourar */
 .importar-campo-arquivo {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  min-width: 0;          /* ← permite encolher */
-  flex: 1;               /* ← ocupa o espaço restante da linha */
+  min-width: 0;
+  flex: 1;
   max-width: 100%;
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--border-color, #e5e7eb);
@@ -10403,7 +10018,6 @@ svg {
   flex-shrink: 0;
 }
 
-/* 3. Nome do arquivo: trunca com "..." */
 .importar-campo-nome {
   flex: 1;
   min-width: 0;
@@ -10414,7 +10028,6 @@ svg {
   color: var(--text-primary, #111);
 }
 
-/* 4. Botão de remover SEMPRE visível */
 .importar-campo-remover {
   flex-shrink: 0;
   display: flex;
@@ -10434,7 +10047,6 @@ svg {
   background: #fee2e2;
 }
 
-/* 5. Botão "Selecionar arquivo" não encolhe nem quebra */
 .importar-campo-selecionar {
   flex-shrink: 0;
   white-space: nowrap;
@@ -10455,7 +10067,6 @@ svg {
   background: #dbeafe;
 }
 
-/* 6. Linha do documento (passo 1) — label fixo + campo flexível */
 .iflow-doc-row {
   display: flex;
   align-items: center;
@@ -10481,12 +10092,9 @@ svg {
 }
 
 .iflow-doc-info span {
-  /* permite quebra de linha em rótulos longos como
-     "Projetos e Documentos do Cliente" */
   white-space: normal;
 }
 
-/* 7. Documentos do rascunho (CompletarColecaoModal) — mesmo problema */
 .rascunho-arquivo-item {
   display: flex;
   align-items: center;
@@ -10520,7 +10128,6 @@ svg {
   flex-shrink: 0;
 }
 
-/* 8. Aumentar o corpo da tabela manual (inputs maiores) */
 .completar-manual-tabela input,
 .completar-manual-tabela select {
   font-size: 0.875rem !important;
@@ -10536,7 +10143,6 @@ svg {
   padding: 0.45rem 0.45rem !important;
 }
 
-/* 9. Campos cliente/descrição maiores */
 .completar-manual-campo label {
   font-size: 0.875rem !important;
 }
@@ -10546,7 +10152,6 @@ svg {
   padding: 0.6rem 0.8rem !important;
 }
 
-/* 10. Responsivo: empilha rótulo e campo no celular */
 @media (max-width: 640px) {
   .iflow-doc-row {
     flex-direction: column;
@@ -10560,13 +10165,12 @@ svg {
   }
 }
 
-/* 6. Linha do documento (passo 1) — QUEBRA em vez de estourar */
 .iflow-doc-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem 1rem;
-  flex-wrap: wrap;        /* ← a chave: quebra pra linha de baixo */
+  flex-wrap: wrap;
   padding: 0.9rem;
   border: 1px solid var(--border-color, #e5e7eb);
   border-radius: 10px;
@@ -10574,7 +10178,7 @@ svg {
 }
 
 .iflow-doc-info {
-  flex: 1 1 200px;        /* rótulo ocupa o espaço e pode encolher */
+  flex: 1 1 200px;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -10589,10 +10193,9 @@ svg {
 }
 
 .iflow-doc-info span {
-  white-space: normal;    /* rótulo longo pode quebrar linha */
+  white-space: normal;
 }
 
-/* 5. Botão "Selecionar arquivo" — fica limitado à largura da linha */
 .importar-campo-selecionar {
   flex-shrink: 1;
   max-width: 100%;
@@ -10735,10 +10338,56 @@ svg {
   color: var(--text-muted, #6b7280);
 }
 
-/* spinner */
 .spin {
   animation: spin 1s linear infinite;
 }
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+.sessao-trabalho-multi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-elevated);
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sessao-trabalho-select {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  max-width: 120px;
+}
+
+.sessao-trabalho-info-float {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 10px;
+  background: var(--bg-elevated);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.sessao-trabalho-etapa-float {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+}
+
+.sessao-trabalho-tempo-float {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
 }

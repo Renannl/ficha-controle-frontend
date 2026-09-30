@@ -4,9 +4,6 @@ import { getProgressPct } from "../utils/fichaStatus";
 const HORAS_DIA = 8;
 const DIAS_SEMANA = 5;
 
-/**
- * Gera uma chave para agrupar fichas similares no cálculo de média histórica.
- */
 function getFichaTipoKey(ficha) {
   const op = String(ficha.operacao ?? "");
   const tipoPainel = ficha.tipoPainel || ficha.dados?.tipoPainel;
@@ -18,9 +15,6 @@ function getFichaTipoKey(ficha) {
   return `op-${op}`;
 }
 
-/**
- * Fallbacks quando não existe histórico nem tempo previsto.
- */
 const FALLBACK_HORAS = {
   "op-10": 40,
   "op-50": 16,
@@ -29,9 +23,6 @@ const FALLBACK_HORAS = {
   default: 24,
 };
 
-/**
- * Calcula a média histórica de horas gastas em fichas finalizadas do mesmo tipo.
- */
 function calcularMediaHistorica(fichas, fichaAtual) {
   const chave = getFichaTipoKey(fichaAtual);
 
@@ -69,9 +60,6 @@ function calcularSegundosPorSessoes(sessions) {
   }, 0);
 }
 
-/**
- * Retorna o cargo atualizado do operador, considerando mudanças feitas no AdminPanel.
- */
 function getCargoAtual(operador, usuarios) {
   if (!operador) return null;
 
@@ -85,15 +73,12 @@ function getCargoAtual(operador, usuarios) {
 }
 
 function getHorasEstimadasFicha(ficha, fichas) {
-  // 1. Tempo previsto manual (em horas)
   const previsto = Number(ficha.tempoPrevisto);
   if (!isNaN(previsto) && previsto > 0) return previsto;
 
-  // 2. Média histórica
   const media = calcularMediaHistorica(fichas, ficha);
   if (media !== null) return media;
 
-  // 3. Fallback por operação
   const chave = getFichaTipoKey(ficha);
   return FALLBACK_HORAS[chave] ?? FALLBACK_HORAS.default;
 }
@@ -104,14 +89,12 @@ export function useCapacityMetrics(fichas, usuarios) {
       (u) => u.active !== false && u.role && u.role !== "admin",
     );
 
-    // Agrupa funcionários por cargo
     const funcionariosPorCargo = {};
     usuariosAtivos.forEach((u) => {
       if (!funcionariosPorCargo[u.role]) funcionariosPorCargo[u.role] = [];
       funcionariosPorCargo[u.role].push(u);
     });
 
-    // Inicializa métricas por cargo
     const demandaPorCargo = {};
     Object.keys(funcionariosPorCargo).forEach((cargo) => {
       demandaPorCargo[cargo] = {
@@ -142,7 +125,6 @@ export function useCapacityMetrics(fichas, usuarios) {
         if (cargo) cargosNaFicha.add(cargo);
       });
 
-      // Se não tem operador alocado, não distribui demanda
       if (operadores.length === 0 || cargosNaFicha.size === 0) {
         etaPorFicha.push({
           ficha,
@@ -153,7 +135,6 @@ export function useCapacityMetrics(fichas, usuarios) {
         return;
       }
 
-      // Distribui horas restantes igualmente entre os cargos presentes
       const horasPorCargo = horasRestantes / cargosNaFicha.size;
       let etaDias = 0;
 
@@ -182,7 +163,6 @@ export function useCapacityMetrics(fichas, usuarios) {
       });
     });
 
-    // Monta métricas finais por cargo
     const metricasCargo = Object.values(demandaPorCargo).map((d) => {
       const capacidadeSemanal = d.nFuncionarios * HORAS_DIA * DIAS_SEMANA;
       const folga = capacidadeSemanal - d.horasDemanda;
@@ -204,7 +184,6 @@ export function useCapacityMetrics(fichas, usuarios) {
       };
     });
 
-    // Ordena: gargalos primeiro, depois maior ETA
     metricasCargo.sort((a, b) => {
       if (a.gargalo && !b.gargalo) return -1;
       if (!a.gargalo && b.gargalo) return 1;

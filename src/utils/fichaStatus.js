@@ -8,8 +8,6 @@ function isItemRespondido(item) {
   return ["ok", "na", "erro"].includes(r);
 }
 
-// Retorna a lista COMPLETA de itens esperada para a ficha,
-// de acordo com o template (não o que está salvo em ficha.items).
 function getTemplateItems(ficha) {
   const op = String(ficha.operacao ?? "");
   const tipoPainel = ficha.tipoPainel || ficha.dados?.tipoPainel;
@@ -17,12 +15,10 @@ function getTemplateItems(ficha) {
   if (!tipoPainel) return null;
 
   if (op === "50") {
-    // TAF: usa apenas os itens de verificação
     return getPainelVerificacaoItems(tipoPainel);
   }
 
   if (op === "10") {
-    // Produção (painel): usa apenas a sequência de montagem
     return getPainelChecklistItems(tipoPainel, { incluirVerificacao: false });
   }
 
@@ -46,7 +42,6 @@ function getChecklistProgress(ficha) {
     return { total, done };
   }
 
-  // Fallback para operações sem template de painel (FOTO, QUA...)
   const total = itensSalvos.length;
   const done = itensSalvos.filter(isItemRespondido).length;
   return { total, done };
