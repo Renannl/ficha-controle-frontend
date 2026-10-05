@@ -13,14 +13,12 @@ export function hasPermission(user, key) {
   return user?.permissoes?.includes(key);
 }
 
+export const canLiberarEtapas = (user) =>
+  user?.permissoes?.includes("liberar_etapas");
+
 export const canManageUsers = (user) => hasPermission(user, "alocar_usuario");
-
 export const canApprove = (user) => hasPermission(user, "aprovar");
-
 export const canEditFicha = (user) => hasPermission(user, "editar_ficha");
-
 export const canDeleteFicha = (user) => hasPermission(user, "excluir_ficha");
-
 export const canGeneratePdf = (user) => hasPermission(user, "gerar_pdf");
-
 export const canViewQrCode = (user) => hasPermission(user, "ver_qrcode");

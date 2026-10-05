@@ -11,26 +11,15 @@ import {
   UserPlus,
   Trash,
   QrCode,
+  Unlock,
 } from "lucide-react";
 
 import { FaFilePdf } from "react-icons/fa";
 
 export const EXECUTION_PERMISSIONS = [
-  {
-    key: "taf",
-    label: "TAF",
-    icon: Zap,
-  },
-  {
-    key: "controle",
-    label: "Controle",
-    icon: ClipboardList,
-  },
-  {
-    key: "fotos",
-    label: "Fotos",
-    icon: Camera,
-  },
+  { key: "taf", label: "TAF", icon: Zap },
+  { key: "controle", label: "Controle", icon: ClipboardList },
+  { key: "fotos", label: "Fotos", icon: Camera },
 ];
 
 export const MANAGEMENT_PERMISSIONS = [
@@ -44,4 +33,5 @@ export const MANAGEMENT_PERMISSIONS = [
   { key: "gerar_pdf", label: "Gerar PDF", icon: FaFilePdf },
   { key: "ver_qrcode", label: "Ver QR Code", icon: QrCode },
   { key: "ver_historico", label: "Ver histórico/timeline", icon: Clock3 },
+  { key: "liberar_etapas", label: "Liberar etapas do painel", icon: Unlock }, // 🆕
 ];

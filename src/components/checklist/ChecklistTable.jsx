@@ -67,8 +67,8 @@ export default function ChecklistTable({
     const etapa = template?.etapa;
     if (!etapa) return true;
 
-    // 🆕 Admin + etapa liberada pode editar independente do cargo
-    if (user?.role === "admin" && etapasLiberadas.includes(etapa)) return true;
+    if (user?.role === "admin") return true;
+    if (etapasLiberadas.includes(etapa)) return true;
 
     return podeTrabalharNaEtapa(user, etapa);
   }
@@ -78,7 +78,42 @@ export default function ChecklistTable({
     const template = checklistItems.find((c) => c.id === item.id);
     const etapa = template?.etapa;
 
-    if (isPainel && etapa && etapasLiberadas.includes(etapa)) return true;
+    // 🆕 Etapa liberada pelo admin: libera em sequência DENTRO da etapa
+    if (isPainel && etapa && etapasLiberadas.includes(etapa)) {
+      let primeiroDaEtapa = true;
+      for (let i = index - 1; i >= 0; i--) {
+        const t = checklistItems.find((c) => c.id === ficha.items[i].id);
+        if (t?.etapa === etapa) {
+          primeiroDaEtapa = false;
+          break;
+        }
+      }
+      if (primeiroDaEtapa) return true;
+
+      let anterior = null;
+      let anteriorTemplate = null;
+      for (let i = index - 1; i >= 0; i--) {
+        const t = checklistItems.find((c) => c.id === ficha.items[i].id);
+        if (t?.etapa === etapa) {
+          anterior = ficha.items[i];
+          anteriorTemplate = t;
+          break;
+        }
+      }
+
+      if (!anterior) return false;
+
+      if (String(anteriorTemplate?.id ?? "").includes("-ver-")) {
+        const idxVer = parseInt(
+          String(anteriorTemplate.id).split("-").pop(),
+          10,
+        );
+        const valorVer = ficha.verificacoes?.[anteriorTemplate.etapa]?.[idxVer];
+        return valorVer === "ok" || valorVer === "na";
+      }
+
+      return anterior.resultado === "ok" || anterior.resultado === "na";
+    }
 
     if (index === 0) return true;
 

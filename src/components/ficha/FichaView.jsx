@@ -31,6 +31,7 @@ import { getEtapaAtual, podeTrabalharNaEtapa } from "../../utils/etapas";
 import QrCodeModal from "../qrcode/QrCodeModal";
 import { montarUrlPublica } from "../qrcode/QrCodeDocumentacao";
 import TimelineFicha from "../sessions/TimelineFicha";
+import { canLiberarEtapas } from "../../utils/hasPermission";
 import {
   Zap,
   ListChecks,
@@ -75,6 +76,7 @@ export default function FichaView({
   const { registrarMarcacao } = useChecklistLog(ficha?.dbId);
   const isAdmin = user?.role === "admin";
   const etapasLiberadas = ficha?.etapasLiberadas || [];
+  const podeLiberarEtapas = canLiberarEtapas(user);
   const sessaoIniciada = sessoes.some(
     (s) => !s.fim && s.usuario === user?.username,
   );
@@ -155,8 +157,15 @@ export default function FichaView({
     }));
   }
 
+  function podeEditarEtapa(etapaName) {
+    if (!etapaName) return false;
+    if (isAdmin) return true;
+    if (etapasLiberadas.includes(etapaName)) return true;
+    return podeTrabalharNaEtapa(user, etapaName);
+  }
+
   function toggleEtapaLiberada(etapa) {
-    if (!isAdmin || !isPainel) return;
+    if (!podeLiberarEtapas || !isPainel) return;
     const novas = etapasLiberadas.includes(etapa)
       ? etapasLiberadas.filter((e) => e !== etapa)
       : [...etapasLiberadas, etapa];
@@ -239,7 +248,7 @@ export default function FichaView({
     if (!item) return;
 
     const template = activeChecklistItems.find((c) => c.id === item.id);
-    if (isPainel && !podeTrabalharNaEtapa(user, template?.etapa)) return;
+    if (isPainel && !podeEditarEtapa(template?.etapa)) return;
 
     const novosItems = [...(ficha.items ?? [])];
     novosItems[itemIndex] = { ...novosItems[itemIndex], [key]: value };
@@ -330,7 +339,7 @@ export default function FichaView({
     if (!item) return;
 
     const template = activeChecklistItems.find((c) => c.id === item.id);
-    if (isPainel && !podeTrabalharNaEtapa(user, template?.etapa)) return;
+    if (isPainel && !podeEditarEtapa(template?.etapa)) return;
 
     const novosItems = [...(ficha.items ?? [])];
     novosItems[itemIndex] = { ...novosItems[itemIndex], resultado, observacao };
@@ -362,7 +371,7 @@ export default function FichaView({
     if (!item) return;
 
     const template = activeChecklistItems.find((c) => c.id === item.id);
-    if (isPainel && !podeTrabalharNaEtapa(user, template?.etapa)) return;
+    if (isPainel && !podeEditarEtapa(template?.etapa)) return;
 
     const novoValor = item.sessionMarks?.[sessionIndex] === value ? "" : value;
 
@@ -785,7 +794,7 @@ export default function FichaView({
 
           {activeTab === "checklist" && (
             <>
-              {isPainel && isAdmin && (
+              {isPainel && podeLiberarEtapas && (
                 <div className="etapas-liberadas-card">
                   <div className="etapas-liberadas-title">
                     Liberar etapas para edição simultânea

@@ -25,15 +25,29 @@ export default function BotaoSessaoTrabalho({
   const sessaoAtiva =
     sessoes?.find((s) => !s.fim && s.usuario === user?.username) || null;
 
-  // 🆕 Etapas que o admin pode escolher
+  // 📍 Determina qual etapa o usuário pode trabalhar
+  const etapaPermitida = useMemo(() => {
+    if (isAdmin) return etapa;
+
+    if (podeTrabalharNaEtapa(user, etapa)) return etapa;
+
+    for (const etapaLiberada of etapasLiberadas) {
+      if (podeTrabalharNaEtapa(user, etapaLiberada)) {
+        return etapaLiberada;
+      }
+    }
+
+    return etapa;
+  }, [isAdmin, user, etapa, etapasLiberadas]);
+
   const etapasDisponiveis = useMemo(() => {
     if (isAdmin && etapasLiberadas?.length > 0) return etapasLiberadas;
-    return etapa ? [etapa] : [];
-  }, [isAdmin, etapasLiberadas, etapa]);
+    return etapaPermitida ? [etapaPermitida] : [];
+  }, [isAdmin, etapasLiberadas, etapaPermitida]);
 
   const [selectedEtapa, setSelectedEtapa] = useState(() => {
-    if (etapasDisponiveis.includes(etapa)) return etapa;
-    return etapasDisponiveis[0] || etapa;
+    if (etapasDisponiveis.includes(etapaPermitida)) return etapaPermitida;
+    return etapasDisponiveis[0] || etapaPermitida;
   });
 
   useEffect(() => {
@@ -48,23 +62,30 @@ export default function BotaoSessaoTrabalho({
     return () => clearInterval(interval);
   }, [sessaoAtiva]);
 
-  // 🆕 Sincroniza selectedEtapa se as opções mudarem
   useEffect(() => {
     if (etapasDisponiveis.includes(selectedEtapa)) return;
-    setSelectedEtapa(etapasDisponiveis[0] || etapa);
-  }, [etapasDisponiveis, selectedEtapa, etapa]);
+    setSelectedEtapa(etapasDisponiveis[0] || etapaPermitida);
+  }, [etapasDisponiveis, selectedEtapa, etapaPermitida]);
 
-  const podeIniciar = isAdmin
-    ? etapasLiberadas.length > 0 || podeTrabalharNaEtapa(user, etapa)
-    : podeTrabalharNaEtapa(user, etapa);
+  function podeIniciarEtapa(etapaName) {
+    if (!etapaName) return false;
+    if (isAdmin) return true;
+    if (podeTrabalharNaEtapa(user, etapaName)) return true;
+    if (etapasLiberadas.includes(etapaName)) return true;
+    return false;
+  }
 
+  const etapaParaIniciar =
+    sessaoAtiva?.etapa || selectedEtapa || etapaPermitida;
+  const podeIniciar = podeIniciarEtapa(etapaParaIniciar);
   const bloqueado = !podeIniciar && !sessaoAtiva;
 
   const handlePlay = async () => {
     if (bloqueado) return;
     try {
       setLoading(true);
-      const etapaIniciar = sessaoAtiva?.etapa || selectedEtapa || etapa;
+      const etapaIniciar =
+        sessaoAtiva?.etapa || selectedEtapa || etapaPermitida;
 
       const res = await authFetch(`/fichas/${fichaId}/sessao/iniciar`, {
         method: "POST",
@@ -125,49 +146,51 @@ export default function BotaoSessaoTrabalho({
             </span>
           </div>
         </>
+      ) : isAdmin && etapasLiberadas.length > 0 ? (
+        <div className="sessao-trabalho-multi">
+          <select
+            className="sessao-trabalho-select"
+            value={selectedEtapa}
+            onChange={(e) => setSelectedEtapa(e.target.value)}
+          >
+            {etapasDisponiveis.map((e) => (
+              <option key={e} value={e}>
+                {getEtapaLabel(e)}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={handlePlay}
+            disabled={loading || bloqueado}
+            className="sessao-trabalho-btn iniciar"
+            title={
+              bloqueado
+                ? "Seu cargo não permite iniciar nesta etapa"
+                : "Iniciar sessão"
+            }
+          >
+            <Play size={20} />
+          </button>
+        </div>
       ) : (
-        <>
-          {isAdmin && etapasLiberadas.length > 0 ? (
-            <div className="sessao-trabalho-multi">
-              <select
-                className="sessao-trabalho-select"
-                value={selectedEtapa}
-                onChange={(e) => setSelectedEtapa(e.target.value)}
-              >
-                {etapasDisponiveis.map((e) => (
-                  <option key={e} value={e}>
-                    {getEtapaLabel(e)}
-                  </option>
-                ))}
-              </select>
-              <button
-                onClick={handlePlay}
-                disabled={loading || bloqueado}
-                className="sessao-trabalho-btn iniciar"
-                title={
-                  bloqueado
-                    ? "Seu cargo não permite iniciar nesta etapa"
-                    : "Iniciar sessão"
-                }
-              >
-                <Play size={20} />
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={handlePlay}
-              disabled={loading || bloqueado}
-              className="sessao-trabalho-btn iniciar"
-              title={
-                bloqueado
-                  ? "Seu cargo não permite iniciar nesta etapa"
-                  : "Iniciar sessão"
-              }
-            >
-              <Play size={20} />
-            </button>
-          )}
-        </>
+        /* 🆕 Funcionário também usa a pílula (mesmo estilo do admin) */
+        <div className="sessao-trabalho-multi">
+          <span className="sessao-trabalho-etapa-float">
+            {getEtapaLabel(etapaParaIniciar)}
+          </span>
+          <button
+            onClick={handlePlay}
+            disabled={loading || bloqueado}
+            className="sessao-trabalho-btn iniciar"
+            title={
+              bloqueado
+                ? "Seu cargo não permite iniciar nesta etapa"
+                : `Iniciar ${getEtapaLabel(etapaParaIniciar)}`
+            }
+          >
+            <Play size={20} />
+          </button>
+        </div>
       )}
     </div>
   );
