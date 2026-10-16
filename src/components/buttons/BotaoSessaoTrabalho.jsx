@@ -22,6 +22,8 @@ export default function BotaoSessaoTrabalho({
 }) {
   const [tempoAtual, setTempoAtual] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [showPauseModal, setShowPauseModal] = useState(false);
+  const [motivoPausa, setMotivoPausa] = useState("");
 
   const sessaoAtiva =
     sessoes?.find((s) => !s.fim && s.usuario === user?.username) || null;
@@ -113,13 +115,16 @@ export default function BotaoSessaoTrabalho({
     }
   };
 
-  const handlePause = async () => {
+  const handlePause = async (motivo = "") => {
     try {
       setLoading(true);
       const res = await authFetch(`/fichas/${fichaId}/sessao/pausar`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessaoId: sessaoAtiva?.id }),
+        body: JSON.stringify({
+          sessaoId: sessaoAtiva?.id,
+          motivoPausa: motivo,
+        }),
       });
       if (!res) return;
       const data = await res.json();
@@ -133,73 +138,202 @@ export default function BotaoSessaoTrabalho({
     }
   };
 
+  const confirmPause = async () => {
+    const motivo = motivoPausa.trim();
+    setShowPauseModal(false);
+    setMotivoPausa("");
+    await handlePause(motivo);
+  };
+
   const rodando = !!sessaoAtiva;
 
   return (
-    <div className="sessao-trabalho-float">
-      {rodando ? (
-        <>
-          <button
-            onClick={handlePause}
-            disabled={loading}
-            className="sessao-trabalho-btn pausar"
-          >
-            <Pause size={20} />
-          </button>
-          <div className="sessao-trabalho-info-float">
-            <span className="sessao-trabalho-etapa-float">
-              {getEtapaLabel(sessaoAtiva.etapa)}
-            </span>
-            <span className="sessao-trabalho-tempo-float">
-              {formatarTempo(tempoAtual)}
-            </span>
+    <>
+      <div className="sessao-trabalho-float">
+        {rodando ? (
+          <>
+            <button
+              onClick={() => setShowPauseModal(true)}
+              disabled={loading}
+              className="sessao-trabalho-btn pausar"
+              title="Pausar sessão"
+            >
+              <Pause size={20} />
+            </button>
+            <div className="sessao-trabalho-info-float">
+              <span className="sessao-trabalho-etapa-float">
+                {getEtapaLabel(sessaoAtiva.etapa)}
+              </span>
+              <span className="sessao-trabalho-tempo-float">
+                {formatarTempo(tempoAtual)}
+              </span>
+            </div>
+          </>
+        ) : isAdmin && !isTaf && etapasLiberadas.length > 0 ? (
+          <div className="sessao-trabalho-multi">
+            <select
+              className="sessao-trabalho-select"
+              value={selectedEtapa}
+              onChange={(e) => setSelectedEtapa(e.target.value)}
+            >
+              {etapasDisponiveis.map((e) => (
+                <option key={e} value={e}>
+                  {getEtapaLabel(e)}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handlePlay}
+              disabled={loading || bloqueado}
+              className="sessao-trabalho-btn iniciar"
+              title={
+                bloqueado
+                  ? "Seu cargo não permite iniciar nesta etapa"
+                  : "Iniciar sessão"
+              }
+            >
+              <Play size={20} />
+            </button>
           </div>
-        </>
-      ) : isAdmin && !isTaf && etapasLiberadas.length > 0 ? (
-        <div className="sessao-trabalho-multi">
-          <select
-            className="sessao-trabalho-select"
-            value={selectedEtapa}
-            onChange={(e) => setSelectedEtapa(e.target.value)}
+        ) : (
+          <div className="sessao-trabalho-multi">
+            <span className="sessao-trabalho-etapa-float">
+              {getEtapaLabel(etapaParaIniciar)}
+            </span>
+            <button
+              onClick={handlePlay}
+              disabled={loading || bloqueado}
+              className="sessao-trabalho-btn iniciar"
+              title={
+                bloqueado
+                  ? "Seu cargo não permite iniciar nesta etapa"
+                  : `Iniciar ${getEtapaLabel(etapaParaIniciar)}`
+              }
+            >
+              <Play size={20} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {showPauseModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "16px",
+          }}
+          onClick={() => setShowPauseModal(false)}
+        >
+          <div
+            style={{
+              background: "var(--bg-elevated, #fff)",
+              borderRadius: "12px",
+              width: "100%",
+              maxWidth: "420px",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+              overflow: "hidden",
+            }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {etapasDisponiveis.map((e) => (
-              <option key={e} value={e}>
-                {getEtapaLabel(e)}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={handlePlay}
-            disabled={loading || bloqueado}
-            className="sessao-trabalho-btn iniciar"
-            title={
-              bloqueado
-                ? "Seu cargo não permite iniciar nesta etapa"
-                : "Iniciar sessão"
-            }
-          >
-            <Play size={20} />
-          </button>
-        </div>
-      ) : (
-        <div className="sessao-trabalho-multi">
-          <span className="sessao-trabalho-etapa-float">
-            {getEtapaLabel(etapaParaIniciar)}
-          </span>
-          <button
-            onClick={handlePlay}
-            disabled={loading || bloqueado}
-            className="sessao-trabalho-btn iniciar"
-            title={
-              bloqueado
-                ? "Seu cargo não permite iniciar nesta etapa"
-                : `Iniciar ${getEtapaLabel(etapaParaIniciar)}`
-            }
-          >
-            <Play size={20} />
-          </button>
+            <div
+              style={{
+                padding: "16px 20px",
+                borderBottom: "1px solid var(--border)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600 }}>
+                Pausar sessão
+              </h3>
+              <button
+                onClick={() => setShowPauseModal(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--text-secondary)",
+                  fontSize: "22px",
+                  cursor: "pointer",
+                  lineHeight: 1,
+                  padding: "4px",
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ padding: "20px" }}>
+              <p style={{ fontSize: "14px", marginBottom: "12px" }}>
+                Deseja registrar o motivo da pausa? <strong>(opcional)</strong>
+              </p>
+              <textarea
+                value={motivoPausa}
+                onChange={(e) => setMotivoPausa(e.target.value)}
+                placeholder="Descreva o motivo da pausa..."
+                rows={3}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  border: "1px solid var(--border)",
+                  background: "var(--bg-base, #f8fafc)",
+                  color: "var(--text-primary)",
+                  fontSize: "14px",
+                  resize: "vertical",
+                  fontFamily: "inherit",
+                }}
+              />
+            </div>
+
+            <div
+              style={{
+                padding: "16px 20px",
+                borderTop: "1px solid var(--border)",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "10px",
+              }}
+            >
+              <button
+                onClick={() => setShowPauseModal(false)}
+                style={{
+                  padding: "8px 16px",
+                  background: "var(--bg-base, #f1f5f9)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  color: "var(--text-primary)",
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmPause}
+                disabled={loading}
+                style={{
+                  padding: "8px 16px",
+                  background: "var(--red, #ef4444)",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  opacity: loading ? 0.6 : 1,
+                }}
+              >
+                {loading ? "Pausando..." : "Pausar"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

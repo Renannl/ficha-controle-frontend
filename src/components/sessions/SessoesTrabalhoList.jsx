@@ -216,6 +216,19 @@ export default function SessoesTrabalhoList({
                               editado manualmente
                             </span>
                           )}
+
+                          {s.motivo_pausa && (
+                            <div
+                              style={{
+                                marginTop: 4,
+                                fontSize: 12,
+                                color: "var(--text-secondary)",
+                                fontStyle: "italic",
+                              }}
+                            >
+                              <strong>Motivo da pausa:</strong> {s.motivo_pausa}
+                            </div>
+                          )}
                         </div>
 
                         {isAdmin && (
