@@ -912,6 +912,7 @@ export default function FichaView({
           etapa={etapaAtual}
           etapasLiberadas={etapasLiberadas}
           isAdmin={isAdmin}
+          isTaf={isTaf}
         />
       </div>
 

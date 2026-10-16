@@ -20,6 +20,7 @@ export const ROLES = {
   montagem: "Montagem Mecânica",
   cabeamento: "Cabeamento",
   barramento: "Barramento",
+  taf: "Técnico TAF",
 };
 
 export const ROLE_PRESETS = {
@@ -35,6 +36,8 @@ export const ROLE_PRESETS = {
   ],
 
   barramento: ["ver_enviadas", "rejeitar", "editar_ficha"],
+
+  taf: ["taf"],
 
   admin: [
     "taf",

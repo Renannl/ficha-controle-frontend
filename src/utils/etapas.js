@@ -4,6 +4,7 @@ export const ETAPA_LABELS = {
   montagem: "Montagem",
   barramento: "Barramento",
   cabeamento: "Cabeamento",
+  taf: "TAF",
 };
 
 export const CARGO_LABELS = {
@@ -11,6 +12,7 @@ export const CARGO_LABELS = {
   barramento: "Barramento",
   cabeamento: "Cabeamento",
   admin: "Administrador",
+  taf: "Técnico TAF",
 };
 
 export function getEtapaDoCargo(role) {

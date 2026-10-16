@@ -78,7 +78,15 @@ export default function ChecklistTable({
     const template = checklistItems.find((c) => c.id === item.id);
     const etapa = template?.etapa;
 
-    // 🆕 Etapa liberada pelo admin: libera em sequência DENTRO da etapa
+    if (isTaf) {
+      if (index === 0) return true;
+
+      const anterior = ficha.items[index - 1];
+      if (!anterior) return false;
+
+      return anterior.resultado === "ok" || anterior.resultado === "na";
+    }
+
     if (isPainel && etapa && etapasLiberadas.includes(etapa)) {
       let primeiroDaEtapa = true;
       for (let i = index - 1; i >= 0; i--) {

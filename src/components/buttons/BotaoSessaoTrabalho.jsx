@@ -18,6 +18,7 @@ export default function BotaoSessaoTrabalho({
   etapa,
   etapasLiberadas = [],
   isAdmin = false,
+  isTaf = false,
 }) {
   const [tempoAtual, setTempoAtual] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -25,10 +26,14 @@ export default function BotaoSessaoTrabalho({
   const sessaoAtiva =
     sessoes?.find((s) => !s.fim && s.usuario === user?.username) || null;
 
-  // 📍 Determina qual etapa o usuário pode trabalhar
-  const etapaPermitida = useMemo(() => {
-    if (isAdmin) return etapa;
+  const podeExecutarTaf = useMemo(() => {
+    if (!isTaf) return false;
+    return user?.role === "taf" || user?.role === "admin";
+  }, [isTaf, user]);
 
+  const etapaPermitida = useMemo(() => {
+    if (isTaf) return "taf";
+    if (isAdmin) return etapa;
     if (podeTrabalharNaEtapa(user, etapa)) return etapa;
 
     for (const etapaLiberada of etapasLiberadas) {
@@ -38,12 +43,13 @@ export default function BotaoSessaoTrabalho({
     }
 
     return etapa;
-  }, [isAdmin, user, etapa, etapasLiberadas]);
+  }, [isTaf, isAdmin, user, etapa, etapasLiberadas]);
 
   const etapasDisponiveis = useMemo(() => {
+    if (isTaf) return podeExecutarTaf ? ["taf"] : [];
     if (isAdmin && etapasLiberadas?.length > 0) return etapasLiberadas;
     return etapaPermitida ? [etapaPermitida] : [];
-  }, [isAdmin, etapasLiberadas, etapaPermitida]);
+  }, [isTaf, podeExecutarTaf, isAdmin, etapasLiberadas, etapaPermitida]);
 
   const [selectedEtapa, setSelectedEtapa] = useState(() => {
     if (etapasDisponiveis.includes(etapaPermitida)) return etapaPermitida;
@@ -69,14 +75,16 @@ export default function BotaoSessaoTrabalho({
 
   function podeIniciarEtapa(etapaName) {
     if (!etapaName) return false;
+    if (isTaf) return podeExecutarTaf;
     if (isAdmin) return true;
     if (podeTrabalharNaEtapa(user, etapaName)) return true;
     if (etapasLiberadas.includes(etapaName)) return true;
     return false;
   }
 
-  const etapaParaIniciar =
-    sessaoAtiva?.etapa || selectedEtapa || etapaPermitida;
+  const etapaParaIniciar = isTaf
+    ? "taf"
+    : sessaoAtiva?.etapa || selectedEtapa || etapaPermitida;
   const podeIniciar = podeIniciarEtapa(etapaParaIniciar);
   const bloqueado = !podeIniciar && !sessaoAtiva;
 
@@ -84,8 +92,9 @@ export default function BotaoSessaoTrabalho({
     if (bloqueado) return;
     try {
       setLoading(true);
-      const etapaIniciar =
-        sessaoAtiva?.etapa || selectedEtapa || etapaPermitida;
+      const etapaIniciar = isTaf
+        ? "taf"
+        : sessaoAtiva?.etapa || selectedEtapa || etapaPermitida;
 
       const res = await authFetch(`/fichas/${fichaId}/sessao/iniciar`, {
         method: "POST",
@@ -146,7 +155,7 @@ export default function BotaoSessaoTrabalho({
             </span>
           </div>
         </>
-      ) : isAdmin && etapasLiberadas.length > 0 ? (
+      ) : isAdmin && !isTaf && etapasLiberadas.length > 0 ? (
         <div className="sessao-trabalho-multi">
           <select
             className="sessao-trabalho-select"
@@ -173,7 +182,6 @@ export default function BotaoSessaoTrabalho({
           </button>
         </div>
       ) : (
-        /* 🆕 Funcionário também usa a pílula (mesmo estilo do admin) */
         <div className="sessao-trabalho-multi">
           <span className="sessao-trabalho-etapa-float">
             {getEtapaLabel(etapaParaIniciar)}
