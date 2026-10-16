@@ -580,6 +580,21 @@ export default function FichaView({
       };
     }
 
+    const temErroCritico = (fichaEfetiva.items || []).some(
+      (i) => String(i.resultado || "").toLowerCase() === "erro",
+    );
+
+    if (temErroCritico) {
+      setSuccessModal({
+        isOpen: true,
+        title: "Erro crítico pendente",
+        message:
+          "Não é possível finalizar: existem itens com erro crítico no checklist. Corrija antes de finalizar.",
+        type: "danger",
+      });
+      return;
+    }
+
     const faltando = getCamposFaltantes(fichaEfetiva);
     if (faltando.length > 0) {
       setSuccessModal({

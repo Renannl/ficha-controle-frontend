@@ -78,13 +78,16 @@ export default function ChecklistTable({
     const template = checklistItems.find((c) => c.id === item.id);
     const etapa = template?.etapa;
 
+    const resultadoConclusivo = (valor) =>
+      valor === "ok" || valor === "na" || valor === "erro";
+
     if (isTaf) {
       if (index === 0) return true;
 
       const anterior = ficha.items[index - 1];
       if (!anterior) return false;
 
-      return anterior.resultado === "ok" || anterior.resultado === "na";
+      return resultadoConclusivo(anterior.resultado);
     }
 
     if (isPainel && etapa && etapasLiberadas.includes(etapa)) {
@@ -120,7 +123,7 @@ export default function ChecklistTable({
         return valorVer === "ok" || valorVer === "na";
       }
 
-      return anterior.resultado === "ok" || anterior.resultado === "na";
+      return resultadoConclusivo(anterior.resultado);
     }
 
     if (index === 0) return true;
@@ -135,7 +138,7 @@ export default function ChecklistTable({
       return valorVer === "ok" || valorVer === "na";
     }
 
-    return anterior.resultado === "ok" || anterior.resultado === "na";
+    return resultadoConclusivo(anterior.resultado);
   }
 
   function handleResultado(index, value, observacao) {

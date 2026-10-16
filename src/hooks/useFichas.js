@@ -278,7 +278,24 @@ export function useFichas(currentUser) {
                 body: JSON.stringify(limparArquivos(fichaAtualizada)),
               },
             );
-            if (!res || !res.ok) throw new Error("Erro ao atualizar");
+
+            if (!res || !res.ok) {
+              const erro = await res
+                ?.json()
+                .catch(() => ({ error: "Erro ao atualizar" }));
+              console.error("[API] Erro ao atualizar ficha:", erro.error);
+
+              if (res?.status === 400) {
+                setFichas((prev) =>
+                  prev.map((f) =>
+                    f.dbId === fichaAtual.dbId ? fichaAtual : f,
+                  ),
+                );
+                alert(erro.error || "Erro ao salvar alterações.");
+              }
+
+              throw new Error(erro.error);
+            }
           } catch (err) {
             console.error("[API] Erro ao atualizar ficha:", err);
           } finally {
