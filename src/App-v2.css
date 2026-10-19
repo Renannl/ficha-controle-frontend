@@ -4032,6 +4032,82 @@ body {
   backdrop-filter: blur(4px);
 }
 
+.concluidas-card {
+  margin-top: 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.concluidas-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary, #f1f5f9);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease;
+}
+
+.concluidas-toggle:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.concluidas-toggle svg {
+  color: var(--text-muted, #94a3b8);
+  flex-shrink: 0;
+}
+
+.concluidas-count {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--blue-accent, #3b82f6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.concluidas-card .colecoes-grid {
+  padding: 0 20px 20px;
+  gap: 14px;
+}
+
+/* Ajuste nos cards dentro de "Concluídas" para ficarem um pouco mais discretos */
+.concluidas-card .colecao-card {
+  opacity: 0.92;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.concluidas-card .colecao-card:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* Linha divisória sutil quando a seção abre */
+.concluidas-card .colecoes-grid::before {
+  content: "";
+  display: block;
+  grid-column: 1 / -1;
+  height: 1px;
+  margin-bottom: 4px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .album-info {
   padding: 10px;
 }

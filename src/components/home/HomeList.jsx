@@ -1,5 +1,5 @@
-import { useState } from "react";
 import HomeFilters from "./HomeFilters";
+import { useState } from "react";
 import FichaCard from "./FichaCard";
 import {
   FolderOpen,
@@ -66,6 +66,7 @@ export default function HomeList({
 }) {
   const [expandedColecaoId, setExpandedColecaoId] = useState(null);
   const [rascunhoSelecionado, setRascunhoSelecionado] = useState(null);
+  const [concluidasAberto, setConcluidasAberto] = useState(false);
 
   const isAdmin = user?.role === "admin";
 
@@ -73,16 +74,161 @@ export default function HomeList({
     const LIMITE_PREVIEW = 3;
 
     const rascunhos = colecoes.filter((col) => col.status === "rascunho");
-    const completas = colecoes.filter((col) => col.status !== "rascunho");
+
+    const ativas = [];
+    const concluidas = [];
+    colecoes.forEach((col) => {
+      if (col.status === "rascunho") return;
+      const fichasDaCol = fichas.filter((f) => f.colecao_id === col.id);
+      if (getColecaoStatus(fichasDaCol) === "completa") {
+        concluidas.push(col);
+      } else {
+        ativas.push(col);
+      }
+    });
+
+    function renderColecaoCard(col) {
+      const fichasDaCol = fichas.filter((f) => f.colecao_id === col.id);
+      const isExpanded = expandedColecaoId === col.id;
+
+      const preview = isExpanded
+        ? fichasDaCol
+        : fichasDaCol.slice(0, LIMITE_PREVIEW);
+
+      const resto = fichasDaCol.length - LIMITE_PREVIEW;
+      const colecaoStatus = getColecaoStatus(fichasDaCol);
+
+      const temTrabalhoEmAndamento = fichasDaCol.some((f) => f.sessao_ativa);
+
+      const dataCriacao = col.created_at
+        ? new Date(col.created_at).toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : null;
+
+      return (
+        <div
+          key={col.id}
+          className={`colecao-card ${colecaoStatus !== "vazia" ? `status-${colecaoStatus}` : ""}`}
+          onClick={() => onOpenColecao(col)}
+        >
+          <div className="colecao-card-top">
+            <div className="colecao-card-icon">
+              <FolderOpen size={18} />
+            </div>
+            <div className="colecao-card-info">
+              <div className="colecao-card-title">
+                {col.cliente ?? "Sem nome"}
+                {temTrabalhoEmAndamento && (
+                  <span
+                    className="colecao-card-timer-badge"
+                    title={`Em andamento: ${fichasDaCol
+                      .filter((f) => f.sessao_ativa)
+                      .map((f) => f.sessao_ativa.usuario)
+                      .join(", ")}`}
+                  >
+                    ● em andamento
+                  </span>
+                )}
+              </div>
+              <div className="colecao-card-sub">
+                {col.descricao ?? "Sem descrição"}
+              </div>
+            </div>
+
+            <div className="colecao-card-actions">
+              <div
+                className="colecao-card-badge"
+                style={{
+                  color: getStatusColor(colecaoStatus),
+                  borderColor: getStatusColor(colecaoStatus),
+                }}
+              >
+                {fichasDaCol.length}{" "}
+                {fichasDaCol.length === 1 ? "ficha" : "fichas"}
+              </div>
+
+              {onDeleteColecao && (
+                <button
+                  className="colecao-card-delete-btn"
+                  title={
+                    fichasDaCol.length > 0
+                      ? "Não é possível excluir: coleção possui fichas"
+                      : "Excluir coleção"
+                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteColecao(e, col.id);
+                  }}
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="colecao-preview">
+            {fichasDaCol.length === 0 ? (
+              <div className="colecao-card-empty">
+                <Plus size={13} /> Nenhuma ficha ainda
+              </div>
+            ) : (
+              <>
+                {preview.map((f) => (
+                  <div key={f.dbId} className="preview-ficha">
+                    <span
+                      className="preview-ficha-dot"
+                      style={{
+                        background: getFichaStatusColor(getFichaStatus(f)),
+                      }}
+                    />
+                    {f.nomeEquipamento ?? f.tipo ?? "Ficha"}
+                  </div>
+                ))}
+                {resto > 0 && (
+                  <div
+                    className="preview-ficha-more"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedColecaoId(isExpanded ? null : col.id);
+                    }}
+                  >
+                    {isExpanded
+                      ? "ver menos"
+                      : `+${resto} ficha${resto > 1 ? "s" : ""}`}
+                    <ChevronDown
+                      size={12}
+                      style={{
+                        transform: isExpanded
+                          ? "rotate(180deg)"
+                          : "rotate(0deg)",
+                        transition: "transform 0.2s ease",
+                      }}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {dataCriacao && (
+            <div className="colecao-card-date">
+              <Calendar size={11} />
+              Criada em {dataCriacao}
+            </div>
+          )}
+        </div>
+      );
+    }
 
     return (
       <div className="home-list animate-scaleIn">
         {isAdmin && rascunhos.length > 0 && (
           <div className="secao-rascunhos">
             <div className="home-list-header">
-              <h2 className="home-list-title">
-                Rascunhos
-              </h2>
+              <h2 className="home-list-title">Rascunhos</h2>
             </div>
             <div className="colecoes-grid">
               {rascunhos.map((col) => {
@@ -160,7 +306,7 @@ export default function HomeList({
             {!showSearch && (
               <h2 className="home-list-title" style={{ marginBottom: 0 }}>
                 {rascunhos.length > 0
-                  ? "Coleções Completas"
+                  ? "Coleções em Andamento"
                   : "Coleções Recentes"}
               </h2>
             )}
@@ -190,152 +336,43 @@ export default function HomeList({
           </div>
         </div>
 
-        {completas.length === 0 ? (
+        {ativas.length === 0 ? (
           <div className="colecoes-empty">
-            <p>Nenhuma coleção encontrada.</p>
+            <p>Nenhuma coleção em andamento.</p>
             <small>Use o botão + para criar uma coleção para um cliente.</small>
           </div>
         ) : (
           <div className="colecoes-grid">
-            {completas.map((col) => {
-              const fichasDaCol = fichas.filter((f) => f.colecao_id === col.id);
-              const isExpanded = expandedColecaoId === col.id;
+            {ativas.map((col) => renderColecaoCard(col))}
+          </div>
+        )}
 
-              const preview = isExpanded
-                ? fichasDaCol
-                : fichasDaCol.slice(0, LIMITE_PREVIEW);
+        {concluidas.length > 0 && (
+          <div className="concluidas-card">
+            <button
+              type="button"
+              className="concluidas-toggle"
+              onClick={() => setConcluidasAberto((v) => !v)}
+              aria-expanded={concluidasAberto}
+            >
+              <ChevronDown
+                size={18}
+                style={{
+                  transform: concluidasAberto
+                    ? "rotate(180deg)"
+                    : "rotate(0deg)",
+                  transition: "transform 0.2s ease",
+                }}
+              />
+              <span>Concluídas</span>
+              <span className="concluidas-count">{concluidas.length}</span>
+            </button>
 
-              const resto = fichasDaCol.length - LIMITE_PREVIEW;
-              const colecaoStatus = getColecaoStatus(fichasDaCol);
-
-              const temTrabalhoEmAndamento = fichasDaCol.some(
-                (f) => f.sessao_ativa,
-              );
-
-              const dataCriacao = col.created_at
-                ? new Date(col.created_at).toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })
-                : null;
-
-              return (
-                <div
-                  key={col.id}
-                  className={`colecao-card ${colecaoStatus !== "vazia" ? `status-${colecaoStatus}` : ""}`}
-                  onClick={() => onOpenColecao(col)}
-                >
-                  <div className="colecao-card-top">
-                    <div className="colecao-card-icon">
-                      <FolderOpen size={18} />
-                    </div>
-                    <div className="colecao-card-info">
-                      <div className="colecao-card-title">
-                        {col.cliente ?? "Sem nome"}
-                        {temTrabalhoEmAndamento && (
-                          <span
-                            className="colecao-card-timer-badge"
-                            title={`Em andamento: ${fichasDaCol
-                              .filter((f) => f.sessao_ativa)
-                              .map((f) => f.sessao_ativa.usuario)
-                              .join(", ")}`}
-                          >
-                            ● em andamento
-                          </span>
-                        )}
-                      </div>
-                      <div className="colecao-card-sub">
-                        {col.descricao ?? "Sem descrição"}{" "}
-                      </div>
-                    </div>
-
-                    <div className="colecao-card-actions">
-                      <div
-                        className="colecao-card-badge"
-                        style={{
-                          color: getStatusColor(colecaoStatus),
-                          borderColor: getStatusColor(colecaoStatus),
-                        }}
-                      >
-                        {fichasDaCol.length}{" "}
-                        {fichasDaCol.length === 1 ? "ficha" : "fichas"}
-                      </div>
-
-                      {onDeleteColecao && (
-                        <button
-                          className="colecao-card-delete-btn"
-                          title={
-                            fichasDaCol.length > 0
-                              ? "Não é possível excluir: coleção possui fichas"
-                              : "Excluir coleção"
-                          }
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteColecao(e, col.id);
-                          }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="colecao-preview">
-                    {fichasDaCol.length === 0 ? (
-                      <div className="colecao-card-empty">
-                        <Plus size={13} /> Nenhuma ficha ainda
-                      </div>
-                    ) : (
-                      <>
-                        {preview.map((f) => (
-                          <div key={f.dbId} className="preview-ficha">
-                            <span
-                              className="preview-ficha-dot"
-                              style={{
-                                background: getFichaStatusColor(
-                                  getFichaStatus(f),
-                                ),
-                              }}
-                            />
-                            {f.nomeEquipamento ?? f.tipo ?? "Ficha"}
-                          </div>
-                        ))}
-                        {resto > 0 && (
-                          <div
-                            className="preview-ficha-more"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedColecaoId(isExpanded ? null : col.id);
-                            }}
-                          >
-                            {isExpanded
-                              ? "ver menos"
-                              : `+${resto} ficha${resto > 1 ? "s" : ""}`}
-                            <ChevronDown
-                              size={12}
-                              style={{
-                                transform: isExpanded
-                                  ? "rotate(180deg)"
-                                  : "rotate(0deg)",
-                                transition: "transform 0.2s ease",
-                              }}
-                            />
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-
-                  {dataCriacao && (
-                    <div className="colecao-card-date">
-                      <Calendar size={11} />
-                      Criada em {dataCriacao}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {concluidasAberto && (
+              <div className="colecoes-grid">
+                {concluidas.map((col) => renderColecaoCard(col))}
+              </div>
+            )}
           </div>
         )}
 
