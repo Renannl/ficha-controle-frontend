@@ -10,6 +10,7 @@ import {
   Trash2,
   ChevronDown,
   FileSpreadsheet,
+  CheckCircle2,
 } from "lucide-react";
 import { getFichaStatus } from "../../utils/fichaStatus";
 import { getColecaoStatus } from "../../utils/colecaoStatus";
@@ -364,6 +365,7 @@ export default function HomeList({
                   transition: "transform 0.2s ease",
                 }}
               />
+              <CheckCircle2 size={18} style={{ color: "#22c55e" }} />
               <span>Concluídas</span>
               <span className="concluidas-count">{concluidas.length}</span>
             </button>
