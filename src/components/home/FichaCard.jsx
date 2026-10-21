@@ -36,6 +36,10 @@ export default function FichaCard({
   const pct = getProgressPct(ficha);
   const operadores = ficha.operadores || [];
 
+  const podeExcluirFicha =
+    user?.username === "master" ||
+    user?.permissoes?.includes("excluir_ficha") === true;
+
   function getOperadorRole(op) {
     const doBanco = listaUsuarios?.find(
       (u) => u.id === op.id || u.username === op.username,
@@ -155,7 +159,7 @@ export default function FichaCard({
             )}
           </div>
         </div>
-        {canDeleteFicha(user) && (
+        {podeExcluirFicha && (
           <button
             className="delete-btn"
             onClick={(e) => onDelete(e, ficha.dbId)}

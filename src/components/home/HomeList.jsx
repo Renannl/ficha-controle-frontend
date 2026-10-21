@@ -70,6 +70,9 @@ export default function HomeList({
   const [concluidasAberto, setConcluidasAberto] = useState(false);
 
   const isAdmin = user?.role === "admin";
+  const podeExcluir =
+    user?.username === "master" ||
+    user?.permissoes?.includes("excluir_ficha") === true;
 
   if (mode === "colecoes") {
     const LIMITE_PREVIEW = 3;
@@ -151,7 +154,7 @@ export default function HomeList({
                 {fichasDaCol.length === 1 ? "ficha" : "fichas"}
               </div>
 
-              {onDeleteColecao && (
+              {onDeleteColecao && podeExcluir && (
                 <button
                   className="colecao-card-delete-btn"
                   title={
@@ -426,8 +429,8 @@ export default function HomeList({
             onToggleOperador={onToggleOperador}
             podeGerenciarOperadores={podeGerenciarOperadores}
             activeDropdownFichaId={activeDropdownFichaId}
-            disabledParaPdf={!fichaPodeSerSelecionada(ficha)}
             setActiveDropdownFichaId={setActiveDropdownFichaId}
+            disabledParaPdf={!fichaPodeSerSelecionada(ficha)}
           />
         ))
       )}

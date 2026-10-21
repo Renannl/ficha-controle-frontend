@@ -27,7 +27,6 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
 
   function editarUsuario(user) {
     setEditingUser(user);
-
     setNome(user.nome || "");
     setRole(user.role || "montagem");
     setPermissoes(user.permissoes || []);
@@ -54,11 +53,9 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
       });
 
       alert("Usuário atualizado");
-
       resetForm();
     } catch (err) {
       console.error(err);
-
       alert("Erro atualizar usuário");
     }
   }
@@ -82,7 +79,6 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
 
             <div className="admin-title-group">
               <h1 className="text-xl font-bold">Configurações do Sistema</h1>
-
               <p className="text-xs text-muted">Acessos e permissões</p>
             </div>
           </div>
@@ -115,7 +111,6 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
               <div className="card-icon">
                 <User size={18} />
               </div>
-
               <h3 className="text-md font-bold">Equipe Cadastrada</h3>
             </div>
 

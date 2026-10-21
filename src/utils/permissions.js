@@ -33,5 +33,5 @@ export const MANAGEMENT_PERMISSIONS = [
   { key: "gerar_pdf", label: "Gerar PDF", icon: FaFilePdf },
   { key: "ver_qrcode", label: "Ver QR Code", icon: QrCode },
   { key: "ver_historico", label: "Ver histórico/timeline", icon: Clock3 },
-  { key: "liberar_etapas", label: "Liberar etapas do painel", icon: Unlock }, // 🆕
+  { key: "liberar_etapas", label: "Liberar etapas do painel", icon: Unlock },
 ];
