@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://192.168.101.60:3001";
+const API_URL = import.meta.env.VITE_API_URL || "http://192.168.101.60:3002";
 
 const LIDER_USERNAME = "heveraldo.bispo";
-const SETORES_TODOS = ["barramento", "montagem", "cabeamento"];
+const SETORES_TODOS = ["barramento", "montagem", "cabeamento", "taf"];
 
 const INTERVALO_RECHECK = 15000;
 
@@ -11,6 +11,7 @@ const NOME_SETOR = {
   barramento: "Barramento",
   montagem: "Montagem (Estrutura)",
   cabeamento: "Cabeamento",
+  taf: "TAF",
 };
 
 function getRoleFromToken() {
@@ -48,11 +49,16 @@ export default function ModalAssinaturaObrigatoria() {
   const ehLider = usuario === LIDER_USERNAME;
 
   const [role, setRole] = useState(null);
-  const setoresParaAssinar = ehLider ? SETORES_TODOS : role ? [role] : [];
+  const setoresParaAssinar = ehLider
+    ? SETORES_TODOS
+    : SETORES_TODOS.includes(role)
+      ? [role]
+      : [];
 
   const [setorAtivo, setSetorAtivo] = useState(null);
   const [status, setStatus] = useState({});
   const [assinados, setAssinados] = useState([]);
+  const [erroCarregamento, setErroCarregamento] = useState("");
 
   const assinandoRef = useRef(false);
   const assinouAlgoRef = useRef(false);
@@ -65,7 +71,10 @@ export default function ModalAssinaturaObrigatoria() {
 
   const carregarStatus = useCallback(async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setCarregando(false);
+      return;
+    }
 
     let roleAtual = getRoleFromToken();
     try {
@@ -76,21 +85,42 @@ export default function ModalAssinaturaObrigatoria() {
         const perfilData = await perfilRes.json();
         roleAtual = perfilData.user?.role || roleAtual;
       }
-    } catch {
-    }
+    } catch {}
+
     setRole(roleAtual);
 
-    const setores = ehLider ? SETORES_TODOS : [roleAtual];
+    const setores = ehLider
+      ? SETORES_TODOS
+      : SETORES_TODOS.includes(roleAtual)
+        ? [roleAtual]
+        : [];
+
+    if (setores.length === 0) {
+      setStatus({});
+      setErroCarregamento("");
+      setCarregando(false);
+      return;
+    }
 
     const resultados = await Promise.all(
       setores.map((setor) =>
         fetch(`${API_URL}/assinaturas/atual?setor=${setor}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-          .then((r) => r.json())
+          .then(async (r) => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+          })
           .then((data) => ({ setor, ...data }))
-          .catch(() => ({ setor, erro: true })),
+          .catch((err) => ({ setor, erro: true, mensagem: err.message })),
       ),
+    );
+
+    const teveErro = resultados.some((r) => r.erro);
+    setErroCarregamento(
+      teveErro
+        ? "Não foi possível verificar a APR. Verifique sua conexão."
+        : "",
     );
 
     const novo = {};
@@ -176,7 +206,7 @@ export default function ModalAssinaturaObrigatoria() {
       .then((r) => r.json())
       .then((data) => setDocumentoHtml(data.html || ""))
       .catch(() => setDocumentoHtml(""));
-  }, [setorAtivo]);
+  }, [setorAtivo, evento?.id]);
 
   useEffect(() => {
     if (!evento) return;
@@ -247,6 +277,7 @@ export default function ModalAssinaturaObrigatoria() {
 
   const limpar = () => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "#fff";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -327,6 +358,70 @@ export default function ModalAssinaturaObrigatoria() {
       >
         <div className="login-spinner" />
         <p>Verificando assinatura da APR...</p>
+      </div>
+    );
+  }
+
+  if (erroCarregamento && !evento && !assinando && !assinouAlgo) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.85)",
+          zIndex: 99999,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "20px",
+        }}
+      >
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "12px",
+            maxWidth: "420px",
+            width: "100%",
+            padding: "24px",
+            textAlign: "center",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.4)",
+          }}
+        >
+          <h3
+            style={{ margin: "0 0 10px", fontSize: "18px", color: "#d32f2f" }}
+          >
+            Erro ao verificar APR
+          </h3>
+          <p
+            style={{
+              margin: "0 0 16px",
+              fontSize: "14px",
+              color: "#555",
+              lineHeight: 1.5,
+            }}
+          >
+            {erroCarregamento}
+          </p>
+          <button
+            onClick={() => {
+              setCarregando(true);
+              setErroCarregamento("");
+              carregarStatus();
+            }}
+            style={{
+              padding: "10px 20px",
+              border: "none",
+              background: "#1976d2",
+              color: "#fff",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Tentar novamente
+          </button>
+        </div>
       </div>
     );
   }
