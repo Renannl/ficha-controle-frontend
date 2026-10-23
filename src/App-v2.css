@@ -10508,19 +10508,23 @@ svg {
    LIBERAR ETAPAS (admin) — Toggle switches
    ============================================================ */
 
+/* ============================================================
+   LIBERAR ETAPAS (admin) — Toggle switches
+   ============================================================ */
+
 .etapas-liberadas-card {
-  background: var(--card-bg, #ffffff);
-  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--card-bg, var(--bg-elevated, #ffffff));
+  border: 1px solid var(--border-color, var(--border, #3a3f4b));
   border-radius: 14px;
   padding: 18px 20px;
   margin-bottom: 18px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .etapas-liberadas-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary, #e2e8f0);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
@@ -10533,7 +10537,6 @@ svg {
   gap: 12px;
 }
 
-/* Cada "pílula" clicável */
 .etapa-liberada-toggle {
   display: inline-flex;
   align-items: center;
@@ -10541,25 +10544,24 @@ svg {
   cursor: pointer;
   user-select: none;
   padding: 10px 16px;
-  background: var(--bg-base, #f8fafc);
-  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--bg-base, var(--bg-input, #1e293b));
+  border: 1px solid var(--border-color, var(--border, #3a3f4b));
   border-radius: 12px;
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .etapa-liberada-toggle:hover {
   border-color: var(--green, #22c55e);
-  background: #f0fdf4;
+  background: #14532d33;
 }
 
-/* Esconde o checkbox nativo e vira o "trilho" do switch */
 .etapa-liberada-toggle input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
   margin: 0;
   width: 44px;
   height: 24px;
-  background: #cbd5e1;
+  background: var(--toggle-bg, #475569);
   border-radius: 999px;
   position: relative;
   cursor: pointer;
@@ -10567,7 +10569,6 @@ svg {
   transition: background 0.2s ease;
 }
 
-/* O "pino" (bolinha) do switch */
 .etapa-liberada-toggle input[type="checkbox"]::before {
   content: "";
   position: absolute;
@@ -10581,7 +10582,6 @@ svg {
   transition: transform 0.2s ease;
 }
 
-/* Estado marcado (ligado) */
 .etapa-liberada-toggle input[type="checkbox"]:checked {
   background: var(--green, #22c55e);
 }
@@ -10590,27 +10590,24 @@ svg {
   transform: translateX(20px);
 }
 
-/* Acessibilidade: anel de foco no teclado */
 .etapa-liberada-toggle input[type="checkbox"]:focus-visible {
   outline: 2px solid var(--green, #22c55e);
   outline-offset: 2px;
 }
 
-/* Texto do rótulo */
 .etapa-liberada-toggle span {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary, #e2e8f0);
   transition: color 0.2s ease;
 }
 
-/* Realça a pílula inteira quando ligada */
 .etapa-liberada-toggle:has(input:checked) {
   border-color: var(--green, #22c55e);
-  background: #f0fdf4;
+  background: #14532d4d;
 }
 
 .etapa-liberada-toggle:has(input:checked) span {
-  color: #166534;
+  color: #4ade80;
   font-weight: 600;
 }
