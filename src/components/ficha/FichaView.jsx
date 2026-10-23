@@ -77,6 +77,7 @@ export default function FichaView({
   const isAdmin = user?.role === "admin";
   const etapasLiberadas = ficha?.etapasLiberadas || [];
   const podeLiberarEtapas = canLiberarEtapas(user);
+  const dadosFicha = ficha?.dados || {};
   const sessaoIniciada = sessoes.some(
     (s) => !s.fim && s.usuario === user?.username,
   );
@@ -776,6 +777,7 @@ export default function FichaView({
             ? [{ id: "historico", Icon: History, label: "Histórico" }]
             : []),
         ];
+        console.log("FichaView → dados:", ficha);
 
   return (
     <>
@@ -948,6 +950,11 @@ export default function FichaView({
         url={montarUrlPublica(ficha?.tokenPublico)}
         filename={`qr-code-${ficha?.numeroInd || ficha?.dbId || "painel"}.png`}
         fichaId={ficha?.dbId}
+        cliente={ficha?.dados?.cliente || ficha?.cliente || ""}
+        numeroInd={ficha?.dados?.numeroInd || ficha?.numeroInd || ""}
+        nomePainel={
+          ficha?.dados?.nomeEquipamento || ficha?.nomeEquipamento || ""
+        }
         onClose={() => setQrOpen(false)}
       />
 

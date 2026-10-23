@@ -1,9 +1,21 @@
-import { QrCode } from "lucide-react";
+import { useState } from "react";
+import { QrCode, Printer } from "lucide-react";
 import { useQrDataUrl, baixarQrCode } from "./QrCodeDocumentacao";
 import FichaPdfCliente from "./FichaPdfCliente";
+import EtiquetaPainel from "./EtiquetaPainel";
 
-export default function QrCodeModal({ open, url, filename, fichaId, onClose }) {
+export default function QrCodeModal({
+  open,
+  url,
+  filename,
+  fichaId,
+  cliente = "",
+  numeroInd = "",
+  nomePainel = "",
+  onClose,
+}) {
   const dataUrl = useQrDataUrl(url);
+  const [aba, setAba] = useState("qrcode");
 
   if (!open) return null;
 
@@ -20,39 +32,71 @@ export default function QrCodeModal({ open, url, filename, fichaId, onClose }) {
           </button>
         </div>
 
+        {/* Abas */}
+        <div className="qr-tabs">
+          <button
+            type="button"
+            className={`qr-tab ${aba === "qrcode" ? "active" : ""}`}
+            onClick={() => setAba("qrcode")}
+          >
+            <QrCode size={15} />
+            QR Code
+          </button>
+          <button
+            type="button"
+            className={`qr-tab ${aba === "etiqueta" ? "active" : ""}`}
+            onClick={() => setAba("etiqueta")}
+          >
+            <Printer size={15} />
+            Etiqueta de Impressão
+          </button>
+        </div>
+
         <div className="modal-body qr-modal-body">
-          {dataUrl ? (
+          {aba === "qrcode" ? (
             <>
-              <div className="qr-code-preview">
-                <img src={dataUrl} alt="QR Code da documentação" />
-              </div>
-              <p className="qr-code-hint">
-                Escaneie para acessar a documentação deste painel
-              </p>
-              <code className="qr-code-url">{url}</code>
+              {dataUrl ? (
+                <>
+                  <div className="qr-code-preview">
+                    <img src={dataUrl} alt="QR Code da documentação" />
+                  </div>
+                  <p className="qr-code-hint">
+                    Escaneie para acessar a documentação deste painel
+                  </p>
+                  <code className="qr-code-url">{url}</code>
+                </>
+              ) : (
+                <div className="qr-loading">
+                  <div className="login-spinner" />
+                  <span>Gerando QR Code...</span>
+                </div>
+              )}
             </>
           ) : (
-            <div className="qr-loading">
-              <div className="login-spinner" />
-              <span>Gerando QR Code...</span>
-            </div>
+            <EtiquetaPainel
+              cliente={cliente}
+              numeroInd={numeroInd}
+              nomePainel={nomePainel}
+            />
           )}
         </div>
 
-        <div className="modal-actions">
-          <button className="btn btn-ghost btn-sm" onClick={onClose}>
-            Fechar
-          </button>
-          <button
-            className="btn btn-primary btn-sm"
-            disabled={!dataUrl}
-            onClick={() => baixarQrCode(dataUrl, filename)}
-          >
-            Baixar PNG
-          </button>
-        </div>
+        {aba === "qrcode" && (
+          <div className="modal-actions">
+            <button className="btn btn-ghost btn-sm" onClick={onClose}>
+              Fechar
+            </button>
+            <button
+              className="btn btn-primary btn-sm"
+              disabled={!dataUrl}
+              onClick={() => baixarQrCode(dataUrl, filename)}
+            >
+              Baixar PNG
+            </button>
+          </div>
+        )}
 
-        {fichaId && (
+        {fichaId && aba === "qrcode" && (
           <div className="qr-pdf-section">
             <div className="qr-pdf-section-titulo">PDF do QR Code</div>
             <p className="qr-pdf-section-hint">
