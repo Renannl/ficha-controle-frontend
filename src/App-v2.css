@@ -10611,3 +10611,103 @@ svg {
   color: #4ade80;
   font-weight: 600;
 }
+
+.selection-bar {
+  flex-wrap: wrap;
+}
+
+.selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.attach-pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  background: var(--bg-elevated, #fff);
+  color: var(--text-primary, #1e293b);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.attach-pdf-btn:hover {
+  border-color: #1976d2;
+  background: #f0f7ff;
+  color: black;
+}
+
+.attach-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #1976d2;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.relatorios-anexados {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  margin-top: 10px;
+  border-top: 1px dashed var(--border-color, #e2e8f0);
+}
+
+.relatorios-titulo {
+  width: 100%;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary, #64748b);
+}
+
+.relatorio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  background: var(--bg-base, #f8fafc);
+  color: var(--text-primary, #1e293b);
+  font-size: 12px;
+  max-width: 260px;
+}
+
+.relatorio-nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.relatorio-remove:hover {
+  background: #fee2e2;
+}

@@ -112,6 +112,7 @@ export async function generateBookPdf(
   fichaIds,
   elementId = "book-print-root",
   filename = "BOOK.pdf",
+  relatorios = [],
 ) {
   const el = document.getElementById(elementId);
   if (!el) return false;
@@ -125,13 +126,19 @@ export async function generateBookPdf(
       const cssText = extractAllCssText();
       const html = buildFullHtml(el.outerHTML, cssText);
 
+      const formData = new FormData();
+      formData.append("html", html);
+      formData.append("fichaIds", JSON.stringify(fichaIds));
+      (relatorios || []).forEach((file) =>
+        formData.append("relatorios", file),
+      );
+
       const res = await fetch(`${API_URL}/books/pdf-gerar`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({ html, fichaIds }),
+        body: formData,
       });
 
       const text = await res.text();

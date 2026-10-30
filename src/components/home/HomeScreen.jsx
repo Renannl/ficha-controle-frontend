@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ConfirmModal from "../buttons/ConfirmModal";
 import { useFichasFilter } from "../../hooks/useFichasFilter";
@@ -18,7 +18,7 @@ import {
   generateFichaPdf,
   generateBookPdf,
 } from "../../services/exportPdfEngine";
-import { FileInputIcon } from "lucide-react";
+import { FileInputIcon, Paperclip, X, FileText } from "lucide-react";
 import { useColecoes } from "../../hooks/useColecoes";
 import ColecaoArquivosTab from "../colecao/ColecaoArquivosTab";
 import ColecaoPastasTab from "../colecao/ColecaoPastasTab";
@@ -50,6 +50,27 @@ export default function HomeScreen({
   const [deleteColecaoId, setDeleteColecaoId] = useState(null);
   const [abaColecao, setAbaColecao] = useState("fichas");
   const [bookReady, setBookReady] = useState(false);
+  const [relatoriosAnexados, setRelatoriosAnexados] = useState([]);
+  const relatoriosInputRef = useRef(null);
+
+  function handleSelecionarRelatorios(e) {
+    const arquivos = Array.from(e.target.files || []).filter(
+      (f) =>
+        f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"),
+    );
+
+    if (arquivos.length === 0) {
+      alert("Selecione apenas arquivos PDF.");
+      return;
+    }
+
+    setRelatoriosAnexados((prev) => [...prev, ...arquivos]);
+    e.target.value = "";
+  }
+
+  function removerRelatorio(index) {
+    setRelatoriosAnexados((prev) => prev.filter((_, i) => i !== index));
+  }
 
   const navigate = useNavigate();
   const { colecaoId } = useParams();
@@ -182,10 +203,16 @@ export default function HomeScreen({
         ? String(bookFichas[0].numeroInd)
         : "BOOK";
       const filename = `Book IND${numeroInd}.pdf`;
-      await generateBookPdf(pendingExport, "book-print-root", filename);
+      await generateBookPdf(
+        pendingExport,
+        "book-print-root",
+        filename,
+        relatoriosAnexados,
+      );
       setPendingExport(null);
+      setRelatoriosAnexados([]);
     })();
-  }, [bookReady, pendingExport, bookFichas]);
+  }, [bookReady, pendingExport, bookFichas, relatoriosAnexados]);
 
   const { filterStatus, setFilterStatus, filterType, setFilterType } =
     useHomeFilters();
@@ -391,20 +418,66 @@ export default function HomeScreen({
               <div className="selection-subtitle">fichas selecionadas</div>
             </div>
           </div>
-          <button
-            className="generate-pdf-btn"
-            onClick={() => {
-              const fichasBook = selectedFichas
-                .map((id) => fichasDaColecao.find((f) => f.dbId === id))
-                .filter(Boolean);
+          <div className="selection-actions">
+            <input
+              ref={relatoriosInputRef}
+              type="file"
+              accept="application/pdf,.pdf"
+              multiple
+              hidden
+              onChange={handleSelecionarRelatorios}
+            />
+            <button
+              type="button"
+              className="attach-pdf-btn"
+              onClick={() => relatoriosInputRef.current?.click()}
+              title="Anexar relatórios de calibração ao Book"
+            >
+              <Paperclip size={16} />
+              Relatórios
+              {relatoriosAnexados.length > 0 && (
+                <span className="attach-count">
+                  {relatoriosAnexados.length}
+                </span>
+              )}
+            </button>
+            <button
+              className="generate-pdf-btn"
+              onClick={() => {
+                const fichasBook = selectedFichas
+                  .map((id) => fichasDaColecao.find((f) => f.dbId === id))
+                  .filter(Boolean);
 
-              window.dispatchEvent(
-                new CustomEvent("abrir-book-pdf", { detail: fichasBook }),
-              );
-            }}
-          >
-            <FileInputIcon /> Gerar PDF
-          </button>
+                window.dispatchEvent(
+                  new CustomEvent("abrir-book-pdf", { detail: fichasBook }),
+                );
+              }}
+            >
+              <FileInputIcon /> Gerar PDF
+            </button>
+          </div>
+
+          {relatoriosAnexados.length > 0 && (
+            <div className="relatorios-anexados">
+              <span className="relatorios-titulo">
+                Relatórios anexados ({relatoriosAnexados.length})
+              </span>
+              {relatoriosAnexados.map((file, i) => (
+                <div className="relatorio-item" key={`${file.name}-${i}`}>
+                  <FileText size={14} />
+                  <span className="relatorio-nome">{file.name}</span>
+                  <button
+                    type="button"
+                    className="relatorio-remove"
+                    onClick={() => removerRelatorio(i)}
+                    title="Remover"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
       <div
