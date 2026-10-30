@@ -6,8 +6,6 @@ const BORDER_COLOR = "#333";
 
 export default function PrintViewFotos({ ficha, isBook = false }) {
   const fotos = ficha?.fotoData?.fotos || [];
-  const responsavelTecnico = ficha?.fotoData?.responsavelTecnico || "";
-  const dataHoraInicio = ficha?.fotoData?.dataHoraInicio || "";
 
   const FOTOS_POR_PAGINA = 6;
   const pages = [];
@@ -24,140 +22,13 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
       }
       style={{ fontFamily: "Inter, sans-serif", color: "#000" }}
     >
-      <div style={{ marginBottom: "8mm" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            background: HEADER_BG,
-            color: HEADER_FG,
-            padding: "6mm 8mm",
-            borderTopLeftRadius: 4,
-            borderTopRightRadius: 4,
-          }}
-        >
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 800 }}>IndusPower</div>
-            <div style={{ fontSize: 8, opacity: 0.8 }}>Powering Solutions</div>
-          </div>
-          <div style={{ fontSize: 11, fontWeight: 700 }}>
-            RELATÓRIO FOTOGRÁFICO
-          </div>
-          <div style={{ fontSize: 10, fontWeight: 600 }}>CONSIDERAÇÕES</div>
-        </div>
-
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            border: `1px solid ${BORDER_COLOR}`,
-            fontSize: 10,
-          }}
-        >
-          <thead>
-            <tr>
-              <th
-                style={{
-                  background: "#e8f5e9",
-                  border: `1px solid ${BORDER_COLOR}`,
-                  padding: "4mm",
-                  width: "15%",
-                }}
-              >
-                FOTO
-              </th>
-              <th
-                style={{
-                  background: "#e8f5e9",
-                  border: `1px solid ${BORDER_COLOR}`,
-                  padding: "4mm",
-                }}
-              >
-                DESCRIÇÃO
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {fotos.map((foto, i) => (
-              <tr key={foto.id ?? i}>
-                <td
-                  style={{
-                    border: `1px solid ${BORDER_COLOR}`,
-                    padding: "3mm",
-                    textAlign: "center",
-                    fontWeight: 600,
-                  }}
-                >
-                  FOTO {i + 1}
-                </td>
-                <td
-                  style={{
-                    border: `1px solid ${BORDER_COLOR}`,
-                    padding: "3mm",
-                  }}
-                >
-                  {foto.descricao || "—"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div
-          style={{
-            border: `1px solid ${BORDER_COLOR}`,
-            borderTop: "none",
-            padding: "4mm",
-            minHeight: "30mm",
-          }}
-        >
-          <strong style={{ fontSize: 11 }}>Observações:</strong>
-          <div
-            style={{
-              whiteSpace: "pre-wrap",
-              marginTop: "2mm",
-              fontSize: 10,
-              lineHeight: 1.5,
-            }}
-          >
-            {ficha.observacoes || "—"}
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            border: `1px solid ${BORDER_COLOR}`,
-            borderTop: "none",
-            fontSize: 10,
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              padding: "3mm",
-              borderRight: `1px solid ${BORDER_COLOR}`,
-            }}
-          >
-            <strong>RESPONSÁVEL TÉCNICO:</strong> {responsavelTecnico || "—"}
-          </div>
-          <div style={{ width: "45mm", textAlign: "center", padding: "3mm" }}>
-            <div style={{ fontWeight: 700, marginBottom: 1 }}>
-              DATA / HORA DE INÍCIO
-            </div>
-            <div>{dataHoraInicio || "—"}</div>
-          </div>
-        </div>
-      </div>
-
       {pages.map((page, pageIdx) => {
         return (
           <div
             key={pageIdx}
             style={{
-              pageBreakBefore: "always",
-              breakBefore: "page",
+              pageBreakBefore: pageIdx > 0 ? "always" : undefined,
+              breakBefore: pageIdx > 0 ? "page" : undefined,
               paddingTop: "4mm",
             }}
           >
@@ -301,7 +172,7 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
                 paddingRight: "2mm",
               }}
             >
-              Página {pageIdx + 2} de {pages.length + 1}
+              Página {pageIdx + 1} de {pages.length}
             </div>
           </div>
         );
