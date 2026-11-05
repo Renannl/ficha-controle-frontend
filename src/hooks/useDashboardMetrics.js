@@ -1,162 +1,336 @@
+// ============================================================
+// hooks/useDashboardMetrics.js — ARQUIVO COMPLETO
+// ⚠️ Admins (role === "admin") NÃO entram nas métricas de
+// colaboradores/produção, pois não trabalham nas fichas.
+// ============================================================
 import { useMemo } from "react";
-import { getFichaStatus } from "../utils/fichaStatus";
+import {
+  campo,
+  dataISO,
+  diffDias,
+  estadoFicha,
+  hoje,
+  isConcluida,
+  itemsDe,
+  chaveMes,
+} from "../utils/metricsHelpers";
 
-export function useDashboardMetrics(fichas) {
+const PRAZO_CRITICO_DIAS = 5; // vence em até 5 dias
+const ESTAGNADA_DIAS = 3; // sem atualização há 3+ dias
+
+export function useDashboardMetrics(fichas, usuarios = []) {
   return useMemo(() => {
-    const total = fichas.length;
+    const lista = Array.isArray(fichas) ? fichas : [];
+    const users = Array.isArray(usuarios) ? usuarios : [];
 
-    let concluidas = 0;
-    let emAndamento = 0;
-    let novas = 0;
-    let reprovadas = 0;
+    // Set de usernames/ids que são admin → excluídos das métricas de colaboradores
+    const adminIds = new Set();
+    for (const u of users) {
+      if (u?.role === "admin") {
+        if (u.username) adminIds.add(String(u.username).toLowerCase());
+        if (u.id) adminIds.add(String(u.id).toLowerCase());
+        if (u.nome) adminIds.add(String(u.nome).trim().toLowerCase());
+      }
+    }
 
-    let totalItems = 0;
-    let itemsOk = 0;
-    let itemsNa = 0;
-    let itemsErro = 0;
+    const agora = hoje();
 
-    let totalFotos = 0;
+    const contadores = {
+      total: 0,
+      emAndamento: 0,
+      concluidas: 0,
+      novas: 0,
+      reprovadas: 0,
+      aprovadas: 0,
+      atrasadas: 0,
+      prazoCritico: 0,
+      fichasParadas: 0,
+      fichasEstagnadas: 0,
+      sessoesAtivas: 0,
+      totalSegundos: 0,
+    };
 
-    let producao = 0;
-    let taf = 0;
-    let fotos = 0;
-    let qualidade = 0;
+    const contagemAprovacao = {
+      qtdAprovadas: 0,
+      qtdReprovadas: 0,
+      qtdAguardando: 0,
+      qtdRevisao: 0,
+    };
 
-    let totalSegundos = 0;
-    let sessoesAtivas = 0;
-    let fichasParadas = 0;
+    const itens = {
+      totalItems: 0,
+      itemsOk: 0,
+      itemsNa: 0,
+      itemsErro: 0,
+      itemsPendentes: 0,
+      itensErroAbertos: 0,
+    };
 
-    let qtdAprovadas = 0;
-    let qtdReprovadas = 0;
-    let qtdAguardando = 0;
-    let qtdRevisao = 0;
+    const producaoMap = new Map();
+    const clienteMap = new Map();
+    const colabMap = new Map();
 
-    const operadoresMap = {};
-    const clientesMap = {};
-    const producaoMensalMap = {};
+    const fichasAtrasadas = [];
+    const fichasPrazoCritico = [];
     const aguardandoAprovacao = [];
+    const diasEmAndamento = [];
 
-    fichas.forEach((f) => {
-      const itemCount = f.items?.length || 0;
-      totalItems += itemCount;
+    for (const ficha of lista) {
+      const estado = estadoFicha(ficha);
+      contadores.total++;
 
-      const op = String(f.operacao ?? "");
-      if (op === "50") taf++;
-      else if (op === "80") fotos++;
-      else if (op === "90") qualidade++;
-      else producao++;
+      if (estado === "andamento") contadores.emAndamento++;
+      else if (estado === "concluida") contadores.concluidas++;
+      else if (estado === "reprovada") contadores.reprovadas++;
+      else contadores.novas++;
 
-      f.items?.forEach((item) => {
-        if (item.foto) totalFotos++;
-        if (item.resultado === "ok") itemsOk++;
-        else if (item.resultado === "na") itemsNa++;
-        else if (item.resultado === "erro") itemsErro++;
-      });
-
-      const status = getFichaStatus(f);
-
-      if (status === "empty") novas++;
-      else if (["progress", "waiting"].includes(status)) emAndamento++;
-      else if (status === "rejected") reprovadas++;
-      else if (["done", "approved"].includes(status)) concluidas++;
-
-      totalSegundos += Number(f.tempo_acumulado_segundos) || 0;
-      if (f.sessao_ativa) sessoesAtivas++;
-
-      if (status === "progress" && !f.sessao_ativa) fichasParadas++;
-
-      const sa = f.statusAprovacao;
-      if (sa === "aprovado") qtdAprovadas++;
-      else if (sa === "reprovado") qtdReprovadas++;
-      else if (sa === "aguardando") {
-        qtdAguardando++;
+      // ── Aprovação ───────────────────────────────────────────
+      const aprov = String(campo(ficha, "statusAprovacao") || "").toLowerCase();
+      if (aprov === "aprovado") {
+        contadores.aprovadas++;
+        contagemAprovacao.qtdAprovadas++;
+      } else if (aprov === "reprovado") {
+        contagemAprovacao.qtdReprovadas++;
+      } else if (aprov === "aguardando") {
+        contagemAprovacao.qtdAguardando++;
         aguardandoAprovacao.push({
-          id: f.dbId ?? f.id,
-          numeroInd: f.numeroInd || "—",
-          nome: f.nomeEquipamento || "Sem nome",
-          codigo: f.codigo || "—",
+          id: ficha?.dbId ?? ficha?.id,
+          codigo: campo(ficha, "codigo"),
+          numeroInd: campo(ficha, "numeroInd"),
+          cliente: campo(ficha, "cliente"),
+          nomeEquipamento: campo(ficha, "nomeEquipamento"),
+          status: estado,
         });
-      } else if (sa === "revisao") qtdRevisao++;
+      } else if (
+        aprov === "revisao" ||
+        aprov === "em revisao" ||
+        aprov === "em_revisao"
+      ) {
+        contagemAprovacao.qtdRevisao++;
+      }
 
-      (f.operadores || []).forEach((opItem) => {
-        const key = opItem.username || opItem.id;
-        if (!key) return;
-        if (!operadoresMap[key]) {
-          operadoresMap[key] = {
-            nome: opItem.nome || key,
-            username: key,
-            role: opItem.role || null,
-            fichas: 0,
-          };
-        }
-        operadoresMap[key].fichas += 1;
-      });
+      // ── Sessões / tempo ─────────────────────────────────────
+      const sessaoAtiva = campo(ficha, "sessao_ativa");
+      if (sessaoAtiva) contadores.sessoesAtivas++;
 
-      const cliente = String(f.cliente || "").trim();
-      if (cliente) clientesMap[cliente] = (clientesMap[cliente] || 0) + 1;
+      const tempoAcumulado = Number(
+        campo(ficha, "tempo_acumulado_segundos") || 0,
+      );
 
-      if (f.created_at) {
-        const d = new Date(f.created_at);
-        if (!isNaN(d.getTime())) {
-          const mesKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-          producaoMensalMap[mesKey] = (producaoMensalMap[mesKey] || 0) + 1;
+      let tempoExtra = 0;
+      if (sessaoAtiva?.inicio) {
+        const inicio = dataISO(sessaoAtiva.inicio);
+        if (inicio)
+          tempoExtra = Math.max(0, (Date.now() - inicio.getTime()) / 1000);
+      }
+
+      const tempoFicha = tempoAcumulado + tempoExtra;
+      contadores.totalSegundos += tempoFicha;
+
+      // ── Prazos ──────────────────────────────────────────────
+      const dataTermino = dataISO(campo(ficha, "dataTermino"));
+      const concluida = isConcluida(ficha);
+
+      if (!concluida && dataTermino) {
+        const diasRestantes = diffDias(agora, dataTermino);
+        const resumo = {
+          id: ficha?.dbId ?? ficha?.id,
+          codigo: campo(ficha, "codigo"),
+          numeroInd: campo(ficha, "numeroInd"),
+          cliente: campo(ficha, "cliente"),
+          nomeEquipamento: campo(ficha, "nomeEquipamento"),
+          diasRestantes,
+        };
+
+        if (diasRestantes < 0) {
+          contadores.atrasadas++;
+          fichasAtrasadas.push(resumo);
+        } else if (diasRestantes <= PRAZO_CRITICO_DIAS) {
+          contadores.prazoCritico++;
+          fichasPrazoCritico.push(resumo);
         }
       }
-    });
 
-    const itemsPendentes = totalItems - itemsOk - itemsNa - itemsErro;
+      // ── Estagnação / dias em andamento ──────────────────────
+      if (estado === "andamento") {
+        if (!sessaoAtiva) contadores.fichasParadas++;
+
+        const updatedAt = dataISO(ficha?.updated_at);
+        if (updatedAt && diffDias(updatedAt, agora) >= ESTAGNADA_DIAS) {
+          contadores.fichasEstagnadas++;
+        }
+
+        const criado = dataISO(ficha?.created_at || campo(ficha, "dataInicio"));
+        if (criado) {
+          const dias = diffDias(criado, agora);
+          if (dias !== null && dias >= 0) diasEmAndamento.push(dias);
+        }
+      }
+
+      // ── Checklist ───────────────────────────────────────────
+      const itensFicha = itemsDe(ficha);
+      const encerrada = estado === "concluida" || estado === "reprovada";
+
+      for (const item of itensFicha) {
+        itens.totalItems++;
+        const r = String(item?.resultado || "").toLowerCase();
+
+        if (r === "ok") itens.itemsOk++;
+        else if (r === "na" || r === "n/a") itens.itemsNa++;
+        else if (r === "erro") {
+          itens.itemsErro++;
+          if (!encerrada) itens.itensErroAbertos++;
+        } else {
+          itens.itemsPendentes++;
+        }
+      }
+
+      // ── Produção mensal (mês de conclusão) ──────────────────
+      const finalizadaEm = dataISO(
+        campo(ficha, "finalizadaAt") || campo(ficha, "aprovadoEm"),
+      );
+      if (concluida && finalizadaEm) {
+        const m = chaveMes(finalizadaEm);
+        producaoMap.set(m, (producaoMap.get(m) || 0) + 1);
+      }
+
+      // ── Clientes ────────────────────────────────────────────
+      const cliente = String(campo(ficha, "cliente") || "Sem cliente").trim();
+      clienteMap.set(cliente, (clienteMap.get(cliente) || 0) + 1);
+
+      // ── Colaboradores (operadores + criador) ────────────────
+      // Admins são ignorados — não trabalham nas fichas.
+      const operadores = Array.isArray(campo(ficha, "operadores"))
+        ? campo(ficha, "operadores")
+        : [];
+      const envolvidos = new Map();
+
+      for (const op of operadores) {
+        const username = op?.username || op?.usuario;
+        if (!username) continue;
+        const role = op?.role || op?.cargo || "";
+        if (role === "admin") continue; // 🆕 ignora admin
+        const chave = String(username).toLowerCase();
+        if (adminIds.has(chave)) continue; // 🆕 ignora admin pela lista de usuários
+        envolvidos.set(username, {
+          username,
+          nome: op?.nome || username,
+          role,
+        });
+      }
+
+      const criador = ficha?.user_id || campo(ficha, "user_id");
+      if (criador && !envolvidos.has(criador)) {
+        const chaveCriador = String(criador).toLowerCase();
+        if (!adminIds.has(chaveCriador)) {
+          envolvidos.set(criador, {
+            username: criador,
+            nome: campo(ficha, "criado_por") || criador,
+            role: "",
+          });
+        }
+      }
+
+      for (const [username, info] of envolvidos) {
+        const atual = colabMap.get(username) || {
+          username,
+          nome: info.nome,
+          role: info.role,
+          fichas: 0,
+          itens: 0,
+          horas: 0, // segundos de envolvimento (soma por ficha)
+        };
+        atual.fichas += 1;
+        atual.itens += itensFicha.length;
+        atual.horas += tempoFicha;
+        colabMap.set(username, atual);
+      }
+    }
+
+    // ── Checklist ─────────────────────────────────────────────
+    const verificados = itens.itemsOk + itens.itemsNa + itens.itemsErro;
     const pctGeral =
-      totalItems > 0
-        ? Math.round(((itemsOk + itemsNa + itemsErro) / totalItems) * 100)
+      itens.totalItems > 0
+        ? Math.round((verificados / itens.totalItems) * 100)
+        : 0;
+    const taxaErro =
+      verificados > 0 ? Math.round((itens.itemsErro / verificados) * 100) : 0;
+
+    // ── Aprovação ─────────────────────────────────────────────
+    const decididas =
+      contagemAprovacao.qtdAprovadas + contagemAprovacao.qtdReprovadas;
+    const taxaAprovacao =
+      decididas > 0
+        ? Math.round((contagemAprovacao.qtdAprovadas / decididas) * 100)
         : 0;
 
-    const colaboradores = Object.values(operadoresMap).sort(
-      (a, b) => b.fichas - a.fichas,
-    );
-    const clientesRanking = Object.entries(clientesMap)
-      .map(([nome, qtd]) => ({ nome, qtd }))
-      .sort((a, b) => b.qtd - a.qtd);
-    const producaoMensal = Object.entries(producaoMensalMap)
+    // ── Tempo ─────────────────────────────────────────────────
+    const mediaTempoPorFicha =
+      contadores.total > 0 ? contadores.totalSegundos / contadores.total : 0;
+    const mediaDiasAndamento =
+      diasEmAndamento.length > 0
+        ? Math.round(
+            (diasEmAndamento.reduce((a, b) => a + b, 0) /
+              diasEmAndamento.length) *
+              10,
+          ) / 10
+        : 0;
+
+    // ── Séries e rankings ─────────────────────────────────────
+    const producaoMensal = [...producaoMap.entries()]
       .map(([mes, qtd]) => ({ mes, qtd }))
       .sort((a, b) => a.mes.localeCompare(b.mes));
 
-    const decididas = qtdAprovadas + qtdReprovadas;
-    const taxaAprovacao =
-      decididas > 0 ? Math.round((qtdAprovadas / decididas) * 100) : 0;
-    const mediaTempoPorFicha =
-      total > 0 ? Math.round(totalSegundos / total) : 0;
+    const colaboradores = [...colabMap.values()]
+      .sort((a, b) => b.fichas - a.fichas || b.itens - a.itens)
+      .map((c) => ({ ...c, horas: Math.round((c.horas / 3600) * 10) / 10 }));
+
+    const clientesRanking = [...clienteMap.entries()]
+      .map(([nome, qtd]) => ({ nome, qtd }))
+      .sort((a, b) => b.qtd - a.qtd);
 
     return {
-      total,
-      concluidas,
-      emAndamento,
-      novas,
-      reprovadas,
-      totalItems,
-      itemsOk,
-      itemsNa,
-      itemsErro,
-      itemsPendentes,
-      totalFotos,
-      producao,
-      taf,
-      fotos,
-      qualidade,
+      // volumes
+      total: contadores.total,
+      emAndamento: contadores.emAndamento,
+      concluidas: contadores.concluidas,
+      novas: contadores.novas,
+      reprovadas: contadores.reprovadas,
+      aprovadas: contadores.aprovadas,
+
+      // prazos
+      atrasadas: contadores.atrasadas,
+      prazoCritico: contadores.prazoCritico,
+      fichasAtrasadas,
+      fichasPrazoCritico,
+
+      // checklist
+      totalItems: itens.totalItems,
+      itemsOk: itens.itemsOk,
+      itemsNa: itens.itemsNa,
+      itemsErro: itens.itemsErro,
+      itemsPendentes: itens.itemsPendentes,
+      itensErroAbertos: itens.itensErroAbertos,
       pctGeral,
-      totalSegundos,
-      mediaTempoPorFicha,
-      sessoesAtivas,
-      fichasParadas,
-      qtdAprovadas,
-      qtdReprovadas,
-      qtdAguardando,
-      qtdRevisao,
+      taxaErro,
+
+      // aprovação
+      ...contagemAprovacao,
       taxaAprovacao,
+      aguardandoAprovacao,
+
+      // tempo / atividade
+      sessoesAtivas: contadores.sessoesAtivas,
+      totalSegundos: Math.round(contadores.totalSegundos),
+      mediaTempoPorFicha: Math.round(mediaTempoPorFicha),
+      mediaDiasAndamento,
+      fichasParadas: contadores.fichasParadas,
+      fichasEstagnadas: contadores.fichasEstagnadas,
+
+      // rankings / série
       colaboradores,
-      totalColaboradores: colaboradores.length,
       clientesRanking,
       producaoMensal,
-      aguardandoAprovacao,
     };
-  }, [fichas]);
+  }, [fichas, usuarios]);
 }

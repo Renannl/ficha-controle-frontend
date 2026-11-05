@@ -1,13 +1,5 @@
 import { Gauge } from "lucide-react";
 
-function formatarHoras(segundos) {
-  const s = Math.floor(Number(segundos) || 0);
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  if (h > 0) return `${h}h ${m}min`;
-  return `${m}min`;
-}
-
 export default function DashboardWorkload({ metrics }) {
   return (
     <div className="dash-section">
@@ -25,14 +17,14 @@ export default function DashboardWorkload({ metrics }) {
 
         <div className="dash-workload-item">
           <span className="dash-workload-value" style={{ color: "var(--red)" }}>
-            {metrics.fichasParadas}
+            {metrics.fichasEstagnadas}
           </span>
-          <span className="dash-workload-label">fichas paradas (sem ninguém atuando)</span>
+          <span className="dash-workload-label">fichas paradas há 3+ dias</span>
         </div>
 
         <div className="dash-workload-item">
-          <span className="dash-workload-value">{formatarHoras(metrics.mediaTempoPorFicha)}</span>
-          <span className="dash-workload-label">tempo médio por ficha</span>
+          <span className="dash-workload-value">{metrics.mediaDiasAndamento}</span>
+          <span className="dash-workload-label">dias médios em andamento</span>
         </div>
       </div>
     </div>

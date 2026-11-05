@@ -4,7 +4,6 @@ import {
   AlertTriangle,
   Clock,
   Briefcase,
-  CheckCircle2,
   ArrowRight,
 } from "lucide-react";
 
@@ -15,6 +14,8 @@ export default function DashboardCapacity({ fichas, usuarios }) {
     maiorGargalo,
     totalFichasAtivas,
     totalFuncionariosAtivos,
+    fichasSemAlocacao,
+    totalHorasDemanda,
   } = useCapacityMetrics(fichas, usuarios);
 
   if (totalFichasAtivas === 0) {
@@ -25,8 +26,7 @@ export default function DashboardCapacity({ fichas, usuarios }) {
           <h3>Capacidade da Equipe</h3>
         </div>
         <p className="dash-empty-text">
-          Nenhuma ficha ativa no momento. Crie ou retome fichas para ver a
-          projeção de entrega.
+          Nenhuma ficha ativa no momento. Crie ou retome fichas para ver a projeção de entrega.
         </p>
       </section>
     );
@@ -46,18 +46,26 @@ export default function DashboardCapacity({ fichas, usuarios }) {
         </div>
         <div className="capacity-summary-item">
           <span className="capacity-summary-label">Colaboradores ativos</span>
-          <span className="capacity-summary-value">
-            {totalFuncionariosAtivos}
-          </span>
+          <span className="capacity-summary-value">{totalFuncionariosAtivos}</span>
         </div>
+        <div className="capacity-summary-item">
+          <span className="capacity-summary-label">Demanda total</span>
+          <span className="capacity-summary-value">{totalHorasDemanda}h</span>
+        </div>
+        {fichasSemAlocacao > 0 && (
+          <div className="capacity-summary-item capacity-summary-gargalo">
+            <span className="capacity-summary-label">
+              <AlertTriangle size={14} /> Sem operador
+            </span>
+            <span className="capacity-summary-value">{fichasSemAlocacao}</span>
+          </div>
+        )}
         {maiorGargalo && (
           <div className="capacity-summary-item capacity-summary-gargalo">
             <span className="capacity-summary-label">
               <AlertTriangle size={14} /> Maior gargalo
             </span>
-            <span className="capacity-summary-value">
-              {maiorGargalo.cargo}
-            </span>
+            <span className="capacity-summary-value">{maiorGargalo.cargo}</span>
           </div>
         )}
       </div>
@@ -77,13 +85,10 @@ export default function DashboardCapacity({ fichas, usuarios }) {
           </thead>
           <tbody>
             {metricasCargo.map((m) => (
-              <tr
-                key={m.cargo}
-                className={m.gargalo ? "capacity-row-gargalo" : ""}
-              >
+              <tr key={m.cargo} className={m.gargalo ? "capacity-row-gargalo" : ""}>
                 <td>
                   <span className={`role-badge role-${m.cargo}`}>
-                    {m.cargo}
+                    {m.cargoLabel || m.cargo}
                   </span>
                 </td>
                 <td>
@@ -94,11 +99,7 @@ export default function DashboardCapacity({ fichas, usuarios }) {
                 </td>
                 <td>{m.horasDemanda}h</td>
                 <td>{m.capacidadeSemanal}h</td>
-                <td
-                  className={
-                    m.folgaHoras < 0 ? "capacity-negative" : "capacity-positive"
-                  }
-                >
+                <td className={m.folgaHoras < 0 ? "capacity-negative" : "capacity-positive"}>
                   {m.folgaHoras > 0 ? "+" : ""}
                   {m.folgaHoras}h
                 </td>
@@ -112,13 +113,9 @@ export default function DashboardCapacity({ fichas, usuarios }) {
                 </td>
                 <td>
                   {m.gargalo ? (
-                    <span className="capacity-badge capacity-badge-danger">
-                      Gargalo
-                    </span>
+                    <span className="capacity-badge capacity-badge-danger">Gargalo</span>
                   ) : (
-                    <span className="capacity-badge capacity-badge-ok">
-                      OK
-                    </span>
+                    <span className="capacity-badge capacity-badge-ok">OK</span>
                   )}
                 </td>
               </tr>
@@ -136,22 +133,20 @@ export default function DashboardCapacity({ fichas, usuarios }) {
             .filter((e) => !e.semAlocacao)
             .sort((a, b) => (b.etaDias || 0) - (a.etaDias || 0))
             .slice(0, 8)
-            .map(({ ficha, etaDias, horasRestantes }) => (
+            .map(({ ficha, etaDias, horasRestantes, cargo }) => (
               <div key={ficha.dbId || ficha.id} className="capacity-eta-item">
                 <div className="capacity-eta-info">
                   <span className="capacity-eta-name">
                     {ficha.nomeEquipamento || ficha.numeroInd || "Sem nome"}
                   </span>
                   <span className="capacity-eta-meta">
-                    {ficha.cliente || "—"} · {Math.round(horasRestantes)}h
-                    restantes
+                    {ficha.cliente || "—"} · {Math.round(horasRestantes)}h restantes ·{" "}
+                    {cargo}
                   </span>
                 </div>
                 <div className="capacity-eta-value">
                   {etaDias === null ? (
-                    <span className="capacity-eta-undefined">
-                      sem recurso
-                    </span>
+                    <span className="capacity-eta-undefined">sem recurso</span>
                   ) : (
                     <>
                       <ArrowRight size={14} />
@@ -162,11 +157,10 @@ export default function DashboardCapacity({ fichas, usuarios }) {
               </div>
             ))}
 
-          {etaPorFicha.some((e) => e.semAlocacao) && (
+          {fichasSemAlocacao > 0 && (
             <div className="capacity-eta-warning">
               <AlertTriangle size={14} />
-              {etaPorFicha.filter((e) => e.semAlocacao).length} ficha(s) sem
-              operador alocado
+              {fichasSemAlocacao} ficha{fichasSemAlocacao !== 1 ? "s" : ""} sem operador alocado
             </div>
           )}
         </div>

@@ -1,8 +1,11 @@
 import { ShieldCheck } from "lucide-react";
 
 export default function DashboardQualidade({ metrics }) {
-  const { itemsOk, itemsNa, itemsErro, itemsPendentes } = metrics;
+  const { itemsOk, itemsNa, itemsErro, itemsPendentes, taxaErro, itensErroAbertos } = metrics;
   const { qtdAprovadas, qtdReprovadas, qtdAguardando, qtdRevisao, taxaAprovacao } = metrics;
+
+  const corTaxaErro =
+    taxaErro > 10 ? "var(--red)" : taxaErro > 3 ? "var(--amber)" : "var(--green)";
 
   return (
     <div className="dash-section">
@@ -29,6 +32,39 @@ export default function DashboardQualidade({ metrics }) {
           <strong>{itemsPendentes}</strong><span>Pendentes</span>
         </div>
       </div>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "8px 0",
+          borderTop: "1px solid var(--border)",
+        }}
+      >
+        <span style={{ color: "var(--text-muted)", fontSize: 13 }}>
+          Taxa de erro (itens verificados)
+        </span>
+        <strong style={{ color: corTaxaErro, fontSize: 15 }}>{taxaErro}%</strong>
+      </div>
+
+      {itensErroAbertos > 0 && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "8px 10px",
+            borderRadius: 8,
+            background: "rgba(239, 68, 68, 0.1)",
+            color: "var(--red)",
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          ⚠️ {itensErroAbertos} item{itensErroAbertos !== 1 ? "ns" : ""} com erro aguardando correção
+        </div>
+      )}
 
       <div className="dash-aprovacao-list">
         <div className="dash-aprovacao-row">

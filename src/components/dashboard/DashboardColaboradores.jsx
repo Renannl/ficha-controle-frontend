@@ -4,7 +4,7 @@ import { getRoleColor } from "../../utils/roleColors";
 export default function DashboardColaboradores({ colaboradores }) {
   if (!colaboradores?.length) return null;
 
-  const max = colaboradores[0].fichas;
+  const max = colaboradores[0].fichas || 1;
 
   return (
     <div className="dash-section">
@@ -36,6 +36,17 @@ export default function DashboardColaboradores({ colaboradores }) {
 
             <span className="dash-colab-count">
               {c.fichas} {c.fichas === 1 ? "ficha" : "fichas"}
+              {c.horas > 0 && (
+                <span
+                  style={{
+                    color: "var(--text-muted)",
+                    fontSize: 12,
+                    display: "block",
+                  }}
+                >
+                  {c.horas}h
+                </span>
+              )}
             </span>
           </div>
         ))}
