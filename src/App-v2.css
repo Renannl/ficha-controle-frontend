@@ -4090,7 +4090,9 @@ body {
 /* Ajuste nos cards dentro de "Concluídas" para ficarem um pouco mais discretos */
 .concluidas-card .colecao-card {
   opacity: 0.92;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .concluidas-card .colecao-card:hover {
@@ -8102,7 +8104,9 @@ svg {
   font-weight: 600;
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .qr-tab:hover {
@@ -10454,7 +10458,9 @@ svg {
   animation: spin 1s linear infinite;
 }
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .sessao-trabalho-multi {
@@ -10547,7 +10553,10 @@ svg {
   background: var(--bg-base, var(--bg-input, #1e293b));
   border: 1px solid var(--border-color, var(--border, #3a3f4b));
   border-radius: 12px;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .etapa-liberada-toggle:hover {
@@ -10634,13 +10643,351 @@ svg {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 
 .attach-pdf-btn:hover {
   border-color: #1976d2;
   background: #f0f7ff;
   color: black;
+}
+
+/* ============================================================
+   RNC — Registro de Não Conformidade (FM-SGQ-006/007)
+   ============================================================ */
+
+.rnc-screen {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Cabeçalho */
+.rnc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.rnc-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0;
+}
+
+.rnc-subtitulo {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+}
+
+/* Botões */
+.rnc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+.rnc-btn:active {
+  transform: scale(0.97);
+}
+.rnc-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rnc-btn-primary {
+  background: #1976d2;
+  color: #fff;
+}
+.rnc-btn-primary:hover {
+  background: #1565c0;
+}
+
+.rnc-btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-secondary, #64748b);
+}
+.rnc-btn-ghost:hover {
+  background: var(--bg-hover, #f1f5f9);
+}
+
+/* Abas */
+.rnc-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  margin-bottom: 20px;
+}
+
+.rnc-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.rnc-tab:hover {
+  color: var(--text-primary, #1e293b);
+}
+.rnc-tab.ativa {
+  color: #1976d2;
+  border-bottom-color: #1976d2;
+}
+
+/* Lista */
+.rnc-lista-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+}
+
+.rnc-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.rnc-tabela th {
+  background: var(--bg-elevated, #f8fafc);
+  color: var(--text-secondary, #475569);
+  font-weight: 700;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  white-space: nowrap;
+}
+.rnc-tabela td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color, #eef2f7);
+  color: var(--text-primary, #1e293b);
+  vertical-align: middle;
+}
+.rnc-tabela tbody tr:hover {
+  background: var(--bg-hover, #f8fafc);
+}
+.rnc-tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.rnc-td-forte {
+  font-weight: 700;
+}
+.rnc-td-desc {
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rnc-td-check {
+  text-align: center;
+  font-weight: 700;
+  color: #1976d2;
+}
+.rnc-th-casula {
+  text-align: center;
+  font-size: 12px;
+}
+.rnc-td-acoes {
+  display: flex;
+  gap: 6px;
+}
+
+.rnc-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.rnc-icon-btn:hover {
+  background: #eef2ff;
+  color: #1976d2;
+}
+.rnc-icon-danger:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.rnc-vazio {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 14px;
+}
+
+/* Formulário */
+.rnc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rnc-section {
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  padding: 16px;
+  background: var(--bg-elevated, #fff);
+}
+
+.rnc-section-h3 {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #1976d2;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  padding-bottom: 8px;
+}
+
+.rnc-obs {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary, #64748b);
+  background: #fef9c3;
+  border-left: 3px solid #f59e0b;
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+}
+
+.rnc-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.rnc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.rnc-field > span {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary, #64748b);
+}
+.rnc-field input,
+.rnc-field textarea,
+.rnc-field select {
+  padding: 9px 12px;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 8px;
+  background: var(--bg-base, #fff);
+  color: var(--text-primary, #1e293b);
+  font-size: 14px;
+  font-family: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.rnc-field input:focus,
+.rnc-field textarea:focus,
+.rnc-field select:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+}
+.rnc-field textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* Checkboxes e radios */
+.rnc-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.rnc-opcoes-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 6px 12px;
+}
+
+.rnc-checkbox,
+.rnc-radio {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--text-primary, #1e293b);
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.rnc-checkbox input[type="checkbox"],
+.rnc-radio input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #1976d2;
+  cursor: pointer;
+}
+
+/* Ações do formulário */
+.rnc-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 0 20px;
+}
+
+/* Responsivo */
+@media (max-width: 640px) {
+  .rnc-screen {
+    padding: 12px;
+  }
+  .rnc-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .rnc-opcoes-3 {
+    grid-template-columns: 1fr;
+  }
+  .rnc-tabs {
+    overflow-x: auto;
+  }
+  .rnc-tab {
+    white-space: nowrap;
+  }
 }
 
 .attach-count {

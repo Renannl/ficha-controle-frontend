@@ -10,6 +10,7 @@ import {
   Clock3,
   CheckCircle2,
   CalendarDays,
+  FileWarning,
 } from "lucide-react";
 
 function obterSaudacao() {
@@ -25,6 +26,7 @@ export default function HomeHeader({
   theme,
   onToggleTheme,
   onOpenAdmin,
+  onOpenRnc,
   onLogout,
   stats,
 }) {
@@ -86,7 +88,6 @@ export default function HomeHeader({
 
         <div className="user-actions">
           <NotificationBell />{" "}
-
           <button
             className="icon-btn"
             onClick={onToggleTheme}
@@ -94,7 +95,13 @@ export default function HomeHeader({
           >
             {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
           </button>
-
+          <button
+            className="icon-btn"
+            onClick={onOpenRnc}
+            title="RNC — Registro de Não Conformidade"
+          >
+            <FileWarning size={18} />
+          </button>
           {user?.role === "admin" && (
             <button
               className="icon-btn"
@@ -104,8 +111,11 @@ export default function HomeHeader({
               <Settings size={18} />
             </button>
           )}
-
-          <button className="icon-btn icon-btn--logout" onClick={onLogout} title="Sair">
+          <button
+            className="icon-btn icon-btn--logout"
+            onClick={onLogout}
+            title="Sair"
+          >
             <LogOut size={18} />
           </button>
         </div>
@@ -114,8 +124,17 @@ export default function HomeHeader({
       <div className="home-header">
         <div className="home-header-left">
           <div className="home-brand">
-            <img src="/brand/gestor-de-fichas-simbolo.svg" alt="Gestor de Fichas" className="home-logo-img marca-clara" />
-            <img src="/brand/gestor-de-fichas-simbolo-negativo.svg" alt="" aria-hidden="true" className="home-logo-img marca-escura" />
+            <img
+              src="/brand/gestor-de-fichas-simbolo.svg"
+              alt="Gestor de Fichas"
+              className="home-logo-img marca-clara"
+            />
+            <img
+              src="/brand/gestor-de-fichas-simbolo-negativo.svg"
+              alt=""
+              aria-hidden="true"
+              className="home-logo-img marca-escura"
+            />
             <h1>Ficha de Controle</h1>
           </div>
 

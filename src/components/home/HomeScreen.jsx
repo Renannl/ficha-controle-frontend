@@ -14,6 +14,7 @@ import HomeContent from "./HomeContent";
 import HomeFab from "./HomeFab";
 import { useHomeFilters } from "../../hooks/useHomeFilters";
 import BookPrintView from "../print/BookPrintView";
+import RncScreen from "../RncScreen";
 import {
   generateFichaPdf,
   generateBookPdf,
@@ -52,6 +53,7 @@ export default function HomeScreen({
   const [bookReady, setBookReady] = useState(false);
   const [relatoriosAnexados, setRelatoriosAnexados] = useState([]);
   const relatoriosInputRef = useRef(null);
+  const [rncAberto, setRncAberto] = useState(false);
 
   function handleSelecionarRelatorios(e) {
     const arquivos = Array.from(e.target.files || []).filter(
@@ -293,6 +295,7 @@ export default function HomeScreen({
         theme={theme}
         onToggleTheme={onToggleTheme}
         onOpenAdmin={onOpenAdmin}
+        onOpenRnc={() => setRncAberto(true)}
         onLogout={onLogout}
         stats={stats}
       />
@@ -510,6 +513,54 @@ export default function HomeScreen({
         onColecaoImportada={handleColecaoImportada}
         fichasDaColecao={fichasDaColecao}
       />
+      {rncAberto && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9990,
+            background: "var(--bg-base, #f1f5f9)",
+            overflowY: "auto",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "12px 20px",
+              background: "var(--bg-elevated, #fff)",
+              borderBottom: "1px solid var(--border-color, #e2e8f0)",
+              position: "sticky",
+              top: 0,
+              zIndex: 10,
+            }}
+          >
+            <strong style={{ fontSize: 15 }}>
+              RNC — Registro de Não Conformidade
+            </strong>
+            <button
+              type="button"
+              onClick={() => setRncAberto(false)}
+              style={{
+                border: "1px solid var(--border-color, #e2e8f0)",
+                background: "transparent",
+                borderRadius: 8,
+                padding: "6px 14px",
+                cursor: "pointer",
+                color: "var(--text-primary, #1e293b)",
+                fontWeight: 600,
+              }}
+            >
+              Fechar
+            </button>
+          </div>
+
+          <div style={{ padding: 20 }}>
+            <RncScreen />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
