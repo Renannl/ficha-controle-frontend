@@ -1,8 +1,3 @@
-// ============================================================
-// hooks/useCapacityMetrics.js — ARQUIVO COMPLETO
-// ⚠️ Admins (role === "admin") NÃO contam como funcionários,
-// pois não trabalham nas fichas.
-// ============================================================
 import { useMemo } from "react";
 import { campo, emAndamento, capitalizar } from "../utils/metricsHelpers";
 
