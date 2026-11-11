@@ -1,15 +1,16 @@
 import { isApp } from "./nativeApp";
 
 const CHAVE = "perfis-salvos";
-const MAX_PERFIS = 8;
-const VALIDADE_MS = 30 * 24 * 60 * 60 * 1000;
+// Sem limite prático: guarda quantas pessoas forem entrando no aparelho.
+const MAX_PERFIS = 500;
 const FOTO_MAX_BYTES = 150 * 1024;
 const API_URL = import.meta.env.VITE_API_URL;
 
 let plugin = null;
 async function cofre() {
   if (!plugin) {
-    const { SecureStorage } = await import("@aparajita/capacitor-secure-storage");
+    const { SecureStorage } =
+      await import("@aparajita/capacitor-secure-storage");
     await SecureStorage.setKeyPrefix("fichas_");
     plugin = SecureStorage;
   }
@@ -22,8 +23,7 @@ function anotarErro(etapa, err) {
 
 try {
   localStorage.removeItem("perfis-diagnostico");
-} catch {
-}
+} catch {}
 
 async function ler() {
   try {
@@ -52,14 +52,14 @@ async function gravar(lista) {
 
 export async function listarPerfis() {
   if (!isApp) return [];
-  const agora = Date.now();
   const todos = await ler();
-  const validos = todos
-    .filter((p) => p?.username && agora - (p.ultimoAcesso || 0) < VALIDADE_MS)
+  // Sem corte por tempo: nenhum perfil é removido do nada.
+  const ordenados = todos
+    .filter((p) => p?.username)
     .sort((a, b) => b.ultimoAcesso - a.ultimoAcesso)
     .slice(0, MAX_PERFIS);
-  if (validos.length !== todos.length) await gravar(validos);
-  return validos;
+  if (ordenados.length !== todos.length) await gravar(ordenados);
+  return ordenados;
 }
 
 export async function removerPerfil(username) {
@@ -99,7 +99,10 @@ export async function registrarPerfilDoLogin() {
   }
   const token = localStorage.getItem("token");
   if (!user?.username || user.username === "master" || !token) {
-    anotarErro("registrar", `sem usuário/token (user=${!!user?.username}, token=${!!token})`);
+    anotarErro(
+      "registrar",
+      `sem usuário/token (user=${!!user?.username}, token=${!!token})`,
+    );
     return;
   }
 
