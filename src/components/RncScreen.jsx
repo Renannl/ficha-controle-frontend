@@ -368,9 +368,6 @@ export default function RncScreen({ colecaoId }) {
                     placeholder="Gerado automaticamente"
                   />
                 </label>
-                <small className="rnc-hint">
-                  A numeração RNC-AAAA-XXXX é gerada automaticamente ao salvar.
-                </small>
               </label>
             </div>
 
