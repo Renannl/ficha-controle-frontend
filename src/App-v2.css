@@ -11058,3 +11058,61 @@ svg {
 .relatorio-remove:hover {
   background: #fee2e2;
 }
+
+/* ============================================================
+   RNC — estilos extras para isolação e histórico de auditoria
+   Adicione ao seu CSS global (ex.: App.css / App-v2.css)
+   ============================================================ */
+
+.rnc-lock-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.08);
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+/* Tabela do histórico */
+.rnc-historico-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.rnc-historico-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--text-primary, #1e293b);
+}
+.rnc-historico-titulo span {
+  color: var(--text-secondary, #64748b);
+  font-weight: 500;
+  font-size: 13px;
+}
+.rnc-historico-tabela {
+  min-width: 900px;
+}
+.rnc-historico-tabela td {
+  font-size: 12px;
+  padding: 7px 10px;
+}
+
+/* Badges de ação do histórico */
+.rnc-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.rnc-badge-criado { background: rgba(22, 163, 74, 0.12); color: #16a34a; }
+.rnc-badge-alt    { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+.rnc-badge-del    { background: rgba(220, 38, 38, 0.12); color: #dc2626; }

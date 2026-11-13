@@ -8,9 +8,8 @@ import {
   Table2,
   ClipboardList,
   Pencil,
-  CheckCircle2,
-  AlertCircle,
-  Clock,
+  History,
+  Lock,
 } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
@@ -56,6 +55,15 @@ const RNC_VAZIO = {
   status: "aberto",
 };
 
+// Usuário logado (para saber se é admin)
+function usuarioLogado() {
+  try {
+    return JSON.parse(localStorage.getItem("user") || "null");
+  } catch {
+    return null;
+  }
+}
+
 function decodeRnc(rnc) {
   return {
     id: rnc.id,
@@ -81,24 +89,82 @@ function decodeRnc(rnc) {
     prazo: rnc.prazo ? rnc.prazo.slice(0, 10) : "",
     observacao: rnc.observacao || "",
     status: rnc.status || "aberto",
+    // metadados de dono / auditoria
+    criadoPorUser: rnc.criado_por_user_id,
+    criadoPorNome: rnc.criado_por_nome || rnc.criado_por || "",
+    atualizadoPorNome: rnc.atualizado_por_nome || "",
+    atualizadoEm: rnc.atualizado_em || "",
   };
 }
 
 function formatarData(data) {
   if (!data) return "—";
-  return data.slice(0, 10).split("-").reverse().join("/");
+  try {
+    const d = new Date(data);
+    if (Number.isNaN(d.getTime())) {
+      return String(data).slice(0, 10).split("-").reverse().join("/");
+    }
+    return d.toLocaleDateString("pt-BR");
+  } catch {
+    return "—";
+  }
+}
+
+function formatarDataHora(data) {
+  if (!data) return "—";
+  try {
+    const d = new Date(data);
+    if (Number.isNaN(d.getTime())) return "—";
+    return d.toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "—";
+  }
 }
 
 function getStatusInfo(status) {
   return STATUS_OPTIONS.find((s) => s.value === status) || STATUS_OPTIONS[0];
 }
 
+const LABEL_CAMPO = {
+  numero_rnc: "Nº RNC",
+  setor_processo: "Setor/Processo",
+  origens: "Origem",
+  tipo: "Tipo",
+  acao: "Ação",
+  acao_outro: "Ação (outro)",
+  descricao: "Descrição",
+  preenchido_por: "Preenchido por",
+  data_abertura: "Data de abertura",
+  acao_corretiva_imediata: "Ação corretiva imediata",
+  executado_por: "Executado por",
+  data_execucao: "Data da execução",
+  investigacao_causas: "Investigação das causas",
+  plano_acao: "Plano de ação",
+  verificacao_eficacia: "Verificação da eficácia",
+  responsavel: "Responsável",
+  data_encerramento: "Data de encerramento",
+  prazo: "Prazo",
+  observacao: "Observação",
+  status: "Status",
+};
+
 export default function RncScreen({ colecaoId }) {
+  const user = usuarioLogado();
+  const ehAdmin = user?.role === "admin" || user?.isAdmin === true;
+
   const [rncs, setRncs] = useState([]);
   const [form, setForm] = useState(RNC_VAZIO);
   const [editandoId, setEditandoId] = useState(null);
-  const [aba, setAba] = useState("lista");
+  const [aba, setAba] = useState("lista"); // lista | form | historico
   const [loading, setLoading] = useState(false);
+  const [historico, setHistorico] = useState([]);
+  const [historicoRnc, setHistoricoRnc] = useState(null);
 
   const carregar = useCallback(async () => {
     setLoading(true);
@@ -160,7 +226,10 @@ export default function RncScreen({ colecaoId }) {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error("Falha ao salvar o registro.");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Falha ao salvar o registro.");
+      }
       setEditandoId(null);
       setForm(RNC_VAZIO);
       setAba("lista");
@@ -180,7 +249,10 @@ export default function RncScreen({ colecaoId }) {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("Falha ao excluir.");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Falha ao excluir.");
+      }
       await carregar();
     } catch (err) {
       alert(err.message);
@@ -192,7 +264,6 @@ export default function RncScreen({ colecaoId }) {
     setForm(RNC_VAZIO);
     setAba("form");
 
-    // Buscar o próximo número RNC
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/rnc/proximo-numero`, {
@@ -213,11 +284,34 @@ export default function RncScreen({ colecaoId }) {
     setAba("form");
   }
 
+  async function verHistorico(rnc) {
+    setHistoricoRnc(decodeRnc(rnc));
+    setHistorico([]);
+    setAba("historico");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/rnc/${rnc.id}/historico`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setHistorico(Array.isArray(data) ? data : []);
+      } else {
+        setHistorico([]);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar histórico:", err);
+    }
+  }
+
   function cancelar() {
     setEditandoId(null);
     setForm(RNC_VAZIO);
     setAba("lista");
   }
+
+  const rotuloAba = (k) =>
+    k === "lista" ? "Acompanhamento" : k === "form" ? "Registro" : "Histórico";
 
   return (
     <div className="rnc-screen">
@@ -228,6 +322,11 @@ export default function RncScreen({ colecaoId }) {
           </h2>
           <p className="rnc-subtitulo">
             RNC FM-SGQ-006-2026 · Acompanhamento FM-SGQ-007-2026
+            {!ehAdmin && (
+              <span className="rnc-lock-hint">
+                <Lock size={11} /> Você vê apenas os seus RNCs
+              </span>
+            )}
           </p>
         </div>
 
@@ -237,35 +336,40 @@ export default function RncScreen({ colecaoId }) {
           </button>
         ) : (
           <button className="rnc-btn rnc-btn-ghost" onClick={cancelar}>
-            <X size={16} /> Cancelar
+            <X size={16} /> Voltar
           </button>
         )}
       </div>
 
       <div className="rnc-tabs">
-        <button
-          className={`rnc-tab ${aba === "lista" ? "ativa" : ""}`}
-          onClick={() => setAba("lista")}
-        >
-          <Table2 size={15} /> Acompanhamento (Anexo II)
-        </button>
-        <button
-          className={`rnc-tab ${aba === "form" ? "ativa" : ""}`}
-          onClick={() =>
-            editandoId || form.numeroRnc ? setAba("form") : novo()
-          }
-        >
-          <ClipboardList size={15} /> Registro (FM-SGQ-006)
-        </button>
+        {["lista", "form"].map((k) => (
+          <button
+            key={k}
+            className={`rnc-tab ${aba === k ? "ativa" : ""}`}
+            onClick={() => {
+              if (k === "form") {
+                if (editandoId || form.numeroRnc) setAba("form");
+                else novo();
+              } else {
+                setAba("lista");
+              }
+            }}
+          >
+            {k === "lista" && <Table2 size={15} />}
+            {k === "form" && <ClipboardList size={15} />}
+            {rotuloAba(k)}
+          </button>
+        ))}
       </div>
 
-      {aba === "lista" ? (
+      {aba === "lista" && (
         <div className="rnc-lista-wrap">
           {loading && rncs.length === 0 ? (
             <p className="rnc-vazio">Carregando...</p>
           ) : rncs.length === 0 ? (
             <p className="rnc-vazio">
-              Nenhum RNC registrado nesta coleção. Clique em "Novo RNC".
+              Nenhum RNC registrado por você nesta coleção. Clique em "Novo
+              RNC".
             </p>
           ) : (
             <table className="rnc-tabela">
@@ -276,7 +380,6 @@ export default function RncScreen({ colecaoId }) {
                   <th>ORIGEM</th>
                   <th colSpan={2}>TIPO</th>
                   <th>PRAZO</th>
-                  <th>RESP.</th>
                   <th>STATUS</th>
                   <th>Ações</th>
                 </tr>
@@ -284,7 +387,7 @@ export default function RncScreen({ colecaoId }) {
                   <th colSpan={3}></th>
                   <th className="rnc-th-casula">AC</th>
                   <th className="rnc-th-casula">AP</th>
-                  <th colSpan={5}></th>
+                  <th colSpan={3}></th>
                 </tr>
               </thead>
               <tbody>
@@ -302,7 +405,6 @@ export default function RncScreen({ colecaoId }) {
                         {r.acao === "Ação Preventiva" ? "X" : ""}
                       </td>
                       <td>{formatarData(r.prazo)}</td>
-                      <td>{r.responsavel || "—"}</td>
                       <td>
                         <span
                           style={{
@@ -327,6 +429,13 @@ export default function RncScreen({ colecaoId }) {
                           <Pencil size={15} />
                         </button>
                         <button
+                          className="rnc-icon-btn"
+                          title="Ver histórico de alterações"
+                          onClick={() => verHistorico(r)}
+                        >
+                          <History size={15} />
+                        </button>
+                        <button
                           className="rnc-icon-btn rnc-icon-danger"
                           title="Excluir"
                           onClick={() => excluir(r.id)}
@@ -341,7 +450,84 @@ export default function RncScreen({ colecaoId }) {
             </table>
           )}
         </div>
-      ) : (
+      )}
+
+      {aba === "historico" && (
+        <div className="rnc-historico-wrap">
+          <div className="rnc-historico-titulo">
+            <History size={18} />
+            <strong>{historicoRnc?.numeroRnc || "RNC"}</strong>
+            <span>— histórico de alterações</span>
+          </div>
+          <p className="rnc-obs">
+            Registro de auditoria: quem alterou, o que mudou e quando.
+            <br />
+            Criado por <strong>{historicoRnc?.criadoPorNome || "—"}</strong>
+            {historicoRnc?.atualizadoPorNome && (
+              <>
+                {" "}
+                · Última alteração por{" "}
+                <strong>{historicoRnc.atualizadoPorNome}</strong> em{" "}
+                {formatarDataHora(historicoRnc.atualizadoEm)}
+              </>
+            )}
+          </p>
+
+          {historico.length === 0 ? (
+            <p className="rnc-vazio">Sem registros de alteração.</p>
+          ) : (
+            <table className="rnc-tabela rnc-historico-tabela">
+              <thead>
+                <tr>
+                  <th>Data/Hora</th>
+                  <th>Usuário</th>
+                  <th>Ação</th>
+                  <th>Campo</th>
+                  <th>De</th>
+                  <th>Para</th>
+                </tr>
+              </thead>
+              <tbody>
+                {historico.map((h) => (
+                  <tr key={h.id}>
+                    <td
+                      className="rnc-td-forte"
+                      style={{ whiteSpace: "nowrap" }}
+                    >
+                      {formatarDataHora(h.criado_em)}
+                    </td>
+                    <td>{h.usuario_nome || `#${h.usuario_id}`}</td>
+                    <td>
+                      {h.acao === "criado" && (
+                        <span className="rnc-badge rnc-badge-criado">
+                          Criado
+                        </span>
+                      )}
+                      {h.acao === "atualizado" && (
+                        <span className="rnc-badge rnc-badge-alt">
+                          Alterado
+                        </span>
+                      )}
+                      {h.acao === "excluido" && (
+                        <span className="rnc-badge rnc-badge-del">
+                          Excluído
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      {LABEL_CAMPO[h.campo_alterado] || h.campo_alterado || "—"}
+                    </td>
+                    <td>{h.valor_anterior || "—"}</td>
+                    <td>{h.valor_novo || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+
+      {aba === "form" && (
         <form className="rnc-form" onSubmit={salvar}>
           <section className="rnc-section">
             <h3 className="rnc-section-h3">
@@ -358,16 +544,16 @@ export default function RncScreen({ colecaoId }) {
                 />
               </label>
               <label className="rnc-field">
-                <label className="rnc-field">
-                  <span>Nº RNC</span>
-                  <input
-                    type="text"
-                    value={form.numeroRnc}
-                    onChange={(e) => setCampo("numeroRnc", e.target.value)}
-                    disabled={true}
-                    placeholder="Gerado automaticamente"
-                  />
-                </label>
+                <span>Nº RNC</span>
+                <input
+                  type="text"
+                  value={form.numeroRnc}
+                  disabled
+                  placeholder="Gerado automaticamente"
+                />
+                <small className="rnc-hint">
+                  A numeração RNC-AAAA-XXXX é gerada automaticamente ao salvar.
+                </small>
               </label>
             </div>
 

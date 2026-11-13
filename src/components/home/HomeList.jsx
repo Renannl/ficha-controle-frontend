@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { getFichaStatus } from "../../utils/fichaStatus";
 import { getColecaoStatus } from "../../utils/colecaoStatus";
+import { useConfiguracoes } from "../../hooks/useConfiguracoes";
 
 function getStatusColor(status) {
   const cores = {
@@ -68,11 +69,13 @@ export default function HomeList({
   const [expandedColecaoId, setExpandedColecaoId] = useState(null);
   const [rascunhoSelecionado, setRascunhoSelecionado] = useState(null);
   const [concluidasAberto, setConcluidasAberto] = useState(false);
+  const { excluirFichaHabilitado } = useConfiguracoes();
 
   const isAdmin = user?.role === "admin";
   const podeExcluir =
     user?.username === "master" ||
-    user?.permissoes?.includes("excluir_ficha") === true;
+    (excluirFichaHabilitado &&
+      user?.permissoes?.includes("excluir_ficha") === true);
 
   if (mode === "colecoes") {
     const LIMITE_PREVIEW = 3;
