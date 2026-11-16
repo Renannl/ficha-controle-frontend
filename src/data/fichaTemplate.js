@@ -171,6 +171,7 @@ export function createEmptyFicha(
     tag: "",
     dataInicio: "",
     dataTermino: "",
+    totalGavetas: "",
     tempoPrevisto: "",
     recurso: "",
     operacao: codigo,

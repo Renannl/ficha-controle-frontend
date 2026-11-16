@@ -31,6 +31,7 @@ import { getEtapaAtual, podeTrabalharNaEtapa } from "../../utils/etapas";
 import QrCodeModal from "../qrcode/QrCodeModal";
 import { montarUrlPublica } from "../qrcode/QrCodeDocumentacao";
 import TimelineFicha from "../sessions/TimelineFicha";
+import GavetasList from "../gavetas/GavetasList";
 import { canLiberarEtapas } from "../../utils/hasPermission";
 import {
   Zap,
@@ -42,6 +43,7 @@ import {
   StickyNote,
   QrCode,
   History,
+  Boxes,
 } from "lucide-react";
 
 const ETAPAS_PAINEL = ["montagem", "barramento", "cabeamento"];
@@ -78,6 +80,7 @@ export default function FichaView({
   const etapasLiberadas = ficha?.etapasLiberadas || [];
   const podeLiberarEtapas = canLiberarEtapas(user);
   const dadosFicha = ficha?.dados || {};
+  const isCCM = ficha?.tipoPainel === "ccm" || dadosFicha?.tipoPainel === "ccm";
   const sessaoIniciada = sessoes.some(
     (s) => !s.fim && s.usuario === user?.username,
   );
@@ -114,7 +117,8 @@ export default function FichaView({
   }, [fichas, fichaId, ficha]);
 
   useEffect(() => {
-    if (!ficha || String(ficha.operacao) !== "10" || !ficha.tipoPainel) return;
+    if (!ficha || String(ficha.operacao) !== "10" || !ficha.tipoPainel || isCCM)
+      return;
     if (!Array.isArray(ficha.items)) return;
 
     const completos = ensurePainelItemsComVerificacao(
@@ -769,15 +773,20 @@ export default function FichaView({
         ]
       : [
           { id: "info", Icon: ClipboardList, label: "Dados" },
-          { id: "checklist", Icon: ListChecks, label: "Checklist" },
-          { id: "sessions", Icon: Timer, label: "Sessões" },
+          ...(isCCM ? [{ id: "gavetas", Icon: Boxes, label: "Gavetas" }] : []),
+          ...(!isCCM
+            ? [{ id: "checklist", Icon: ListChecks, label: "Checklist" }]
+            : []),
+          ...(!isCCM
+            ? [{ id: "sessions", Icon: Timer, label: "Sessões" }]
+            : []),
           { id: "notes", Icon: StickyNote, label: "Notas" },
           { id: "signatures", Icon: PenLine, label: "Assinaturas" },
           ...(podeVerHistorico
             ? [{ id: "historico", Icon: History, label: "Histórico" }]
             : []),
         ];
-        console.log("FichaView → dados:", ficha);
+  console.log("FichaView → dados:", ficha);
 
   return (
     <>
@@ -809,7 +818,15 @@ export default function FichaView({
               />
             ))}
 
-          {activeTab === "checklist" && (
+          {activeTab === "gavetas" && isCCM && (
+            <GavetasList
+              ficha={ficha}
+              fichaId={ficha?.dbId || fichaId}
+              user={user}
+            />
+          )}
+
+          {activeTab === "checklist" && !isCCM && (
             <>
               {isPainel && podeLiberarEtapas && (
                 <div className="etapas-liberadas-card">
@@ -867,7 +884,7 @@ export default function FichaView({
             <PhotoPanel ficha={ficha} onUpdateFotoData={handleUpdateFotoData} />
           )}
 
-          {activeTab === "sessions" && (
+          {activeTab === "sessions" && !isCCM && (
             <>
               <SessoesTrabalhoList
                 fichaId={fichaId}
@@ -920,17 +937,19 @@ export default function FichaView({
           ))}
         </nav>
 
-        <BotaoSessaoTrabalho
-          fichaId={fichaId}
-          user={user}
-          sessoes={sessoes}
-          loading={sessoesLoading}
-          onChange={loadSessoes}
-          etapa={etapaAtual}
-          etapasLiberadas={etapasLiberadas}
-          isAdmin={isAdmin}
-          isTaf={isTaf}
-        />
+        {!isCCM && (
+          <BotaoSessaoTrabalho
+            fichaId={fichaId}
+            user={user}
+            sessoes={sessoes}
+            loading={sessoesLoading}
+            onChange={loadSessoes}
+            etapa={etapaAtual}
+            etapasLiberadas={etapasLiberadas}
+            isAdmin={isAdmin}
+            isTaf={isTaf}
+          />
+        )}
       </div>
 
       {ficha?.tokenPublico &&

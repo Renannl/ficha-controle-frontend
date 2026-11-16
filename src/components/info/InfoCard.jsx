@@ -1,5 +1,4 @@
 import { OPERACOES } from "../../data/fichaTemplate";
-
 import InfoDocumentSection from "./InfoDocumentSection";
 import InfoEquipmentSection from "./InfoEquipmentSection";
 import InfoPlanningSection from "./InfoPlanningSection";
@@ -17,10 +16,12 @@ export default function InfoCard({
   const handle = (field) => (e) => onChange(field, e.target.value);
 
   const clienteTravado = ficha.colecao?.cliente ?? ficha.cliente ?? "";
+  const dadosFicha = ficha?.dados || {};
+  const isCCM = ficha?.tipoPainel === "ccm" || dadosFicha?.tipoPainel === "ccm";
 
   return (
     <div className="info-section">
-      <InfoDocumentSection ficha={ficha} handle={handle} />
+      <InfoDocumentSection ficha={ficha} handle={handle} isCCM={isCCM} />
 
       <InfoEquipmentSection
         ficha={ficha}

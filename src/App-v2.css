@@ -11116,3 +11116,83 @@ svg {
 .rnc-badge-criado { background: rgba(22, 163, 74, 0.12); color: #16a34a; }
 .rnc-badge-alt    { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
 .rnc-badge-del    { background: rgba(220, 38, 38, 0.12); color: #dc2626; }
+
+.gavetas-wrap { display: flex; flex-direction: column; gap: 16px; }
+.gavetas-header { display: flex; align-items: center; justify-content: space-between; }
+.gavetas-titulo { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; font-weight: 700; color: var(--text-primary); }
+.gavetas-sub { margin: 4px 0 0; font-size: 12px; color: var(--text-secondary); }
+
+.gavetas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.gaveta-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card, #fff);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+.gaveta-card:hover {
+  border-color: var(--accent, #1976d2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+}
+.gaveta-card-topo { display: flex; align-items: center; justify-content: space-between; }
+.gaveta-card-numero { font-size: 12px; font-weight: 800; color: var(--text-secondary); letter-spacing: .5px; }
+.gaveta-card-tag { font-size: 11px; font-weight: 600; color: var(--accent, #1976d2); background: rgba(25,118,210,.08); padding: 2px 8px; border-radius: 6px; }
+.gaveta-card-nome { font-size: 14px; font-weight: 700; color: var(--text-primary); min-height: 20px; }
+.gaveta-card-progresso { display: flex; align-items: center; gap: 8px; }
+.gaveta-progresso-bar { flex: 1; height: 6px; border-radius: 999px; background: var(--border); overflow: hidden; }
+.gaveta-progresso-fill { height: 100%; background: var(--green, #22c55e); border-radius: 999px; }
+.gaveta-progresso-pct { font-size: 11px; font-weight: 700; color: var(--text-secondary); }
+.gaveta-card-rodape { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.gaveta-status { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+.gaveta-assinada { display: inline-flex; align-items: center; gap: 4px; color: var(--green, #22c55e); font-weight: 600; }
+.gaveta-chevron { margin-left: auto; color: var(--text-secondary); }
+
+.gaveta-detalhe { display: flex; flex-direction: column; gap: 14px; }
+.gaveta-detalhe-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.gaveta-btn-voltar { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-primary); font-size: 13px; font-weight: 600; cursor: pointer; }
+.gaveta-detalhe-titulo { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--text-primary); }
+.gaveta-detalhe-ind { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+
+.gaveta-secao { border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: var(--bg-card, #fff); }
+.gaveta-secao-titulo { margin: 0 0 12px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-primary); }
+.gaveta-campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.gaveta-campo { display: flex; flex-direction: column; gap: 5px; }
+.gaveta-campo span { font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+.gaveta-campo input, .gaveta-campo select { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: var(--bg-input, #f8fafc); color: var(--text-primary); }
+
+.gaveta-checklist { display: flex; flex-direction: column; gap: 10px; }
+.gaveta-item { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; }
+.gaveta-item-topo { display: flex; gap: 8px; align-items: flex-start; }
+.gaveta-item-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent, #1976d2); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.gaveta-item-desc { font-size: 13px; color: var(--text-primary); }
+.gaveta-item-acoes { display: flex; gap: 6px; }
+.gaveta-resultado { padding: 4px 10px; border-radius: 6px; border: 1px solid; background: transparent; font-size: 11px; font-weight: 700; cursor: pointer; }
+.gaveta-item-obs { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; background: var(--bg-input, #f8fafc); color: var(--text-primary); }
+
+.gaveta-notas { display: flex; flex-direction: column; gap: 6px; }
+.gaveta-nota { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--bg-input, #f8fafc); border-radius: 8px; font-size: 13px; }
+.gaveta-nota span { flex: 1; }
+.gaveta-nota button { border: none; background: transparent; color: var(--red, #ef4444); cursor: pointer; display: flex; }
+.gaveta-nota-nova { display: flex; gap: 8px; margin-top: 10px; }
+.gaveta-nota-nova input { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+.gaveta-nota-nova button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: none; border-radius: 8px; background: var(--accent, #1976d2); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+.gaveta-nota-nova button:disabled { opacity: .55; cursor: not-allowed; }
+
+.gaveta-erro { color: var(--red, #ef4444); font-size: 13px; font-weight: 600; }
+.gaveta-detalhe-rodape { display: flex; justify-content: flex-end; gap: 10px; }
+.gaveta-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-primary); font-size: 13px; font-weight: 600; cursor: pointer; }
+.gaveta-btn-primario { background: var(--accent, #1976d2); border-color: var(--accent, #1976d2); color: #fff; }
+.gaveta-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+.gaveta-vazio { padding: 20px; text-align: center; color: var(--text-secondary); font-size: 13px; }

@@ -14,6 +14,7 @@ export default function InfoPlanningSection({
   disabled = false,
 }) {
   const isEstrutura = String(ficha.operacao) === "10";
+  const isCcm = String(ficha.tipoPainel || "").toLowerCase() === "ccm";
 
   const colaboradoresTexto = useMemo(() => {
     const unicos = [...new Set(sessoes.map((s) => s.usuario).filter(Boolean))];
@@ -109,6 +110,20 @@ export default function InfoPlanningSection({
                 </option>
               ))}
             </select>
+          </div>
+        )}
+        {isEstrutura && isCcm && (
+          <div className="field">
+            <label>Total de Gavetas</label>
+            <input
+              type="number"
+              min="1"
+              step="1"
+              disabled={disabled}
+              value={ficha.totalGavetas ?? ""}
+              onChange={handle("totalGavetas")}
+              placeholder="Ex: 50"
+            />
           </div>
         )}
 

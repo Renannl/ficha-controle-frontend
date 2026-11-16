@@ -48,6 +48,7 @@ function linhaVazia() {
     tipoPainel: "",
     revisao: "01",
     sufixo: "",
+    totalGavetas: "", // 🆕 quantidade de gavetas do CCM
   };
 }
 
@@ -67,6 +68,17 @@ function parseNomePasta(nome) {
   const observacao = partes.slice(1).join(" - ").trim();
 
   return { ind, cliente, observacao };
+}
+
+// 🆕 Detecta painel CCM (bate com normalizarTipoCCM do backend).
+// Se no futuro o painelTemplates ganhar CCM Tipo V/C/N, adicione
+// "ccm_v", "ccm_c" e "ccm_n" aqui E no normalizarTipoCCM do server.js.
+function isTipoCcm(tipoPainel) {
+  return (
+    String(tipoPainel || "")
+      .toLowerCase()
+      .trim() === "ccm"
+  );
 }
 
 export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
@@ -102,6 +114,9 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
     }
   }, [show]);
   const mostrarSufixo = usarPastaExistente && !!pastaSelecionada;
+
+  // 🆕 Exibe a coluna "Gavetas" sempre que existir ao menos uma linha CCM
+  const mostrarColunaGavetas = linhas.some((l) => isTipoCcm(l.tipoPainel));
 
   if (!show) return null;
 
@@ -213,6 +228,17 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
         setErro(`Linha ${i + 1}: Tipo de Painel é obrigatório.`);
         return;
       }
+
+      // 🆕 Painel CCM exige a quantidade de gavetas
+      if (isTipoCcm(l.tipoPainel)) {
+        const total = Number(l.totalGavetas);
+        if (!Number.isInteger(total) || total < 1) {
+          setErro(
+            `Linha ${i + 1}: Painel CCM exige a quantidade de gavetas (número inteiro maior que zero).`,
+          );
+          return;
+        }
+      }
     }
 
     if (mostrarSufixo) {
@@ -273,6 +299,7 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
               tempoPrevisto: l.tempoPrevisto,
               recurso: l.recurso,
               tipoPainel: l.tipoPainel,
+              totalGavetas: isTipoCcm(l.tipoPainel) ? l.totalGavetas : "", // 🆕
               revisao: l.revisao || "01",
               sufixoFicha:
                 mostrarSufixo && l.sufixo ? Number(l.sufixo) : undefined,
@@ -563,6 +590,9 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
                         <th style={{ width: "12%" }}>Obra</th>
                         <th style={{ width: "8%" }}>Tag</th>
                         <th style={{ width: "12%" }}>Tipo Painel *</th>
+                        {mostrarColunaGavetas && (
+                          <th style={{ width: "8%" }}>Gavetas</th>
+                        )}
                         <th style={{ width: "11%" }}>Data Início</th>
                         <th style={{ width: "11%" }}>Data Término</th>
                         <th style={{ width: "9%" }}>Tempo Prev.</th>
@@ -645,6 +675,35 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
                               )}
                             </select>
                           </td>
+                          {mostrarColunaGavetas && (
+                            <td>
+                              {isTipoCcm(linha.tipoPainel) ? (
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  maxLength={3}
+                                  placeholder="Ex: 50"
+                                  value={linha.totalGavetas}
+                                  onChange={(e) =>
+                                    atualizarLinha(
+                                      i,
+                                      "totalGavetas",
+                                      e.target.value.replace(/\D/g, ""),
+                                    )
+                                  }
+                                  title="Quantidade de gavetas do painel CCM"
+                                />
+                              ) : (
+                                <span
+                                  style={{
+                                    color: "var(--text-muted, #94a3b8)",
+                                  }}
+                                >
+                                  —
+                                </span>
+                              )}
+                            </td>
+                          )}
                           <td>
                             <input
                               type="date"
@@ -764,6 +823,7 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
                       <th>Obra</th>
                       <th>Tag</th>
                       <th>Tipo</th>
+                      {mostrarColunaGavetas && <th>Gavetas</th>}
                       <th>Início</th>
                       <th>Término</th>
                     </tr>
@@ -777,6 +837,13 @@ export default function ImportarColecaoFlow({ show, onClose, onImportado }) {
                         <td>{l.obra}</td>
                         <td>{l.tag}</td>
                         <td>{PAINEL_LABELS[l.tipoPainel] || l.tipoPainel}</td>
+                        {mostrarColunaGavetas && (
+                          <td>
+                            {isTipoCcm(l.tipoPainel)
+                              ? l.totalGavetas || "—"
+                              : "—"}
+                          </td>
+                        )}
                         <td>{l.dataInicio}</td>
                         <td>{l.dataTermino}</td>
                       </tr>

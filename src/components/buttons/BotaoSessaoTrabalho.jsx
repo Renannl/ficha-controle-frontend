@@ -79,9 +79,7 @@ export default function BotaoSessaoTrabalho({
     if (!etapaName) return false;
     if (isTaf) return podeExecutarTaf;
     if (isAdmin) return true;
-    if (podeTrabalharNaEtapa(user, etapaName)) return true;
-    if (etapasLiberadas.includes(etapaName)) return true;
-    return false;
+    return podeTrabalharNaEtapa(user, etapaName);
   }
 
   const etapaParaIniciar = isTaf

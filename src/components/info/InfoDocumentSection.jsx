@@ -13,7 +13,7 @@ export default function InfoDocumentSection({ ficha, handle }) {
         </div>
       </div>
 
-      <div className="form-grid form-grid-3">
+      <div className={`form-grid form-grid-3`}>
         <div className="field">
           <label>Código</label>
           <input

@@ -2,12 +2,14 @@ export const TIPOS_PAINEL = {
   SOBREPOR_EMBUTIR: "sobrepor_embutir",
   AUTOPORTANTE: "autoportante",
   PMT: "pmt",
+  CCM: "ccm",
 };
 
 export const PAINEL_LABELS = {
   [TIPOS_PAINEL.SOBREPOR_EMBUTIR]: "Quadro sobrepor ou embutir",
   [TIPOS_PAINEL.AUTOPORTANTE]: "Quadro autoportante",
   [TIPOS_PAINEL.PMT]: "PMT",
+  [TIPOS_PAINEL.CCM]: "CCM",
 };
 
 export const PAINEL_KEYS = Object.values(TIPOS_PAINEL);
@@ -267,6 +269,21 @@ export const painelTemplates = {
         "Verificar se os parafusos e seus acessórios estão corretos e torqueados. (Parafuso, arruela lisa, arruela de pressão e quando necessário porca)",
       ],
     },
+  },
+};
+
+painelTemplates[TIPOS_PAINEL.CCM] = {
+  montagemMecanica: {
+    ...painelTemplates[TIPOS_PAINEL.AUTOPORTANTE].montagemMecanica,
+    titulo: "CCM",
+  },
+  barramento: {
+    ...painelTemplates[TIPOS_PAINEL.AUTOPORTANTE].barramento,
+    titulo: "CCM",
+  },
+  cabeamento: {
+    ...painelTemplates[TIPOS_PAINEL.AUTOPORTANTE].cabeamento,
+    titulo: "CCM",
   },
 };
 
