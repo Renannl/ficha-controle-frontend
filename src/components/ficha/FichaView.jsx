@@ -33,6 +33,7 @@ import { montarUrlPublica } from "../qrcode/QrCodeDocumentacao";
 import TimelineFicha from "../sessions/TimelineFicha";
 import GavetasList from "../gavetas/GavetasList";
 import { canLiberarEtapas } from "../../utils/hasPermission";
+import { useGavetas } from "../../hooks/useGavetas";
 import {
   Zap,
   ListChecks,
@@ -81,6 +82,7 @@ export default function FichaView({
   const podeLiberarEtapas = canLiberarEtapas(user);
   const dadosFicha = ficha?.dados || {};
   const isCCM = ficha?.tipoPainel === "ccm" || dadosFicha?.tipoPainel === "ccm";
+  const { gavetas } = useGavetas(ficha?.dbId || fichaId);
   const sessaoIniciada = sessoes.some(
     (s) => !s.fim && s.usuario === user?.username,
   );
@@ -477,7 +479,66 @@ export default function FichaView({
     const opStr = String(f.operacao ?? "");
     const taf = opStr === "50";
     const foto = opStr === "80";
+    const isCCMFicha = f.tipoPainel === "ccm" || f.dados?.tipoPainel === "ccm";
 
+    // ── CCM: validar gavetas em vez da ficha ──────────────────────────
+    if (isCCMFicha) {
+      if (!gavetas || gavetas.length === 0) {
+        faltando.push("Nenhuma gaveta cadastrada");
+        return faltando;
+      }
+
+      const gavetasIncompletas = [];
+      const gavetasSemAssinaturas = [];
+
+      gavetas.forEach((gaveta) => {
+        const dados = gaveta.dados || {};
+        const items = dados.items || [];
+        const assinaturas = dados.assinaturas || {};
+
+        // Verifica se todos os itens têm resultado
+        const itensSemResultado = items.filter((item) => {
+          if (String(item.id).includes("-ver-")) return false;
+          return !item?.resultado || String(item.resultado).trim() === "";
+        });
+
+        if (itensSemResultado.length > 0) {
+          gavetasIncompletas.push(
+            `${gaveta.tag || `Gaveta ${gaveta.numero}`} (${itensSemResultado.length} itens pendentes)`,
+          );
+        }
+
+        // Verifica assinaturas
+        const temQualidade = !!assinaturas.qualidade?.nome?.trim();
+        const temSupervisor = !!assinaturas.supervisor_producao?.nome?.trim();
+
+        if (!temQualidade || !temSupervisor) {
+          const faltam = [];
+          if (!temQualidade) faltam.push("Qualidade");
+          if (!temSupervisor) faltam.push("Supervisor Produção");
+          gavetasSemAssinaturas.push(
+            `${gaveta.tag || `Gaveta ${gaveta.numero}`}: faltam ${faltam.join(", ")}`,
+          );
+        }
+      });
+
+      if (gavetasIncompletas.length > 0) {
+        faltando.push(
+          `Gavetas incompletas:\n• ${gavetasIncompletas.join("\n• ")}`,
+        );
+      }
+
+      if (gavetasSemAssinaturas.length > 0) {
+        faltando.push(
+          `Gavetas sem assinaturas:\n• ${gavetasSemAssinaturas.join("\n• ")}`,
+        );
+      }
+
+      return faltando;
+    }
+
+    // ── FICHA NORMAL (painel/TAF/foto) ────────────────────────────────
+    // (código original que você já tinha)
     if (!foto) {
       const camposBasicos = {
         nomeEquipamento: "Nome do Equipamento",

@@ -5,7 +5,6 @@ import {
   Pause,
   X,
   Trash2,
-  Clock,
   PenLine,
   SkipForward,
   Settings2,
@@ -46,7 +45,6 @@ const STATUS_SAVE = {
   erro: { label: "Erro ao salvar", cor: "#dc2626" },
 };
 
-// ─── helpers de formatação ───────────────────────────────────────────
 function formatarTempo(totalSeg) {
   const seg = Math.max(0, Math.floor(Number(totalSeg) || 0));
   const h = String(Math.floor(seg / 3600)).padStart(2, "0");
@@ -77,7 +75,19 @@ function etapaDeItemId(id) {
   return null;
 }
 
-// Garante que os itens da gaveta tenham TODOS os ids do template
+function nomeDoItem(item) {
+  return (
+    item?.label ||
+    item?.nome ||
+    item?.titulo ||
+    item?.descricao ||
+    item?.texto ||
+    item?.name ||
+    item?.id ||
+    "Item do checklist"
+  );
+}
+
 function ensureGavetaItems(tipoPainel, itensSalvos) {
   const template =
     getPainelChecklistItems(tipoPainel, { incluirVerificacao: true }) || [];
@@ -87,13 +97,20 @@ function ensureGavetaItems(tipoPainel, itensSalvos) {
 
   return template.map((t) => {
     const salvo = mapa.get(t.id) || {};
+    const marks = Array.isArray(salvo.sessionMarks)
+      ? salvo.sessionMarks
+      : Array(15).fill("");
+    const marksMeta = Array.isArray(salvo.sessionMarksMeta)
+      ? salvo.sessionMarksMeta
+      : Array(15).fill(null);
     return {
       id: t.id,
       resultado: salvo.resultado || "",
       observacao: salvo.observacao || "",
-      sessionMarks: Array.isArray(salvo.sessionMarks)
-        ? salvo.sessionMarks
-        : Array(15).fill(""),
+      marcadoEm: salvo.marcadoEm || "",
+      marcadoPor: salvo.marcadoPor || "",
+      sessionMarks: marks,
+      sessionMarksMeta: marksMeta,
     };
   });
 }
@@ -105,6 +122,10 @@ function normalizarDados(raw) {
     verificacoes:
       origem.verificacoes && typeof origem.verificacoes === "object"
         ? origem.verificacoes
+        : {},
+    verificacoesMeta:
+      origem.verificacoesMeta && typeof origem.verificacoesMeta === "object"
+        ? origem.verificacoesMeta
         : {},
     sessoes: Array.isArray(origem.sessoes) ? origem.sessoes : [],
     sessaoAtiva: origem.sessaoAtiva || null,
@@ -120,7 +141,6 @@ function normalizarDados(raw) {
   };
 }
 
-// Etapa do CARGO do usuário (não-admin). Admin retorna null (pode tudo).
 function etapaDoCargo(user) {
   if (!user) return null;
   if (user.role === "admin" || user.isAdmin === true) return null;
@@ -130,8 +150,6 @@ function etapaDoCargo(user) {
   return null;
 }
 
-// Uma etapa está "concluída" quando todos os itens de sequência dela
-// (não os de verificação) estão OK ou N/A.
 function etapaConcluida(dados, etapa) {
   const itens = (dados.items || []).filter(
     (i) => etapaDeItemId(i.id) === etapa && !String(i.id).includes("-ver-"),
@@ -140,14 +158,10 @@ function etapaConcluida(dados, etapa) {
   return itens.every((i) => i.resultado === "ok" || i.resultado === "na");
 }
 
-// Liberação sequencial da etapa (para o checklist e o cronômetro):
-// - admin sempre liberado
-// - etapa liberada manualmente (etapasLiberadas) sempre liberada
-// - Montagem liberada (primeira)
-// - Barramento/Cabeamento liberadas quando a anterior está concluída
-function etapaLiberada(dados, etapa, adminLiberou = []) {
+function etapaLiberada(dados, etapa, user) {
   if (!etapa) return false;
-  if (adminLiberou.includes(etapa)) return true;
+  if (user?.role === "admin" || user?.isAdmin === true) return true;
+  if ((dados.etapasLiberadas || []).includes(etapa)) return true;
   if (etapa === "montagem") return true;
   if (etapa === "barramento") return etapaConcluida(dados, "montagem");
   if (etapa === "cabeamento") return etapaConcluida(dados, "barramento");
@@ -173,7 +187,6 @@ export default function GavetaDetalhe({
   const [agora, setAgora] = useState(Date.now());
   const [assinaturaInput, setAssinaturaInput] = useState({});
 
-  // Pausa + ajuste admin
   const [showPauseModal, setShowPauseModal] = useState(false);
   const [motivoPausa, setMotivoPausa] = useState("");
   const [showAjusteModal, setShowAjusteModal] = useState(false);
@@ -199,7 +212,6 @@ export default function GavetaDetalhe({
 
   const ehAdmin = user?.role === "admin" || user?.isAdmin === true;
 
-  // Etapas que o usuário PODE marcar, conforme o cargo.
   const etapasPermitidas = useMemo(() => {
     if (ehAdmin) return ETAPAS.map((e) => e.id);
     return ETAPAS.filter((e) => podeTrabalharNaEtapa(user, e.id)).map(
@@ -207,32 +219,110 @@ export default function GavetaDetalhe({
     );
   }, [ehAdmin, user]);
 
-  // 🆕 Etapas que o usuário pode trabalhar AGORA, conforme a ORDEM:
-  // cargo E etapa liberada (montagem sempre; as demais só após a
-  // anterior concluída OU liberação explícita do admin).
   const etapasTrabalhaveis = useMemo(() => {
     return ETAPAS.filter(
       (e) =>
-        etapasPermitidas.includes(e.id) &&
-        etapaLiberada(dados, e.id, dados.etapasLiberadas || []),
+        etapasPermitidas.includes(e.id) && etapaLiberada(dados, e.id, user),
     ).map((e) => e.id);
-  }, [etapasPermitidas, dados]);
+  }, [etapasPermitidas, dados, user]);
 
-  // Etapa do cargo — usada para o cronômetro.
   const etapaCargo = useMemo(
     () => (ehAdmin ? null : etapaDoCargo(user)),
     [ehAdmin, user],
   );
 
-  // Liberação do cronômetro para o usuário atual.
   const cronometroLiberado = useMemo(() => {
     if (ehAdmin || !etapaCargo) return true;
-    return etapaLiberada(dados, etapaCargo, dados.etapasLiberadas || []);
-  }, [ehAdmin, etapaCargo, dados]);
+    return etapaLiberada(dados, etapaCargo, user);
+  }, [ehAdmin, etapaCargo, dados, user]);
 
   const sessaoIniciada = !!dados.sessaoAtiva;
 
-  // Mantém a ref de dados sempre atualizada
+  // Marcações do checklist (itens + sessões + verificações) com data/hora/quem
+  const marcacoesChecklist = useMemo(() => {
+    const marcacoes = [];
+
+    const categoriaDaEtapa = {
+      montagem: "Montagem",
+      barramento: "Barramento",
+      cabeamento: "Cabeamento",
+    };
+
+    const rotuloResultado = (resultado) => {
+      const valor = String(resultado || "").toLowerCase();
+      if (valor === "ok") return "OK";
+      if (valor === "na") return "N/A";
+      if (valor === "erro") return "ERRO";
+      return String(resultado || "").toUpperCase();
+    };
+
+    // Resultado dos itens principais
+    (dados.items || []).forEach((item) => {
+      if (String(item.id || "").includes("-ver-")) return;
+      if (!item.resultado || !item.marcadoEm) return;
+
+      marcacoes.push({
+        id: `resultado-${item.id}`,
+        item: nomeDoItem(checklistItems.find((ci) => ci.id === item.id)),
+        categoria: categoriaDaEtapa[etapaDeItemId(item.id)] || "Checklist",
+        resultado: rotuloResultado(item.resultado),
+        quando: item.marcadoEm,
+        usuario: item.marcadoPor || "Usuário não identificado",
+      });
+    });
+
+    // Quadradinhos de sessão
+    (dados.items || []).forEach((item) => {
+      const etapa = etapaDeItemId(item.id);
+      const marks = item.sessionMarks || [];
+      const marksMeta = item.sessionMarksMeta || [];
+
+      marks.forEach((mark, index) => {
+        const meta = marksMeta[index];
+        if (!mark || !meta?.quando) return;
+
+        marcacoes.push({
+          id: `sessao-${item.id}-${index}`,
+          item: `${nomeDoItem(
+            checklistItems.find((ci) => ci.id === item.id),
+          )} — sessão ${index + 1}`,
+          categoria: categoriaDaEtapa[etapa] || "Checklist",
+          resultado: "Marcado",
+          quando: meta.quando,
+          usuario: meta.usuario || "Usuário não identificado",
+        });
+      });
+    });
+
+    // Verificações por etapa
+    ETAPAS.forEach((etapa) => {
+      const itensVerificacao = getPainelVerificacaoPorEtapa(
+        TIPOS_PAINEL.AUTOPORTANTE,
+        etapa.id,
+      );
+      const resultados = dados.verificacoes?.[etapa.id] || [];
+      const metadados = dados.verificacoesMeta?.[etapa.id] || [];
+
+      resultados.forEach((resultado, index) => {
+        const meta = metadados[index];
+        if (!resultado || !meta?.quando) return;
+
+        marcacoes.push({
+          id: `verificacao-${etapa.id}-${index}`,
+          item: nomeDoItem(itensVerificacao[index]),
+          categoria: categoriaDaEtapa[etapa.id],
+          resultado: rotuloResultado(resultado),
+          quando: meta.quando,
+          usuario: meta.usuario || "Usuário não identificado",
+        });
+      });
+    });
+
+    return marcacoes.sort(
+      (a, b) => new Date(b.quando).getTime() - new Date(a.quando).getTime(),
+    );
+  }, [dados.items, dados.verificacoes, dados.verificacoesMeta, checklistItems]);
+
   useEffect(() => {
     dadosRef.current = dados;
   }, [dados]);
@@ -249,6 +339,7 @@ export default function GavetaDetalhe({
       dados: {
         items: d.items,
         verificacoes: d.verificacoes,
+        verificacoesMeta: d.verificacoesMeta,
         sessoes: d.sessoes,
         sessaoAtiva: d.sessaoAtiva,
         assinaturas: d.assinaturas,
@@ -275,7 +366,6 @@ export default function GavetaDetalhe({
     [fichaId, gaveta?.id],
   );
 
-  // Reset quando troca de gaveta
   useEffect(() => {
     sujoRef.current = false;
     clearTimeout(debounceRef.current);
@@ -294,7 +384,6 @@ export default function GavetaDetalhe({
     setManualFim("");
   }, [chaveGaveta]);
 
-  // AUTOSAVE com debounce de 800ms
   useEffect(() => {
     if (!sujoRef.current) return;
     setStatusSave("pendente");
@@ -306,7 +395,6 @@ export default function GavetaDetalhe({
     return () => clearTimeout(debounceRef.current);
   }, [dados, persistir, montarPayload]);
 
-  // Flush no unmount
   useEffect(() => {
     return () => {
       clearTimeout(debounceRef.current);
@@ -318,7 +406,6 @@ export default function GavetaDetalhe({
     };
   }, [fichaId, gaveta?.id, montarPayload]);
 
-  // Tick do cronômetro
   useEffect(() => {
     if (!dados.sessaoAtiva) {
       clearInterval(timerRef.current);
@@ -328,7 +415,6 @@ export default function GavetaDetalhe({
     return () => clearInterval(timerRef.current);
   }, [dados.sessaoAtiva]);
 
-  // ─── CHECKLIST (só da etapa do cargo E liberada) ──────────────────
   const setResultado = useCallback(
     (index, valor, observacao) => {
       const item = dadosRef.current.items[index];
@@ -342,11 +428,13 @@ export default function GavetaDetalhe({
           ...items[index],
           resultado: valor,
           observacao: valor ? observacao : "",
+          marcadoEm: valor ? new Date().toISOString() : "",
+          marcadoPor: valor ? user?.nome || user?.username : "",
         };
         return { ...prev, items };
       });
     },
-    [mudar, etapasTrabalhaveis],
+    [mudar, etapasTrabalhaveis, user],
   );
 
   const toggleMark = useCallback(
@@ -359,12 +447,23 @@ export default function GavetaDetalhe({
         const items = [...prev.items];
         if (!items[index]) return prev;
         const marks = [...(items[index].sessionMarks || [])];
+        const meta = [...(items[index].sessionMarksMeta || [])];
         marks[sessionIndex] = value;
-        items[index] = { ...items[index], sessionMarks: marks };
+        meta[sessionIndex] = value
+          ? {
+              quando: new Date().toISOString(),
+              usuario: user?.nome || user?.username,
+            }
+          : null;
+        items[index] = {
+          ...items[index],
+          sessionMarks: marks,
+          sessionMarksMeta: meta,
+        };
         return { ...prev, items };
       });
     },
-    [mudar, etapasTrabalhaveis],
+    [mudar, etapasTrabalhaveis, user],
   );
 
   const handleToggleVerificacao = useCallback(
@@ -380,27 +479,35 @@ export default function GavetaDetalhe({
 
       mudar((prev) => {
         const base = [...(prev.verificacoes?.[etapa] || [])];
+        const baseMeta = [...(prev.verificacoesMeta?.[etapa] || [])];
         while (base.length < itens.length) base.push("");
+        while (baseMeta.length < itens.length) baseMeta.push(null);
         const vaiMarcar = base[idx] !== valor;
         base[idx] = vaiMarcar ? valor : "";
+        baseMeta[idx] = vaiMarcar
+          ? {
+              quando: new Date().toISOString(),
+              usuario: user?.nome || user?.username,
+            }
+          : null;
         return {
           ...prev,
           verificacoes: { ...(prev.verificacoes || {}), [etapa]: base },
+          verificacoesMeta: {
+            ...(prev.verificacoesMeta || {}),
+            [etapa]: baseMeta,
+          },
         };
       });
     },
-    [verificacaoEtapa, mudar, etapasTrabalhaveis],
+    [verificacaoEtapa, mudar, etapasTrabalhaveis, user],
   );
 
-  // ─── PULAR ETAPAS (somente admin) — SÓ LIBERA A ETAPA ────────────
-  // NÃO marca nem altera itens do checklist.
   const confirmarPularEtapa = useCallback(
     (justificativa) => {
       if (!etapaPular) return;
       const etapaAlvo = etapaPular;
 
-      // 🆕 SÓ adiciona a etapa escolhida em etapasLiberadas.
-      // NÃO toca em items, resultados ou observações.
       mudar((prev) => {
         const liberadas = [...(prev.etapasLiberadas || [])];
         if (!liberadas.includes(etapaAlvo)) {
@@ -419,7 +526,6 @@ export default function GavetaDetalhe({
     [etapaPular, mudar, user],
   );
 
-  // ─── SESSÃO DE TEMPO — INICIAR / PAUSAR (sem descartar) ──────────
   const tempoSessaoAtiva = useCallback(() => {
     const s = dados.sessaoAtiva;
     if (!s) return 0;
@@ -441,11 +547,7 @@ export default function GavetaDetalhe({
   function iniciarSessao() {
     if (dados.sessaoAtiva) return;
 
-    if (
-      !ehAdmin &&
-      etapaCargo &&
-      !etapaLiberada(dados, etapaCargo, dados.etapasLiberadas || [])
-    ) {
+    if (!ehAdmin && etapaCargo && !etapaLiberada(dados, etapaCargo, user)) {
       setErro(
         `A etapa ${CARGOS[etapaCargo] || etapaCargo} ainda não está liberada. ` +
           `Conclua a etapa anterior para liberar o cronômetro.`,
@@ -490,7 +592,6 @@ export default function GavetaDetalhe({
     setErro("");
   }
 
-  // ─── AJUSTE DE HORÁRIO (somente admin) ────────────────────────────
   function aplicarAjusteTempo() {
     const mins = Number(String(ajusteMinutos).replace(",", "."));
     if (!Number.isFinite(mins) || mins < 0) {
@@ -502,7 +603,10 @@ export default function GavetaDetalhe({
       if (!prev.sessaoAtiva) return prev;
       return {
         ...prev,
-        sessaoAtiva: { ...prev.sessaoAtiva, inicio: Date.now() - segs * 1000 },
+        sessaoAtiva: {
+          ...prev.sessaoAtiva,
+          inicio: Date.now() - segs * 1000,
+        },
       };
     });
     setAjusteMinutos("");
@@ -548,7 +652,6 @@ export default function GavetaDetalhe({
     }));
   }
 
-  // ─── ASSINATURAS (somente Supervisor Qualidade + Supervisor Produção) ──
   function assinarChave(chave) {
     const nome = (assinaturaInput[chave] || "").trim();
     if (!nome) {
@@ -579,7 +682,6 @@ export default function GavetaDetalhe({
     });
   }
 
-  // ─── PROGRESSO ────────────────────────────────────────────────────
   function progresso() {
     const total = dados.items.length;
     if (!total) return { concluidos: 0, total: 0, pct: 0 };
@@ -605,7 +707,6 @@ export default function GavetaDetalhe({
   const totalAssinaturas = Object.keys(dados.assinaturas || {}).length;
   const totalPossiveis = ASSINATURAS_FIXAS.length;
 
-  // Estilos
   const s = {
     card: {
       background: "var(--bg-elevated, #fff)",
@@ -659,19 +760,6 @@ export default function GavetaDetalhe({
       background: "#f0fdf4",
       color: "#166534",
     },
-    btnVermelho: {
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 4,
-      padding: "6px 12px",
-      borderRadius: 7,
-      fontSize: 12,
-      fontWeight: 700,
-      cursor: "pointer",
-      border: "1px solid #fecaca",
-      background: "#fef2f2",
-      color: "#991b1b",
-    },
     btnCinza: {
       display: "inline-flex",
       alignItems: "center",
@@ -709,7 +797,6 @@ export default function GavetaDetalhe({
         paddingBottom: 90,
       }}
     >
-      {/* Cabeçalho */}
       <div
         style={{
           display: "flex",
@@ -773,7 +860,6 @@ export default function GavetaDetalhe({
         </div>
       )}
 
-      {/* Progresso geral */}
       <div style={s.card}>
         <div
           style={{
@@ -824,7 +910,6 @@ export default function GavetaDetalhe({
           />
         </div>
 
-        {/* Liberar etapas (admin) — SÓ LIBERA A ETAPA ESCOLHIDA */}
         {ehAdmin && (
           <div
             style={{
@@ -857,7 +942,6 @@ export default function GavetaDetalhe({
         )}
       </div>
 
-      {/* Grid: checklist + lateral */}
       <div
         style={{
           display: "grid",
@@ -866,7 +950,6 @@ export default function GavetaDetalhe({
           alignItems: "start",
         }}
       >
-        {/* Checklist */}
         <div style={s.card}>
           <ChecklistTable
             ficha={{ items: dados.items, verificacoes: dados.verificacoes }}
@@ -886,7 +969,6 @@ export default function GavetaDetalhe({
           />
         </div>
 
-        {/* Lateral */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {/* Sessões registradas */}
           <div style={s.card}>
@@ -910,7 +992,9 @@ export default function GavetaDetalhe({
               )}
             </div>
 
-            {(dados.sessoes || []).length === 0 && !sessaoAtiva ? (
+            {(dados.sessoes || []).length === 0 &&
+            sessaoAtiva == null &&
+            marcacoesChecklist.length === 0 ? (
               <div style={s.sub}>Nenhuma sessão registrada nesta gaveta.</div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1044,9 +1128,103 @@ export default function GavetaDetalhe({
                 </div>
               </div>
             )}
+
+            {/* Marcações do checklist (com data/hora e usuário) */}
+            {marcacoesChecklist.length > 0 && (
+              <div
+                style={{
+                  marginTop: 16,
+                  paddingTop: 14,
+                  borderTop: "1px dashed #e2e8f0",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 10,
+                  }}
+                >
+                  <h4
+                    style={{
+                      margin: 0,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: "#475569",
+                    }}
+                  >
+                    Marcações do checklist
+                  </h4>
+                  <span style={{ fontSize: 11, color: "#94a3b8" }}>
+                    {marcacoesChecklist.length} evento
+                    {marcacoesChecklist.length === 1 ? "" : "s"}
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                    maxHeight: 320,
+                    overflowY: "auto",
+                  }}
+                >
+                  {marcacoesChecklist.map((m) => (
+                    <div
+                      key={m.id}
+                      style={{
+                        padding: "9px 11px",
+                        borderRadius: 8,
+                        border: "1px solid #eef2f7",
+                        background: "#fff",
+                        fontSize: 12,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                          gap: 8,
+                        }}
+                      >
+                        <strong
+                          style={{
+                            fontSize: 12,
+                            color: "#1e293b",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {m.item}
+                        </strong>
+                        <span
+                          style={{
+                            flexShrink: 0,
+                            padding: "2px 7px",
+                            borderRadius: 6,
+                            background: "#f1f5f9",
+                            color: "#475569",
+                            fontSize: 10,
+                            fontWeight: 700,
+                          }}
+                        >
+                          {m.resultado}
+                        </span>
+                      </div>
+                      <div style={{ color: "#64748b", marginTop: 4 }}>
+                        {m.categoria} · {formatarDataHora(m.quando)} ·{" "}
+                        {m.usuario}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Assinaturas — SOMENTE Supervisor Qualidade + Supervisor Produção */}
+          {/* Assinaturas */}
           <div style={s.card}>
             <h3
               style={{
@@ -1179,7 +1357,7 @@ export default function GavetaDetalhe({
         </div>
       </div>
 
-      {/* Verificação */}
+      {/* Verificações — UMA MODAL PARA CADA ETAPA (montagem, barramento, cabeamento) */}
       <VerificacaoEtapaModal
         isOpen={!!verificacaoEtapa}
         etapa={verificacaoEtapa}
@@ -1202,7 +1380,6 @@ export default function GavetaDetalhe({
         onSessoesParadas={() => {}}
       />
 
-      {/* Pular etapa */}
       <PularEtapaModal
         isOpen={!!etapaPular}
         etapaAtual={etapaPular}
@@ -1253,7 +1430,6 @@ export default function GavetaDetalhe({
         )}
       </div>
 
-      {/* Modal de pausa (motivo opcional) */}
       {showPauseModal && (
         <div
           style={{
@@ -1384,7 +1560,6 @@ export default function GavetaDetalhe({
         </div>
       )}
 
-      {/* Modal de ajuste de horário (somente admin) */}
       {showAjusteModal && ehAdmin && (
         <div
           style={{
@@ -1457,7 +1632,6 @@ export default function GavetaDetalhe({
                 gap: 22,
               }}
             >
-              {/* Ajustar sessão ativa */}
               {sessaoAtiva && (
                 <div>
                   <h4 style={{ margin: "0 0 10px", fontSize: 14 }}>
@@ -1475,8 +1649,9 @@ export default function GavetaDetalhe({
                     <div style={{ flex: 1, minWidth: 160 }}>
                       <span
                         style={{
-                          ...s.sub,
                           display: "block",
+                          fontSize: 12,
+                          color: "#64748b",
                           marginBottom: 6,
                           fontWeight: 600,
                         }}
@@ -1505,7 +1680,6 @@ export default function GavetaDetalhe({
 
               <div style={{ height: 1, background: "#eef2f7" }} />
 
-              {/* Adicionar sessão manual */}
               <div>
                 <h4 style={{ margin: "0 0 10px", fontSize: 14 }}>
                   Adicionar sessão manual
@@ -1524,8 +1698,9 @@ export default function GavetaDetalhe({
                   <div>
                     <span
                       style={{
-                        ...s.sub,
                         display: "block",
+                        fontSize: 12,
+                        color: "#64748b",
                         marginBottom: 6,
                         fontWeight: 600,
                       }}
@@ -1553,8 +1728,9 @@ export default function GavetaDetalhe({
                     <div>
                       <span
                         style={{
-                          ...s.sub,
                           display: "block",
+                          fontSize: 12,
+                          color: "#64748b",
                           marginBottom: 6,
                           fontWeight: 600,
                         }}
@@ -1571,8 +1747,9 @@ export default function GavetaDetalhe({
                     <div>
                       <span
                         style={{
-                          ...s.sub,
                           display: "block",
+                          fontSize: 12,
+                          color: "#64748b",
                           marginBottom: 6,
                           fontWeight: 600,
                         }}
@@ -1591,7 +1768,7 @@ export default function GavetaDetalhe({
                     onClick={adicionarSessaoManual}
                     style={{ ...s.btnVerde, justifyContent: "center" }}
                   >
-                    ✓ Adicionar sessão
+                    Adicionar sessão
                   </button>
                 </div>
               </div>
