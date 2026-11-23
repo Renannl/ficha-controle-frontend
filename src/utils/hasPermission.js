@@ -14,7 +14,7 @@ export function hasPermission(user, key) {
 }
 
 export const canLiberarEtapas = (user) =>
-  user?.permissoes?.includes("liberar_etapas");
+  hasPermission(user, "liberar_etapas");
 
 export const canManageUsers = (user) => hasPermission(user, "alocar_usuario");
 export const canApprove = (user) => hasPermission(user, "aprovar");

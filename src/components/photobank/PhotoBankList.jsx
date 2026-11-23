@@ -1,67 +1,140 @@
-import { useState } from "react";
-import PhotoBankSearch from "./PhotoBankSearch";
-import PhotoAlbumCard from "./PhotoAlbumCard";
+import { useMemo } from "react";
+import { useGavetas } from "../../hooks/useGavetas";
+import { Camera, ChevronRight, Boxes } from "lucide-react";
 
-export default function PhotoBankList({ fichas, onOpenAlbum }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
+function ehFichaCcm(ficha) {
+  return (
+    String(
+      ficha?.tipoPainel || ficha?.dados?.tipoPainel || "",
+    ).toLowerCase() === "ccm"
+  );
+}
 
-  const allFichasWithPhotos = fichas.filter(
-    (f) => (f.fotoData?.fotos?.length ?? 0) > 0,
+function contarFotosGerais(ficha) {
+  return Array.isArray(ficha?.fotoData?.fotos)
+    ? ficha.fotoData.fotos.length
+    : 0;
+}
+
+function primeiraFotoGaveta(gavetasComFotos) {
+  const g = gavetasComFotos[0];
+  const foto = g?.dados?.fotos?.[0];
+  if (!foto) return "";
+  return foto.dataUrl || foto.imagem || foto.foto || "";
+}
+
+function FichaPhotoCard({ ficha, capa, onOpenAlbum, onOpenGaveta }) {
+  const fichaId = ficha?.dbId ?? ficha?.id;
+  const isCcm = ehFichaCcm(ficha);
+
+  const { gavetas, loading } = useGavetas(isCcm ? fichaId : null);
+
+  const fotosGerais = contarFotosGerais(ficha);
+
+  const gavetasComFotos = useMemo(
+    () =>
+      (gavetas || [])
+        .filter(
+          (g) => Array.isArray(g?.dados?.fotos) && g.dados.fotos.length > 0,
+        )
+        .sort((a, b) => Number(a.numero) - Number(b.numero)),
+    [gavetas],
   );
 
-  const fichasWithPhotos = allFichasWithPhotos.filter((f) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      !searchTerm ||
-      (f.nomeEquipamento || "").toLowerCase().includes(term) ||
-      (f.id || "").toLowerCase().includes(term) ||
-      (f.cliente || "").toLowerCase().includes(term)
-    );
-  });
+  // Capa: prioriza a foto geral; senão usa a 1ª foto da 1ª gaveta
+  const capaFinal = useMemo(
+    () => capa || primeiraFotoGaveta(gavetasComFotos),
+    [capa, gavetasComFotos],
+  );
+
+  if (fotosGerais === 0 && gavetasComFotos.length === 0) return null;
+
+  const nomeFicha = ficha?.nomeEquipamento || ficha?.nome || `Ficha ${fichaId}`;
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          {!showSearch && (
-            <div className="home-list-title" style={{ marginBottom: 0 }}>
-              Álbuns de Fotos
-            </div>
-          )}
-          <PhotoBankSearch
-            showSearch={showSearch}
-            setShowSearch={setShowSearch}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-          />
-        </div>
-      </div>
-
-      <div className="photo-album-grid">
-        {fichasWithPhotos.length > 0 ? (
-          fichasWithPhotos.map((ficha) => (
-            <PhotoAlbumCard
-              key={ficha.id}
-              ficha={ficha}
-              onClick={() => onOpenAlbum(ficha.id)}
-            />
-          ))
+    <div className="photo-card">
+      <button
+        type="button"
+        className="photo-card-capa"
+        onClick={() => onOpenAlbum?.(ficha)}
+      >
+        {capaFinal ? (
+          <img src={capaFinal} alt={nomeFicha} />
         ) : (
-          <div
-            className="text-center py-12 opacity-60 text-sm card-glow-none"
-            style={{
-              background: "var(--bg-card)",
-              borderRadius: "var(--radius-md)",
-              padding: "50px 20px",
-              textAlign: "center",
-              fontSize: "15px",
-            }}
-          >
-            Nenhum álbum encontrado.
+          <div className="photo-card-sem-foto">
+            <Camera size={24} /> Sem foto
           </div>
         )}
+        <span className="photo-card-overlay">
+          {nomeFicha}
+          <ChevronRight size={16} />
+        </span>
+      </button>
+
+      <div className="photo-card-info">
+        {fotosGerais > 0 && (
+          <button
+            type="button"
+            className="photo-tag"
+            onClick={() => onOpenAlbum?.(ficha)}
+            title="Ver fotos gerais da ficha"
+          >
+            <Camera size={13} /> Geral · {fotosGerais}
+          </button>
+        )}
+
+        {isCcm && loading && (
+          <span className="photo-tag photo-tag-cinza">
+            Carregando gavetas...
+          </span>
+        )}
+
+        {gavetasComFotos.map((g) => (
+          <button
+            key={g.id}
+            type="button"
+            className="photo-tag photo-tag-gaveta"
+            onClick={() => onOpenGaveta?.(ficha, g)}
+            title={`Abra galeria da ${g.tag || `Gaveta ${g.numero}`}`}
+          >
+            <Boxes size={13} />
+            {g.tag || `G${String(g.numero).padStart(2, "0")}`} ·{" "}
+            {g.dados.fotos.length}
+          </button>
+        ))}
       </div>
-    </>
+    </div>
+  );
+}
+
+export default function PhotoBankList({
+  fichas = [],
+  onOpenAlbum,
+  onOpenGaveta,
+}) {
+  const visiveis = fichas.filter(
+    (f) => contarFotosGerais(f) > 0 || ehFichaCcm(f),
+  );
+
+  if (visiveis.length === 0) {
+    return (
+      <p className="photo-empty">
+        Nenhuma ficha com fotos ou gavetas registradas.
+      </p>
+    );
+  }
+
+  return (
+    <div className="photo-bank-grid">
+      {visiveis.map((ficha) => (
+        <FichaPhotoCard
+          key={ficha.dbId ?? ficha.id}
+          ficha={ficha}
+          capa={ficha?.fotoData?.fotos?.[0]?.imagem}
+          onOpenAlbum={onOpenAlbum}
+          onOpenGaveta={onOpenGaveta}
+        />
+      ))}
+    </div>
   );
 }

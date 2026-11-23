@@ -67,7 +67,6 @@ export default function HomeList({
   fichaPodeSerSelecionada = () => true,
 }) {
   const [expandedColecaoId, setExpandedColecaoId] = useState(null);
-  const [rascunhoSelecionado, setRascunhoSelecionado] = useState(null);
   const [concluidasAberto, setConcluidasAberto] = useState(false);
   const { excluirFichaHabilitado } = useConfiguracoes();
 
@@ -251,7 +250,7 @@ export default function HomeList({
                   <div
                     key={col.id}
                     className="colecao-card rascunho"
-                    onClick={() => setRascunhoSelecionado(col)}
+                    onClick={() => onOpenColecao(col)}
                   >
                     <div className="colecao-card-top">
                       <div className="colecao-card-icon">
@@ -295,7 +294,7 @@ export default function HomeList({
                       className="btn btn-primary btn-completar-rascunho"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setRascunhoSelecionado(col);
+                        onOpenColecao(col);
                       }}
                     >
                       <FileSpreadsheet size={16} />
@@ -384,17 +383,6 @@ export default function HomeList({
           </div>
         )}
 
-        {rascunhoSelecionado && (
-          <CompletarColecaoModal
-            show={!!rascunhoSelecionado}
-            colecaoId={rascunhoSelecionado.id}
-            onClose={() => setRascunhoSelecionado(null)}
-            onCompletado={() => {
-              setRascunhoSelecionado(null);
-              onColecaoImportada?.();
-            }}
-          />
-        )}
       </div>
     );
   }

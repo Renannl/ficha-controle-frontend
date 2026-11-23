@@ -515,6 +515,7 @@ export default function HomeScreen({
       />
       {rncAberto && (
         <div
+          className="rnc-overlay"
           style={{
             position: "fixed",
             inset: 0,
@@ -524,6 +525,7 @@ export default function HomeScreen({
           }}
         >
           <div
+            className="rnc-overlay-topo"
             style={{
               display: "flex",
               alignItems: "center",

@@ -3,6 +3,7 @@ export const ROLE_COLORS = {
   montagem: "#f8bc5a",
   barramento: "#5969f3",
   cabeamento: "#4e944e",
+  taf: "#2fa6b5",
 };
 
 export const ROLE_LABELS = {
@@ -10,12 +11,14 @@ export const ROLE_LABELS = {
   montagem: "Montagem",
   barramento: "Barramento",
   cabeamento: "Cabeamento",
+  taf: "Técnico TAF",
 };
 
 const ROLE_ORDER = [
   "montagem",
   "barramento",
   "cabeamento",
+  "taf",
   "admin",
 ];
 

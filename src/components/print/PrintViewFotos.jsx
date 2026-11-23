@@ -62,7 +62,7 @@ export default function PrintViewFotos({ ficha, isBook = false }) {
                   textAlign: "right",
                 }}
               >
-                {ficha.cliente || ""}
+                {ficha?.cliente || ""}
               </div>
             </div>
 

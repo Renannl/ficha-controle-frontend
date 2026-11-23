@@ -132,7 +132,9 @@ export default function GavetasList({ ficha, fichaId, user }) {
                 <span className="gaveta-card-tag">{g.tag || "—"}</span>
               </div>
 
-              <div className="gaveta-card-nome">{nome}</div>
+              <div className="gaveta-card-nome" title={nome}>
+                {nome}
+              </div>
 
               <div className="gaveta-card-progresso">
                 <div className="gaveta-progresso-bar">

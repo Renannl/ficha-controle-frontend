@@ -9,8 +9,12 @@ export default function PhotoBank({ fichas, colecoes }) {
   const [selectedColecao, setSelectedColecao] = useState(null);
   const [selectedFichaId, setSelectedFichaId] = useState(null);
 
-
-  const fichasComFotos = fichas.filter((f) => getFichaPhotos(f).length > 0);
+  const fichasComFotos = fichas.filter(
+    (f) =>
+      getFichaPhotos(f).length > 0 ||
+      String(f?.tipoPainel || f?.dados?.tipoPainel || "").toLowerCase() ===
+        "ccm",
+  );
 
   if (selectedFichaId) {
     const ficha = fichasComFotos.find((f) => f.id === selectedFichaId);
@@ -49,7 +53,8 @@ export default function PhotoBank({ fichas, colecoes }) {
         {fichasDaColecao.length > 0 ? (
           <PhotoBankList
             fichas={fichasDaColecao}
-            onOpenAlbum={setSelectedFichaId}
+            onOpenAlbum={(ficha) => setSelectedFichaId(ficha.id)}
+            onOpenGaveta={(ficha) => setSelectedFichaId(ficha.id)}
           />
         ) : (
           <EmptyPhotoBank />

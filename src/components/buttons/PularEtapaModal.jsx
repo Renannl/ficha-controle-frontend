@@ -74,11 +74,7 @@ export default function PularEtapaModal({
         <div style={{ padding: "20px" }}>
           <p style={{ fontSize: "14px", marginBottom: "12px" }}>
             Você está prestes a{" "}
-            <strong>pular a etapa de {ETAPA_LABELS[etapaAtual]}</strong> e
-            avançar para{" "}
-            <strong>
-              {proximaEtapa ? ETAPA_LABELS[proximaEtapa] : "finalização"}
-            </strong>
+            <strong>liberar a etapa de {ETAPA_LABELS[etapaAtual]}</strong>
             .
           </p>
           <p
@@ -88,8 +84,7 @@ export default function PularEtapaModal({
               marginBottom: "16px",
             }}
           >
-            Esta ação só pode ser feita por administradores. Todos os itens
-            pendentes desta etapa serão marcados como OK e registrados no log.
+            Esta ação só pode ser feita por administradores.
           </p>
 
           <label

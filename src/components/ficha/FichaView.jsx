@@ -847,7 +847,6 @@ export default function FichaView({
             ? [{ id: "historico", Icon: History, label: "Histórico" }]
             : []),
         ];
-  console.log("FichaView → dados:", ficha);
 
   return (
     <>

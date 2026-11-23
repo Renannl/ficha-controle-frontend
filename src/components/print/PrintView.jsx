@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { OPERACOES } from "../../data/fichaTemplate";
 import { authFetch } from "../../services/apiClient";
 import { useSessoesTrabalho } from "../../hooks/useSessoesTrabalho";
+import { useGavetas } from "../../hooks/useGavetas";
 
 import PrintViewOperacao from "./PrintViewOperacao";
 import PrintViewTAF from "./PrintViewTAF";
 import PrintViewFotos from "./PrintViewFotos";
 import PrintViewFotosTecnicas from "./PrintViewFotosTecnicas";
+import PrintViewGavetaFotos from "./PrintViewGavetaFotos";
 
 function getOperacao(operacoes, id) {
   if (!operacoes) return undefined;
@@ -19,11 +21,28 @@ function getOperacao(operacoes, id) {
   return operacoes[id];
 }
 
+// 🆕 Detecta painel CCM: operação 10 + tipoPainel "ccm".
+// O tipo pode vir de ficha.tipoPainel OU ficha.dados.tipoPainel (JSONB).
+function ehCcm(ficha) {
+  const tipo = String(ficha?.tipoPainel || ficha?.dados?.tipoPainel || "")
+    .toLowerCase()
+    .trim();
+  return tipo === "ccm";
+}
+
 export default function PrintView({ ficha, isBook, onDataReady }) {
   const sinalizado = useRef(false);
   const fichaId = ficha?.dbId ?? ficha?.id;
 
+  const isCcm = String(ficha?.operacao) === "10" && ehCcm(ficha);
+
   const { sessoes, loading: sessoesLoading } = useSessoesTrabalho(fichaId);
+
+  // 🆕 Só carrega gavetas quando é CCM. Quando não é, passa null e o
+  // hook não dispara requisição (loading fica false).
+  const { gavetas, loading: gavetasLoading } = useGavetas(
+    isCcm ? fichaId : null,
+  );
 
   const [logs, setLogs] = useState([]);
   const [logsLoading, setLogsLoading] = useState(!!fichaId);
@@ -52,12 +71,14 @@ export default function PrintView({ ficha, isBook, onDataReady }) {
     };
   }, [fichaId]);
 
+  // 🆕 O "pronto" agora espera também o carregamento das gavetas,
+  // para o PDF não sair antes das fotos das gavetas chegarem.
   useEffect(() => {
-    if (sessoesLoading || logsLoading) return;
+    if (sessoesLoading || logsLoading || gavetasLoading) return;
     if (sinalizado.current) return;
     sinalizado.current = true;
     onDataReady?.();
-  }, [sessoesLoading, logsLoading, onDataReady]);
+  }, [sessoesLoading, logsLoading, gavetasLoading, onDataReady]);
 
   const op = getOperacao(OPERACOES, ficha.operacao);
 
@@ -68,11 +89,11 @@ export default function PrintView({ ficha, isBook, onDataReady }) {
       ) : (
         <PrintViewFotos ficha={ficha} isBook={isBook} />
       );
+
     case "50":
       return <PrintViewTAF ficha={ficha} op={op} isBook={isBook} />;
+
     case "90":
-    case "10":
-    default:
       return (
         <PrintViewOperacao
           ficha={ficha}
@@ -82,5 +103,45 @@ export default function PrintView({ ficha, isBook, onDataReady }) {
           logs={logs}
         />
       );
+
+    case "10":
+    default: {
+      // 🆕 Só as gavetas que realmente têm fotos entram no relatório.
+      const gavetasComFotos = (gavetas || [])
+        .filter((g) => (g?.dados?.fotos || []).length > 0)
+        .sort((a, b) => Number(a.numero) - Number(b.numero));
+
+      // Fotos gerais da ficha mestre (fluxo normal, ex.: fotoData.fotos).
+      const fotosMestre = ficha?.fotoData?.fotos || [];
+
+      return (
+        <>
+          {/* Checklist / planejamento / verificações da ficha mestre */}
+          <PrintViewOperacao
+            ficha={ficha}
+            op={op}
+            isBook={isBook}
+            sessoes={sessoes}
+            logs={logs}
+          />
+
+          {/* 🆕 Fotos gerais do painel CCM (se houver na ficha mestre) */}
+          {isCcm && fotosMestre.length > 0 && (
+            <PrintViewFotos ficha={ficha} isBook={isBook} />
+          )}
+
+          {/* 🆕 Relatório fotográfico separado por gaveta */}
+          {gavetasComFotos.map((g) => (
+            <PrintViewGavetaFotos
+              key={g.id}
+              gaveta={g}
+              ficha={ficha}
+              numeroG={g.numero}
+              isBook={isBook}
+            />
+          ))}
+        </>
+      );
+    }
   }
 }

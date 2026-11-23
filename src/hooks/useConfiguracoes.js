@@ -1,11 +1,9 @@
 // src/hooks/useConfiguracoes.js
 import { useEffect, useState } from "react";
-import { useAuth } from "./useAuth";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 export function useConfiguracoes() {
-  const { authFetch } = useAuth();
   const [configuracoes, setConfiguracoes] = useState(null);
   const [carregando, setCarregando] = useState(true);
 
@@ -14,8 +12,12 @@ export function useConfiguracoes() {
 
     async function carregar() {
       try {
-        const res = await authFetch(`${API_URL}/configuracoes`);
-        if (!res || !res.ok) return;
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const res = await fetch(`${API_URL}/configuracoes`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
         const data = await res.json();
         if (ativo) setConfiguracoes(data);
       } catch (err) {
@@ -29,7 +31,7 @@ export function useConfiguracoes() {
     return () => {
       ativo = false;
     };
-  }, [authFetch]);
+  }, []);
 
   const excluirFichaHabilitado = configuracoes?.excluir_ficha !== false;
 

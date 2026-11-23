@@ -19,6 +19,7 @@ import { podeTrabalharNaEtapa } from "../../utils/etapas";
 import ChecklistTable from "../checklist/ChecklistTable";
 import VerificacaoEtapaModal from "../buttons/VerificacaoEtapaModal";
 import PularEtapaModal from "../buttons/PularEtapaModal";
+import GavetaFotos from "./GavetaFotos";
 
 const ETAPAS = [
   { id: "montagem", label: "Montagem" },
@@ -138,6 +139,7 @@ function normalizarDados(raw) {
     etapasLiberadas: Array.isArray(origem.etapasLiberadas)
       ? origem.etapasLiberadas
       : [],
+    fotos: Array.isArray(origem.fotos) ? origem.fotos : [],
   };
 }
 
@@ -344,6 +346,7 @@ export default function GavetaDetalhe({
         sessaoAtiva: d.sessaoAtiva,
         assinaturas: d.assinaturas,
         notas: d.notas,
+        fotos: d.fotos,
         dataInicio: d.dataInicio,
         etapasLiberadas: d.etapasLiberadas,
       },
@@ -942,14 +945,7 @@ export default function GavetaDetalhe({
         )}
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1.7fr) minmax(300px, 1fr)",
-          gap: 14,
-          alignItems: "start",
-        }}
-      >
+      <div className="gaveta-colunas">
         <div style={s.card}>
           <ChecklistTable
             ficha={{ items: dados.items, verificacoes: dados.verificacoes }}
@@ -1340,6 +1336,14 @@ export default function GavetaDetalhe({
               );
             })}
           </div>
+
+          <GavetaFotos
+            fotos={dados.fotos}
+            onFotosChange={(novas) =>
+              mudar((prev) => ({ ...prev, fotos: novas }))
+            }
+            usuario={user?.nome || user?.username || ""}
+          />
 
           {/* Notas */}
           <div style={s.card}>
