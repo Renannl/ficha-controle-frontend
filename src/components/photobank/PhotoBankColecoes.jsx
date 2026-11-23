@@ -58,15 +58,32 @@ function ColecaoCard({ colecao, fichas, onOpenColecao }) {
     capa = urlDeFoto(primeiraFotoGaveta);
   }
 
-  const totalFotos = fichasDaColecao.reduce(
+  // Fotos gerais + gavetas embutidas nas fichas
+  const totalFotosFichas = fichasDaColecao.reduce(
     (acc, f) => acc + getFichaPhotos(f).length,
     0,
   );
 
-  const gavetasFotos = fichasDaColecao.reduce(
+  // Fotos das gavetas carregadas do backend (useGavetas).
+  // Quando a coleção não tem foto geral, as gavetas da ficha CCM
+  // vêm do hook e NÃO aparecem em getFichaPhotos — por isso o badge
+  // mostrava 0 mesmo existindo fotos dentro da gaveta.
+  const totalFotosGavetasCarregadas = (gavetas || []).reduce(
+    (acc, g) =>
+      acc + (Array.isArray(g?.dados?.fotos) ? g.dados.fotos.length : 0),
+    0,
+  );
+
+  const totalFotos = totalFotosFichas + totalFotosGavetasCarregadas;
+
+  // Mesma correção para o badge lateral "foto(s) de gaveta":
+  // soma as gavetas embutidas E as carregadas do backend.
+  const gavetasFotosEmbutidas = fichasDaColecao.reduce(
     (acc, f) => acc + getFichaGavetaFotos(f).length,
     0,
   );
+
+  const gavetasFotos = gavetasFotosEmbutidas + totalFotosGavetasCarregadas;
 
   return (
     <div className="photo-album-card" onClick={() => onOpenColecao(colecao)}>
@@ -85,11 +102,6 @@ function ColecaoCard({ colecao, fichas, onOpenColecao }) {
         <div className="album-title">{colecao.nome}</div>
         <div className="album-sub">
           {fichasDaColecao.length} ficha(s) · {colecao.cliente}
-          {gavetasFotos > 0 && (
-            <span className="album-gavetas-badge">
-              <Boxes size={12} /> {gavetasFotos} foto(s) de gaveta
-            </span>
-          )}
         </div>
       </div>
     </div>
