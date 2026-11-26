@@ -1,3 +1,5 @@
+import { cargosDe } from "./roles";
+
 export const ETAPA_ORDER = ["montagem", "barramento", "cabeamento"];
 
 export const ETAPA_LABELS = {
@@ -51,8 +53,19 @@ export function getEtapaAtual(items, checklistItems, verificacoes = {}) {
 export function podeTrabalharNaEtapa(user, etapa) {
   if (!etapa) return true;
   if (!user) return false;
-  if (user.role === "admin") return true;
-  const etapaDoCargo = getEtapaDoCargo(user.role);
-  if (!etapaDoCargo) return true;
-  return etapaDoCargo === etapa;
+  if (
+    user.role === "admin" ||
+    user.isAdmin === true ||
+    user.username === "master"
+  ) {
+    return true;
+  }
+
+  const cargos = cargosDe(user);
+  if (cargos.length === 0) return true;
+
+  // 🆕 "admin" como um dos cargos libera tudo
+  if (cargos.includes("admin")) return true;
+
+  return cargos.includes(etapa);
 }

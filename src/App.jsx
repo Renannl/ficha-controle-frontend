@@ -16,6 +16,7 @@ import "./responsivo.css";
 import "./marca.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+import { temAlgumCargo } from "./utils/roles";
 const SECTOR_ROLES = ["barramento", "montagem", "cabeamento", "taf"];
 const LIDER_USERNAME = "heveraldo.bispo";
 
@@ -132,7 +133,7 @@ export default function App() {
   }, []);
 
   const deveAssinarApr =
-    SECTOR_ROLES.includes(user?.role) || user?.username === LIDER_USERNAME;
+    temAlgumCargo(user, SECTOR_ROLES) || user?.username === LIDER_USERNAME;
   if (isLoading && !showWelcome && !despedida) {
     return (
       <div
@@ -163,8 +164,17 @@ export default function App() {
   if (showWelcome) {
     return (
       <div className="welcome-screen">
-        <img src="/brand/gestor-de-fichas-vertical.svg" alt="Gestor de Fichas" className="welcome-logo marca-clara" />
-        <img src="/brand/gestor-de-fichas-vertical-negativo.svg" alt="" aria-hidden="true" className="welcome-logo marca-escura" />
+        <img
+          src="/brand/gestor-de-fichas-vertical.svg"
+          alt="Gestor de Fichas"
+          className="welcome-logo marca-clara"
+        />
+        <img
+          src="/brand/gestor-de-fichas-vertical-negativo.svg"
+          alt=""
+          aria-hidden="true"
+          className="welcome-logo marca-escura"
+        />
         <h1 className="welcome-text">Bem-vindo, {welcomeUser}</h1>
       </div>
     );

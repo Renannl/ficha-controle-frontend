@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { LogOut, User } from "lucide-react";
-
 import { useUsers } from "../../hooks/useUsers";
-
+import { cargosDe } from "../../utils/roles";
 import UserForm from "./UserForm";
 import UserTable from "./UserTable";
 import LoadingState from "./LoadingState";
@@ -11,16 +10,15 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
   const { users, loading, updateUser } = useUsers();
 
   const [editingUser, setEditingUser] = useState(null);
-
   const [nome, setNome] = useState("");
-  const [role, setRole] = useState("montagem");
+  const [cargos, setCargos] = useState([]);
   const [permissoes, setPermissoes] = useState([]);
   const [active, setActive] = useState(true);
 
   function resetForm() {
     setEditingUser(null);
     setNome("");
-    setRole("montagem");
+    setCargos([]);
     setPermissoes([]);
     setActive(true);
   }
@@ -28,28 +26,29 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
   function editarUsuario(user) {
     setEditingUser(user);
     setNome(user.nome || "");
-    setRole(user.role || "montagem");
-    setPermissoes(user.permissoes || []);
-    setActive(user.active);
+    setCargos(cargosDe(user));
+    setPermissoes(user.permissoes || user.permissions || []);
+    setActive(user.active ?? true);
   }
 
   async function salvarUsuario() {
     if (!editingUser) return;
 
     try {
-      await updateUser(editingUser.id, {
+      const payload = {
         nome,
-        role,
+        cargos,
         permissoes,
         active,
-      });
+        // Mantém "role" por compatibilidade: primeiro cargo (ou "admin").
+        role: cargos.includes("admin") ? "admin" : cargos[0] || "",
+      };
+
+      await updateUser(editingUser.id, payload);
 
       onUserUpdated?.({
         ...editingUser,
-        nome,
-        role,
-        permissoes,
-        active,
+        ...payload,
       });
 
       alert("Usuário atualizado");
@@ -76,13 +75,11 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
             >
               <LogOut size={18} />
             </button>
-
             <div className="admin-title-group">
               <h1 className="text-xl font-bold">Configurações do Sistema</h1>
               <p className="text-xs text-muted">Acessos e permissões</p>
             </div>
           </div>
-
           <div className="admin-status-badge">
             <span className="status-dot"></span>
             Interface Administrador
@@ -95,8 +92,8 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
           editingUser={editingUser}
           nome={nome}
           setNome={setNome}
-          role={role}
-          setRole={setRole}
+          cargos={cargos}
+          setCargos={setCargos}
           permissoes={permissoes}
           setPermissoes={setPermissoes}
           active={active}
@@ -113,7 +110,6 @@ export default function AdminPanel({ onBack, onUserUpdated }) {
               </div>
               <h3 className="text-md font-bold">Equipe Cadastrada</h3>
             </div>
-
             <UserTable users={users} onEdit={editarUsuario} />
           </section>
         </div>

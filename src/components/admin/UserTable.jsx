@@ -1,4 +1,5 @@
 import { Settings } from "lucide-react";
+import { cargosDe } from "../../utils/roles";
 
 export default function UserTable({ users, onEdit }) {
   return (
@@ -8,56 +9,70 @@ export default function UserTable({ users, onEdit }) {
           <tr>
             <th>Colaborador</th>
             <th>Usuário</th>
-            <th>Cargo</th>
+            <th>Cargo(s)</th>
             <th>Status</th>
             <th>Ações</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>
-                {user.nome ||
-                  user.username
-                    ?.split(".")
-                    .map(
-                      (parte) =>
-                        parte.charAt(0).toUpperCase() +
-                        parte.slice(1).toLowerCase(),
-                    )
-                    .join(" ")}
-              </td>
+          {users.map((user) => {
+            const cargos = cargosDe(user);
 
-              <td className="user-column">{user.username}</td>
+            return (
+              <tr key={user.id}>
+                <td>
+                  {user.nome ||
+                    user.username
+                      ?.split(".")
+                      .map(
+                        (parte) =>
+                          parte.charAt(0).toUpperCase() +
+                          parte.slice(1).toLowerCase(),
+                      )
+                      .join(" ")}
+                </td>
 
-              <td>
-                <span className={`role-badge role-${user.role}`}>
-                  {user.role}
-                </span>
-              </td>
+                <td className="user-column">{user.username}</td>
 
-              <td>
-                <span
-                  className={`status-badge ${
-                    user.active ? "status-active" : "status-disabled"
-                  }`}
-                >
-                  {user.active ? "ATIVO" : "DESATIVADO"}
-                </span>
-              </td>
+                <td>
+                  {cargos.length === 0 ? (
+                    <span className="role-badge" style={{ opacity: 0.5 }}>
+                      sem cargo
+                    </span>
+                  ) : (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                      {cargos.map((c) => (
+                        <span key={c} className={`role-badge role-${c}`}>
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </td>
 
-              <td>
-                {user.username !== "master" && (
-                  <button
-                    className="btn-edit-user"
-                    onClick={() => onEdit(user)}
+                <td>
+                  <span
+                    className={`status-badge ${
+                      user.active ? "status-active" : "status-disabled"
+                    }`}
                   >
-                    <Settings color="currentColor" size={16} />
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
+                    {user.active ? "ATIVO" : "DESATIVADO"}
+                  </span>
+                </td>
+
+                <td>
+                  {user.username !== "master" && (
+                    <button
+                      className="btn-edit-user"
+                      onClick={() => onEdit(user)}
+                    >
+                      <Settings color="currentColor" size={16} />
+                    </button>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

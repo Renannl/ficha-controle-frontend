@@ -1,19 +1,18 @@
 import { User } from "lucide-react";
-
 import {
   EXECUTION_PERMISSIONS,
   MANAGEMENT_PERMISSIONS,
 } from "../../utils/permissions";
-
-import { ROLES, ROLE_PRESETS } from "../../data/users";
+import { CARGO_OPTIONS, ROLE_PRESETS } from "../../data/users";
+import { presetsDeCargos } from "../../utils/roles";
 import PermissionGroup from "./PermissionGroup";
 
 export default function UserForm({
   editingUser,
   nome,
   setNome,
-  role,
-  setRole,
+  cargos,
+  setCargos,
   permissoes,
   setPermissoes,
   active,
@@ -27,12 +26,13 @@ export default function UserForm({
     );
   }
 
-  function handleRoleChange(newRole) {
-    setRole(newRole);
+  function handleCargoChange(cargo) {
+    const novosCargos = cargos.includes(cargo)
+      ? cargos.filter((c) => c !== cargo)
+      : [...cargos, cargo];
 
-    const preset = ROLE_PRESETS[newRole] || [];
-
-    setPermissoes(preset);
+    setCargos(novosCargos);
+    setPermissoes(presetsDeCargos(novosCargos, ROLE_PRESETS));
   }
 
   return (
@@ -42,7 +42,6 @@ export default function UserForm({
           <div className="card-icon">
             <User size={18} />
           </div>
-
           <h3 className="text-md font-bold">
             {editingUser ? "Editar Usuário" : "Selecione um usuário"}
           </h3>
@@ -51,7 +50,6 @@ export default function UserForm({
         <div className="admin-form-body">
           <div className="form-row">
             <label className="field-label">Nome de Exibição</label>
-
             <input
               type="text"
               value={nome}
@@ -61,34 +59,50 @@ export default function UserForm({
             />
           </div>
 
+          {/* ── CARGO(S) MÚLTIPLOS ─────────────────────────────── */}
           <div className="form-row">
-            <label className="field-label">Cargo / Função</label>
+            <label className="field-label">
+              Cargo(s) / Função(ões)
+            </label>
 
-            <select
-              value={role}
-              onChange={(e) => handleRoleChange(e.target.value)}
-              className="admin-select"
-            >
-              {Object.entries(ROLES).map(([val, label]) => (
-                <option key={val} value={val}>
-                  {label}
-                </option>
-              ))}
-            </select>
+            <div className="multi-cargos-box">
+              {CARGO_OPTIONS.map((c) => {
+                const checked = cargos.includes(c.value);
+                return (
+                  <label
+                    key={c.value}
+                    className={`cargo-chip ${checked ? "cargo-chip--checked" : ""}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => handleCargoChange(c.value)}
+                    />
+                    <span className={`role-badge role-${c.value}`}>
+                      {c.label}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+
+            {cargos.length === 0 && (
+              <p className="field-warning">
+                Nenhum cargo marcado — a pessoa não conseguirá trabalhar em
+                etapas de produção até escolher ao menos um.
+              </p>
+            )}
           </div>
 
           <div className="form-row">
             <label className="field-label">Status do Usuário</label>
-
             <label className="switch-toggle">
               <input
                 type="checkbox"
                 checked={active}
                 onChange={(e) => setActive(e.target.checked)}
               />
-
               <span className="switch-slider"></span>
-
               <span className="switch-label">
                 {active ? "Ativo" : "Desativado"}
               </span>
@@ -119,7 +133,6 @@ export default function UserForm({
           <button className="btn-admin-submit" onClick={salvarUsuario}>
             Salvar Alterações
           </button>
-
           {editingUser && (
             <button className="btn-admin-cancel" onClick={cancelarEdicao}>
               Cancelar

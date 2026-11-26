@@ -4043,7 +4043,7 @@ body {
 }
 
 .gaveta {
-  break-inside: avoid;      /* navegadores modernos */
+  break-inside: avoid; /* navegadores modernos */
   page-break-inside: avoid; /* fallback Chrome/legado */
 }
 
@@ -4058,8 +4058,8 @@ body {
 /* 2) (Opcional) Força CADA gaveta a começar em uma página nova.
       Use se preferir que cada gaveta tenha página inteira própria. */
 .gaveta {
-  break-before: page;       /* página nova antes de cada gaveta */
-  page-break-before: always;/* fallback */
+  break-before: page; /* página nova antes de cada gaveta */
+  page-break-before: always; /* fallback */
 }
 
 /* 3) (Opcional) Evita órfãs: não deixa só a legenda/cabeçalho
@@ -4088,6 +4088,68 @@ body {
 
 .concluidas-toggle:hover {
   background: rgba(255, 255, 255, 0.04);
+}
+
+.multi-cargos-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 12px;
+  background: var(--bg-base, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 10px;
+}
+
+.cargo-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  min-width: 0; /* evita estouro em telas pequenas */
+}
+
+.cargo-chip input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cargo-chip .role-badge {
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font-size: 13px;
+  font-weight: 700;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.cargo-chip:hover .role-badge {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.cargo-chip--checked .role-badge {
+  border-color: var(--primary, #2563eb);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
+.field-hint {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.field-warning {
+  font-size: 12px;
+  color: #b45309;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 8px 0 0;
 }
 
 .concluidas-toggle svg {

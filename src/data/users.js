@@ -1,20 +1,3 @@
-export const INITIAL_USERS = [
-  {
-    username: "zuerlan",
-    password: "23",
-    displayName: "Zuerlan Lirio",
-    role: "admin",
-    permissions: ["all"],
-  },
-  {
-    username: "1",
-    password: "23",
-    displayName: "Usuário Montagem",
-    role: "montagem",
-    permissions: ["taf", "controle", "fotos"],
-  },
-];
-
 export const ROLES = {
   admin: "Administrador (SuperAdmin)",
   montagem: "Montagem Mecânica",
@@ -22,6 +5,15 @@ export const ROLES = {
   barramento: "Barramento",
   taf: "Técnico TAF",
 };
+
+// Lista dos cargos operacionais (admin fica de fora — é papel global).
+export const CARGO_OPTIONS = [
+  { value: "montagem", label: "Montagem Mecânica" },
+  { value: "barramento", label: "Barramento" },
+  { value: "cabeamento", label: "Cabeamento" },
+  { value: "taf", label: "Técnico TAF" },
+  { value: "admin", label: "Administrador" },
+];
 
 export const ROLE_PRESETS = {
   montagem: ["taf", "controle", "fotos"],
