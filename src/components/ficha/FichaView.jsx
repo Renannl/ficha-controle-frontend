@@ -471,8 +471,9 @@ export default function FichaView({
     return [...new Set(nomes.filter(Boolean))].join(", ");
   }
 
-  function getCamposFaltantes(fichaArg = null) {
+  function getCamposFaltantes(fichaArg = null, gavetasArg = null) {
     const f = fichaArg || ficha;
+    const gavetasAtuais = gavetasArg ?? gavetas;
     if (!f) return [];
     const faltando = [];
 
@@ -483,7 +484,7 @@ export default function FichaView({
 
     // ── CCM: validar gavetas em vez da ficha ──────────────────────────
     if (isCCMFicha) {
-      if (!gavetas || gavetas.length === 0) {
+      if (!gavetasAtuais || gavetasAtuais.length === 0) {
         faltando.push("Nenhuma gaveta cadastrada");
         return faltando;
       }
@@ -491,7 +492,7 @@ export default function FichaView({
       const gavetasIncompletas = [];
       const gavetasSemAssinaturas = [];
 
-      gavetas.forEach((gaveta) => {
+      gavetasAtuais.forEach((gaveta) => {
         const dados = gaveta.dados || {};
         const items = dados.items || [];
         const assinaturas = dados.assinaturas || {};
@@ -660,8 +661,19 @@ export default function FichaView({
       });
       return;
     }
+    let gavetasFrescas = [];
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL || "http://localhost:3001"}/fichas/${ficha.dbId || fichaId}/gavetas`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (res.ok) gavetasFrescas = await res.json();
+    } catch (err) {
+      console.error("Erro ao buscar gavetas atualizadas:", err);
+    }
 
-    const faltando = getCamposFaltantes(fichaEfetiva);
+    const faltando = getCamposFaltantes(fichaEfetiva, gavetasFrescas);
     if (faltando.length > 0) {
       setSuccessModal({
         isOpen: true,

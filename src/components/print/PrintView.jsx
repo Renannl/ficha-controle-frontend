@@ -30,19 +30,34 @@ function ehCcm(ficha) {
   return tipo === "ccm";
 }
 
+// 🆕 Pega o id da ficha de produção vinculada (relatório fotográfico/TAF).
+// Usado para carregar as gavetas do CCM ao imprimir a ficha vinculada.
+function fichaProducaoIdDe(ficha) {
+  return (
+    ficha?.ficha_producao_id ||
+    ficha?.dados?.ficha_producao_id ||
+    ficha?.producaoId ||
+    null
+  );
+}
+
 export default function PrintView({ ficha, isBook, onDataReady }) {
   const sinalizado = useRef(false);
   const fichaId = ficha?.dbId ?? ficha?.id;
 
-  const isCcm = String(ficha?.operacao) === "10" && ehCcm(ficha);
+  const operacao = String(ficha?.operacao);
+  const isCcm = operacao === "10" && ehCcm(ficha);
+  const producaoId = isCcm ? null : fichaProducaoIdDe(ficha);
 
   const { sessoes, loading: sessoesLoading } = useSessoesTrabalho(fichaId);
 
-  // 🆕 Só carrega gavetas quando é CCM. Quando não é, passa null e o
-  // hook não dispara requisição (loading fica false).
-  const { gavetas, loading: gavetasLoading } = useGavetas(
-    isCcm ? fichaId : null,
-  );
+  const gavetaTargetId = isCcm
+    ? fichaId
+    : operacao === "80" && producaoId
+      ? producaoId
+      : null;
+
+  const { gavetas, loading: gavetasLoading } = useGavetas(gavetaTargetId);
 
   const [logs, setLogs] = useState([]);
   const [logsLoading, setLogsLoading] = useState(!!fichaId);
@@ -83,12 +98,33 @@ export default function PrintView({ ficha, isBook, onDataReady }) {
   const op = getOperacao(OPERACOES, ficha.operacao);
 
   switch (ficha.operacao) {
-    case "80":
-      return ficha.tipoFotografico === "tecnica" ? (
-        <PrintViewFotosTecnicas ficha={ficha} isBook={isBook} />
-      ) : (
-        <PrintViewFotos ficha={ficha} isBook={isBook} />
+    case "80": {
+      // 🆕 Relatório fotográfico (geral/técnico) + fotos das gavetas do
+      // CCM vinculado. As gavetas vêm da ficha de produção.
+      const gavetasComFotos = (gavetas || [])
+        .filter((g) => (g?.dados?.fotos || []).length > 0)
+        .sort((a, b) => Number(a.numero) - Number(b.numero));
+
+      return (
+        <>
+          {ficha.tipoFotografico === "tecnica" ? (
+            <PrintViewFotosTecnicas ficha={ficha} isBook={isBook} />
+          ) : (
+            <PrintViewFotos ficha={ficha} isBook={isBook} />
+          )}
+
+          {gavetasComFotos.map((g) => (
+            <PrintViewGavetaFotos
+              key={g.id}
+              gaveta={g}
+              ficha={ficha}
+              numeroG={g.numero}
+              isBook={isBook}
+            />
+          ))}
+        </>
       );
+    }
 
     case "50":
       return <PrintViewTAF ficha={ficha} op={op} isBook={isBook} />;

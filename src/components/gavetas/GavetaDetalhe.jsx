@@ -188,6 +188,7 @@ export default function GavetaDetalhe({
   const [etapaPular, setEtapaPular] = useState(null);
   const [agora, setAgora] = useState(Date.now());
   const [assinaturaInput, setAssinaturaInput] = useState({});
+  const [nomeGaveta, setNomeGaveta] = useState(gaveta?.nome_equipamento || "");
 
   const [showPauseModal, setShowPauseModal] = useState(false);
   const [motivoPausa, setMotivoPausa] = useState("");
@@ -336,7 +337,7 @@ export default function GavetaDetalhe({
 
   const montarPayload = useCallback(
     (d) => ({
-      nomeEquipamento: gaveta?.nome_equipamento || "",
+      nomeEquipamento: nomeGaveta || "",
       status: gaveta?.status || "aberta",
       dados: {
         items: d.items,
@@ -351,7 +352,7 @@ export default function GavetaDetalhe({
         etapasLiberadas: d.etapasLiberadas,
       },
     }),
-    [gaveta?.nome_equipamento, gaveta?.status],
+    [nomeGaveta, gaveta?.nome_equipamento, gaveta?.status],
   );
 
   const persistir = useCallback(
@@ -385,6 +386,7 @@ export default function GavetaDetalhe({
     setManualCargo("geral");
     setManualInicio("");
     setManualFim("");
+    setNomeGaveta(gaveta?.nome_equipamento || "");
   }, [chaveGaveta]);
 
   useEffect(() => {
@@ -396,7 +398,7 @@ export default function GavetaDetalhe({
       persistir(montarPayload(dados));
     }, 800);
     return () => clearTimeout(debounceRef.current);
-  }, [dados, persistir, montarPayload]);
+  }, [dados, persistir, montarPayload, nomeGaveta]);
 
   useEffect(() => {
     return () => {
@@ -804,16 +806,17 @@ export default function GavetaDetalhe({
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: "flex-start",
           gap: 10,
           flexWrap: "wrap",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
           <button onClick={onVoltar} style={s.btn} title="Voltar">
             <ArrowLeft size={16} /> Voltar
           </button>
           <div>
+            {/* 🆕 o título agora reflete o nome digitado */}
             <h2
               style={{
                 margin: 0,
@@ -822,10 +825,11 @@ export default function GavetaDetalhe({
                 color: "var(--text-primary, #1e293b)",
               }}
             >
-              {gaveta.tag || `Gaveta ${gaveta.numero}`}
+              {nomeGaveta?.trim() || gaveta.tag || `Gaveta ${gaveta.numero}`}
             </h2>
             <div style={{ ...s.sub, marginTop: 2 }}>
-              {indCompartilhado} · Unidade de produção independente
+              {indCompartilhado} · Unidade de produção independente ·{" "}
+              {gaveta.tag || `Gaveta ${gaveta.numero}`}
             </div>
           </div>
         </div>
@@ -862,6 +866,36 @@ export default function GavetaDetalhe({
           {erro}
         </div>
       )}
+
+      <div style={s.card}>
+        <label
+          style={{
+            display: "block",
+            fontSize: 12,
+            fontWeight: 700,
+            color: "var(--text-secondary, #64748b)",
+            marginBottom: 6,
+            textTransform: "uppercase",
+            letterSpacing: "0.04em",
+          }}
+        >
+          Nome da gaveta
+        </label>
+        <input
+          type="text"
+          value={nomeGaveta}
+          onChange={(e) => {
+            sujoRef.current = true; // dispara o autosave
+            setNomeGaveta(e.target.value);
+          }}
+          placeholder={`Gaveta ${gaveta.numero}`}
+          style={{ ...s.input, fontSize: 15, fontWeight: 600 }}
+        />
+        <p style={{ ...s.sub, marginTop: 8, marginBottom: 0 }}>
+          Esse é o nome exibido no cartão da gaveta na lista. A tag (G01, G02…)
+          permanece a mesma.
+        </p>
+      </div>
 
       <div style={s.card}>
         <div

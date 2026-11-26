@@ -4042,6 +4042,34 @@ body {
   transition: all 0.2s ease;
 }
 
+.gaveta {
+  break-inside: avoid;      /* navegadores modernos */
+  page-break-inside: avoid; /* fallback Chrome/legado */
+}
+
+/* Se as fotos ficam dentro de sub-elementos, garanta também: */
+.gaveta img,
+.gaveta .foto,
+.gaveta .secao-fotos {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* 2) (Opcional) Força CADA gaveta a começar em uma página nova.
+      Use se preferir que cada gaveta tenha página inteira própria. */
+.gaveta {
+  break-before: page;       /* página nova antes de cada gaveta */
+  page-break-before: always;/* fallback */
+}
+
+/* 3) (Opcional) Evita órfãs: não deixa só a legenda/cabeçalho
+      da gaveta ficar sozinho no fim de uma página. */
+.gaveta::after {
+  content: "";
+  display: block;
+  height: 0;
+}
+
 .concluidas-toggle {
   width: 100%;
   display: flex;

@@ -10,12 +10,32 @@ import {
   StickyNote,
 } from "lucide-react";
 
+// Mesma lógica do GavetaDetalhe: itens "-ver-" ficam em dados.verificacoes[etapa][idx]
+function etapaDeItemId(id) {
+  const s = String(id || "");
+  if (s.startsWith("mm-")) return "montagem";
+  if (s.startsWith("bar-")) return "barramento";
+  if (s.startsWith("cab-")) return "cabeamento";
+  return null;
+}
+
 function progressoGaveta(gaveta) {
   const items = gaveta?.dados?.items || [];
+  const verificacoes = gaveta?.dados?.verificacoes || {};
   if (!Array.isArray(items) || items.length === 0) return 0;
-  const done = items.filter(
-    (i) => i?.resultado === "ok" || i?.resultado === "na",
-  ).length;
+
+  const done = items.filter((i) => {
+    // Item de verificação → resultado fica em dados.verificacoes
+    if (String(i?.id || "").includes("-ver-")) {
+      const etapa = etapaDeItemId(i.id);
+      const idx = parseInt(String(i.id).split("-").pop(), 10);
+      const v = verificacoes?.[etapa]?.[idx];
+      return v === "ok" || v === "na";
+    }
+    // Item normal → resultado fica no próprio item
+    return i?.resultado === "ok" || i?.resultado === "na";
+  }).length;
+
   return Math.round((done / items.length) * 100);
 }
 

@@ -81,7 +81,7 @@ export default function PrintViewGavetaFotos({
                 textAlign: "right",
               }}
             >
-              {ficha?.cliente || ""}
+              {ficha?.cliente || ficha?.dados?.cliente || ""}
               <br />
               {indCompartilhado}
             </div>
