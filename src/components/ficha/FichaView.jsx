@@ -595,11 +595,14 @@ export default function FichaView({
       }
     }
 
-    const rolesObrigatorios = foto ? [] : ["supervisor", "qualidade"];
+    const rolesObrigatorios = foto
+      ? []
+      : ["supervisor", "qualidade", ...(taf ? ["tecnico"] : [])];
     rolesObrigatorios.forEach((role) => {
       const assinatura = f.assinaturas?.[role];
       if (!assinatura?.dataUrl || !assinatura?.nome?.trim()) {
         const labels = {
+          tecnico: "Assinatura do Técnico",
           supervisor: "Assinatura do Supervisor",
           qualidade: "Assinatura da Qualidade",
         };

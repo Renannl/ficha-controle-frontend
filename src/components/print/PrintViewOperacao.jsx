@@ -415,9 +415,9 @@ export default function PrintViewOperacao({
                 style={{ width: "50%", padding: "5px", overflow: "hidden" }}
               >
                 <div className="sig-line">
-                  {ficha.assinaturas.supervisor.dataUrl ? (
+                  {ficha.assinaturas?.supervisor?.dataUrl ? (
                     <img
-                      src={ficha.assinaturas.supervisor.dataUrl}
+                      src={ficha.assinaturas?.supervisor?.dataUrl}
                       alt="Assinatura"
                     />
                   ) : (
@@ -426,10 +426,11 @@ export default function PrintViewOperacao({
                 </div>
                 <div className="sig-label">Supervisor de Produção</div>
                 <div className="sig-name">
-                  {ficha.assinaturas.supervisor.nome || "____________________"}
+                  {ficha.assinaturas?.supervisor?.nome ||
+                    "____________________"}
                 </div>
                 <div className="sig-date">
-                  Data: {ficha.assinaturas.supervisor.data || "__/__/____"}
+                  Data: {ficha.assinaturas?.supervisor?.data || "__/__/____"}
                 </div>
               </td>
 
@@ -438,9 +439,9 @@ export default function PrintViewOperacao({
                 style={{ width: "50%", padding: "5px", overflow: "hidden" }}
               >
                 <div className="sig-line">
-                  {ficha.assinaturas.qualidade.dataUrl ? (
+                  {ficha.assinaturas?.qualidade?.dataUrl ? (
                     <img
-                      src={ficha.assinaturas.qualidade.dataUrl}
+                      src={ficha.assinaturas?.qualidade?.dataUrl}
                       alt="Assinatura"
                     />
                   ) : (
@@ -449,10 +450,10 @@ export default function PrintViewOperacao({
                 </div>
                 <div className="sig-label">Responsável pela Qualidade</div>
                 <div className="sig-name">
-                  {ficha.assinaturas.qualidade.nome || "____________________"}
+                  {ficha.assinaturas?.qualidade?.nome || "____________________"}
                 </div>
                 <div className="sig-date">
-                  Data: {ficha.assinaturas.qualidade.data || "__/__/____"}
+                  Data: {ficha.assinaturas?.qualidade?.data || "__/__/____"}
                 </div>
               </td>
             </tr>
